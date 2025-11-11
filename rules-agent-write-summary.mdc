@@ -1,0 +1,51 @@
+---
+command: /write-summary
+description: Writes conversation summary to disk
+alwaysApply: false
+---
+## Instructions
+Create a file in the context directory with the following naming convention:
+Preface: "context-"
+Name: The name of the current chat, lowercase, with spaces replaced by dashes.
+Extension: ".md"
+If a context directory does not exist, create one.
+### Target Audience
+- Write for future AI agents who need to continue the work seamlessly
+- Optimize for maximum context with minimum length to preserve context buffer space
+
+### Content Guidelines
+1. **Include both failed approaches and final working solutions** - document the evolution of the project
+2. **Don't include discoverable context** - avoid repeating information that can be found by examining files (like JSON structure, code snippets)
+3. **Use pointers for discoverability** - reference files and locations where detailed information can be found
+4. **Emphasize key areas**:
+   - Solution evolution and approach changes
+   - Technical requirements and constraints discovered
+   - Current working state and status
+   - User preferences and requirements
+
+### Structure Template
+1. **Context** - Brief project overview
+2. **Evolution of Solutions** - Chronological progression including failed attempts
+3. **Current Working Solution** - Final implemented approach with key details
+4. **Key Technical Requirements Discovered** - Critical constraints and rules
+5. **User Preferences** - Important behavioral preferences for future interactions
+6. **Current State** - Project status and outstanding items
+7. **Usage** - How to run/use the current solution
+8. **Files in Project** - Key files and their purposes
+
+### Style Requirements
+- Concise bullet points and short paragraphs
+- Technical accuracy without unnecessary detail
+- Clear section headers for easy navigation
+- Include specific file names and key dependencies
+- Document error handling approaches
+- Note any external service integrations (URLs, APIs, etc.)
+
+### What NOT to Include
+- Full code snippets (reference files instead)
+- Detailed data structures (point to example files)
+- Step-by-step procedures (link to working scripts)
+- Verbose explanations (prioritize brevity)
+
+The goal is to enable a new AI agent to quickly understand the project state, failed approaches, current solution, and user preferences without consuming excessive context space.
+
