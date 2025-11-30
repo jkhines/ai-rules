@@ -27,3 +27,6 @@ Only add comments when code may be non-obvious to an expert.
 Never add comments with emojis, ASCII formatting, arrows, or extra spaces.
 When writing inline comments, maintain one space between the end of the code and the start of the comment.
 When writing comments, use complete, capitalized sentences terminated with a period.
+
+## External Systems
+When interacting with external third-party systems such as Jira, Confluence, GitHub, SonarQube, or any other platform, always check environment variables for API keys, tokens, or credentials instead of using built-in web browser authentication or prompting for manual input.
