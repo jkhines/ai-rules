@@ -1,0 +1,221 @@
+---
+command: /commit-code
+description: Commits code changes following Conventional Commits v1.0.0 and validates branch naming
+alwaysApply: false
+---
+
+## Conventional Commits (v1.0.0)
+
+### Commit Message Format
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+### Commit Types (REQUIRED)
+- `feat`: New feature for the user (correlates with MINOR in SemVer)
+- `fix`: Bug fix for the user (correlates with PATCH in SemVer)
+- `docs`: Documentation only changes
+- `style`: Code style changes (formatting, missing semi-colons, whitespace, etc.) that do not affect code meaning
+- `refactor`: Code change that neither fixes a bug nor adds a feature
+- `perf`: Code change that improves performance
+- `test`: Adding missing tests or correcting existing tests
+- `build`: Changes to build system or external dependencies (e.g., npm, webpack, gradle)
+- `ci`: Changes to CI configuration files and scripts (e.g., GitHub Actions, CircleCI)
+- `chore`: Other changes that don't modify src or test files (e.g., updating dependencies, tooling)
+- `revert`: Reverts a previous commit
+
+### Scope (OPTIONAL)
+- Noun describing a section of the codebase enclosed in parentheses
+- Examples: `feat(parser):`, `fix(api):`, `refactor(auth):`
+
+### Description (REQUIRED)
+- Short summary in present tense (imperative mood)
+- No capitalized first letter
+- No period at the end
+- Examples: "add user authentication", "fix memory leak in parser"
+
+### Body (OPTIONAL)
+- Provide additional contextual information
+- Use imperative mood
+- May contain multiple paragraphs
+- Separate from description by one blank line
+
+### Footer (OPTIONAL)
+- One or more footers separated from body by one blank line
+- Format: `<token>: <value>` or `<token> #<issue-number>`
+- Common tokens: `BREAKING CHANGE`, `Refs`, `Closes`, `Fixes`
+- BREAKING CHANGE footer triggers MAJOR version bump (or append `!` after type/scope)
+
+### Breaking Changes
+- MUST be indicated by appending `!` after type/scope: `feat!:` or `feat(api)!:`
+- OR by including `BREAKING CHANGE:` footer with description
+- Example:
+  ```
+  feat!: remove deprecated v1 API
+  
+  BREAKING CHANGE: v1 API endpoints have been removed. Use v2 instead.
+  ```
+
+### Examples
+```
+feat(auth): add OAuth2 support
+
+fix: resolve race condition in event loop
+
+docs(readme): update installation instructions
+
+feat!: remove support for Node 12
+
+BREAKING CHANGE: Node 12 is no longer supported. Minimum version is now Node 14.
+
+refactor(core)!: simplify API surface
+
+BREAKING CHANGE: The `initialize()` method now requires a config object.
+
+chore: update dependencies
+
+test(parser): add tests for edge cases
+
+ci: add automated release workflow
+```
+
+## Conventional Branch Naming
+
+### Branch Format
+```
+<type>/<description>
+```
+
+### Branch Types (REQUIRED)
+- `main` or `master` or `develop`: Main development branch (no type prefix)
+- `feature/` or `feat/`: New features
+- `bugfix/` or `fix/`: Bug fixes
+- `hotfix/`: Urgent production fixes
+- `release/`: Release preparation branches
+- `chore/`: Maintenance tasks, dependency updates, tooling
+- `docs/`: Documentation only changes
+- `refactor/`: Code refactoring without behavior change
+- `test/`: Test additions or corrections
+- `perf/`: Performance improvements
+- `ci/`: CI/CD configuration changes
+
+### Description (REQUIRED)
+- Use lowercase letters (a-z), numbers (0-9), and hyphens (-) only
+- Separate words with hyphens
+- No special characters, underscores, or spaces
+- No consecutive, leading, or trailing hyphens or dots
+- Keep concise and descriptive
+- Include ticket/issue numbers when applicable
+- For release branches, dots (.) allowed for version numbers
+
+### Examples
+```
+feature/user-authentication
+feat/add-payment-gateway
+bugfix/fix-login-timeout
+fix/resolve-memory-leak
+hotfix/security-patch-cve-2024
+release/v1.2.0
+chore/update-dependencies
+docs/api-documentation
+refactor/simplify-error-handling
+test/add-integration-tests
+perf/optimize-database-queries
+ci/add-deployment-pipeline
+feature/issue-123-add-dark-mode
+```
+
+## Execution Steps
+
+When `/commit-code` is invoked:
+
+1. **Check Git Status**
+   - Run `git status` to identify staged and unstaged changes
+   - If no changes are present, inform the user and exit
+
+2. **Validate Current Branch**
+   - Run `git branch --show-current` to get the current branch name
+   - Check if branch name matches pattern: `<type>/<description>`
+   - Valid types: `feature/`, `feat/`, `bugfix/`, `fix/`, `hotfix/`, `release/`, `chore/`, `docs/`, `refactor/`, `test/`, `perf/`, `ci/`
+   - Exception: `main`, `master`, `develop` are valid without prefix
+   
+3. **If Branch is Non-Standard**
+   - Display message:
+     ```
+     The current branch '[branch-name]' does not follow conventional branch naming guidelines.
+     
+     Expected format: <type>/<description>
+     Valid types: feature/, feat/, bugfix/, fix/, hotfix/, release/, chore/, docs/, refactor/, test/, perf/, ci/
+     
+     Examples:
+       feature/add-user-login
+       fix/resolve-memory-leak
+       docs/update-api-documentation
+     ```
+   - Ask: "Would you like to create a new branch following the guidelines?"
+   - If yes:
+     - Based on the changes, suggest an appropriate branch name
+     - Ask user to confirm or modify the suggested name
+     - Create and checkout the new branch: `git checkout -b <new-branch-name>`
+   - If no:
+     - Warn: "Proceeding with non-standard branch name (not recommended)"
+     - Continue to commit step
+
+4. **Analyze Changes**
+   - Review the staged/unstaged changes
+   - Determine appropriate commit type based on changes:
+     - `feat`: New functionality added
+     - `fix`: Bug fixes
+     - `docs`: Documentation changes only
+     - `style`: Formatting, whitespace changes
+     - `refactor`: Code restructuring without behavior change
+     - `perf`: Performance improvements
+     - `test`: Test additions or modifications
+     - `build`: Build system or dependency changes
+     - `ci`: CI/CD configuration changes
+     - `chore`: Maintenance tasks
+
+5. **Generate Commit Message**
+   - Propose a commit message following the format:
+     ```
+     <type>[optional scope]: <description>
+     
+     [optional body]
+     
+     [optional footer]
+     ```
+   - Ask user to confirm or modify the commit message
+   - Validate the message against rules:
+     - Type is one of the allowed types
+     - Description is present and in imperative mood
+     - Description starts with lowercase letter
+     - Description does not end with a period
+     - Breaking changes are properly indicated with `!` or `BREAKING CHANGE:` footer
+
+6. **Execute Commit**
+   - If changes are unstaged, ask: "Stage all changes before committing?"
+   - If yes: `git add .` or `git add -A`
+   - Execute: `git commit -m "<commit-message>"`
+   - Confirm commit was successful
+   - Display commit hash and message
+
+7. **Post-Commit Summary**
+   - Show the commit details
+   - If on non-standard branch, remind: "Consider moving to a conventional branch name for future commits"
+
+## Validation Checklist
+
+Before committing, verify:
+- [ ] Commit type is one of the allowed types
+- [ ] Commit description is present and in imperative mood
+- [ ] Commit description does not end with a period
+- [ ] Commit description starts with lowercase letter
+- [ ] Breaking changes are properly indicated with `!` or `BREAKING CHANGE:` footer
+- [ ] Branch name follows `<type>/<description>` format (unless on main/master/develop)
+- [ ] Branch description uses only lowercase, numbers, and hyphens
+- [ ] User has reviewed and approved the commit message
+
