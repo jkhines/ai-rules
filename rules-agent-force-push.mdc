@@ -1,0 +1,181 @@
+---
+command: /force-push
+description: Temporarily bypass organization rules, commit staged changes, push to remote, and restore rules
+alwaysApply: false
+---
+
+## Purpose
+Temporarily disables GitHub organization repository rulesets for the current repository, commits staged changes using Conventional Commits, pushes to remote, and then re-enables the organization rules.
+
+## Prerequisites
+- User must have GitHub CLI (`gh`) installed and authenticated
+- User must have access to an account with `admin:org` scope for the organization
+- Changes should already be staged or ready to commit
+
+## Execution Steps
+
+When `/force-push` is invoked:
+
+### 1. **Identify Repository Context**
+   - Run `git remote get-url origin` to get the repository URL
+   - Extract organization name and repository name from the URL
+     - Format: `https://github.com/{org}/{repo}.git`
+   - Run `git branch --show-current` to get the current branch name
+   - Run `git status` to verify there are changes to commit
+
+### 2. **Authenticate with Admin Permissions**
+   - Run `gh auth status` to check current authentication
+   - Look for an account with `admin:org` scope in the token scopes
+   - If the active account doesn't have `admin:org`:
+     - Identify which account has `admin:org` scope
+     - Run `gh auth switch -u {account-with-admin-org}`
+     - Store the original account name to switch back later
+
+### 3. **Retrieve Organization Rulesets**
+   - Run `gh api orgs/{org}/rulesets --jq '.[] | select(.target == "branch") | {id, name, enforcement}'`
+   - Identify rulesets that apply to branches (typically named like "pr_required_rule" or similar)
+   - For each ruleset found:
+     - Store the ruleset ID
+     - Check if it affects the current repository
+
+### 4. **Disable Organization Rules for This Repository**
+   For each applicable ruleset:
+   - Run:
+     ```powershell
+     gh api orgs/{org}/rulesets/{ruleset-id} | ConvertFrom-Json | ForEach-Object { $_.conditions.repository_name.exclude += "{repo}"; $_ } | ConvertTo-Json -Depth 10 | Out-File -FilePath update-ruleset-{ruleset-id}.json -Encoding utf8
+     ```
+   - Apply the update:
+     ```powershell
+     gh api orgs/{org}/rulesets/{ruleset-id} -X PUT --input update-ruleset-{ruleset-id}.json
+     ```
+   - Verify success by checking the exclude list:
+     ```powershell
+     gh api orgs/{org}/rulesets/{ruleset-id} --jq '.conditions.repository_name.exclude'
+     ```
+   - Clean up: `Remove-Item update-ruleset-{ruleset-id}.json`
+
+### 5. **Commit Changes Using Conventional Commits**
+   - Execute the `/commit-code` command workflow
+   - This command will:
+     - Check git status and identify changes
+     - Validate the current branch name against conventional naming standards
+     - Offer to create a proper branch if needed
+     - Analyze changes and determine appropriate commit type
+     - Generate a Conventional Commit message
+     - Stage changes if needed
+     - Execute the commit and display confirmation
+   - **Important**: Skip the branch validation step in `/commit-code` if the current branch is `main`, `master`, or `develop` since force-pushing to these branches is the intended use case
+   - Capture the commit hash for the summary report
+
+### 6. **Push to Remote**
+   - Run `git push origin {current-branch}`
+   - Verify push was successful
+   - Display confirmation with commit details
+
+### 7. **Re-enable Organization Rules**
+   For each ruleset that was modified:
+   - Remove the repository from the exclude list:
+     ```powershell
+     gh api orgs/{org}/rulesets/{ruleset-id} | ConvertFrom-Json | ForEach-Object { $_.conditions.repository_name.exclude = $_.conditions.repository_name.exclude | Where-Object { $_ -ne "{repo}" }; $_ } | ConvertTo-Json -Depth 10 | Out-File -FilePath restore-ruleset-{ruleset-id}.json -Encoding utf8
+     ```
+   - If the exclude array becomes empty, use this approach instead:
+     ```powershell
+     gh api orgs/{org}/rulesets/{ruleset-id} | ConvertFrom-Json | ForEach-Object { $_.conditions.repository_name.exclude = @(); $_ } | ConvertTo-Json -Depth 10 | Out-File -FilePath restore-ruleset-{ruleset-id}.json -Encoding utf8
+     ```
+   - Apply the restore:
+     ```powershell
+     gh api orgs/{org}/rulesets/{ruleset-id} -X PUT --input restore-ruleset-{ruleset-id}.json
+     ```
+   - Verify restoration:
+     ```powershell
+     gh api orgs/{org}/rulesets/{ruleset-id} --jq '.conditions.repository_name.exclude'
+     ```
+   - Clean up: `Remove-Item restore-ruleset-{ruleset-id}.json`
+
+### 8. **Restore Original GitHub Account**
+   - If the account was switched in step 2:
+     - Run `gh auth switch -u {original-account}`
+
+### 9. **Summary Report**
+   Display a summary:
+   ```
+   ✓ Organization rules temporarily bypassed
+   ✓ Changes committed: {commit-hash} - {commit-message}
+   ✓ Pushed to {remote}/{branch}
+   ✓ Organization rules restored
+   ✓ GitHub account restored to {original-account}
+   ```
+
+## Error Handling
+
+### Authentication Errors
+- If no account has `admin:org` scope:
+  - Display message: "No GitHub account with 'admin:org' scope found. Run: gh auth refresh -h github.com -s admin:org"
+  - Exit without making changes
+
+### Ruleset API Errors
+- If 404 errors occur when accessing rulesets:
+  - Check if authentication has proper scopes
+  - Verify organization name is correct
+  - Display helpful error message with actual API response
+
+### Push Failures
+- If push fails even after disabling rules:
+  - Wait 5 seconds and retry once (rules may need time to propagate)
+  - If still failing, display error and instructions to manually check GitHub
+  - Do NOT restore rules until push succeeds or user confirms abort
+
+### Partial Completion
+- If any step fails after rules are disabled:
+  - Attempt to restore rules before exiting
+  - Clearly indicate which steps completed and which failed
+  - Provide manual restoration commands if automatic restore fails
+
+## Usage Example
+
+```
+User: /force-push
+Assistant: 
+- Detected repository: my-org/my-repo
+- Current branch: main
+- Found 2 modified files ready to commit
+
+Switching to account with admin:org permissions...
+✓ Switched to admin-account
+
+Temporarily disabling organization rules...
+✓ Added my-repo to ruleset exclude list (ID: 12345678)
+
+Analyzing changes...
+Proposed commit message:
+---
+feat: add new user dashboard
+
+Implemented user dashboard with analytics widgets.
+Added real-time data updates and responsive layout.
+---
+
+Confirm this commit message? (yes/no/edit)
+[User confirms]
+
+✓ Committed: abc1234 - feat: add new user dashboard
+✓ Pushed to origin/main
+
+Restoring organization rules...
+✓ Removed my-repo from ruleset exclude list
+✓ Switched back to user-account
+
+Summary:
+✓ Organization rules temporarily bypassed
+✓ Changes committed: abc1234 - feat: add new user dashboard
+✓ Pushed to origin/main
+✓ Organization rules restored
+✓ GitHub account restored to user-account
+```
+
+## Notes
+- This command is designed for PowerShell on Windows
+- Requires organization administrator privileges
+- Always restores rules even if push fails
+- Maintains audit trail of all GitHub API operations
+- Compatible with both repository-level and organization-level rulesets
