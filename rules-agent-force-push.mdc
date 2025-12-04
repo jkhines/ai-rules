@@ -1,11 +1,11 @@
 ---
 command: /force-push
-description: Temporarily bypass organization rules, commit staged changes, push to remote, and restore rules
+description: Temporarily bypass organization and repository rules, commit staged changes, push to remote, and restore rules
 alwaysApply: false
 ---
 
 ## Purpose
-Temporarily disables GitHub organization repository rulesets for the current repository, commits staged changes using Conventional Commits, pushes to remote, and then re-enables the organization rules.
+Temporarily disables GitHub organization and repository rulesets for the current repository, commits staged changes using Conventional Commits, pushes to remote, and then re-enables all rules.
 
 ## Prerequisites
 - User must have GitHub CLI (`gh`) installed and authenticated
@@ -39,7 +39,7 @@ When `/force-push` is invoked:
      - Check if it affects the current repository
 
 ### 4. **Disable Organization Rules for This Repository**
-   For each applicable ruleset:
+   For each applicable organization ruleset:
    - Run:
      ```powershell
      gh api orgs/{org}/rulesets/{ruleset-id} | ConvertFrom-Json | ForEach-Object { $_.conditions.repository_name.exclude += "{repo}"; $_ } | ConvertTo-Json -Depth 10 | Out-File -FilePath update-ruleset-{ruleset-id}.json -Encoding utf8
@@ -54,7 +54,26 @@ When `/force-push` is invoked:
      ```
    - Clean up: `Remove-Item update-ruleset-{ruleset-id}.json`
 
-### 5. **Commit Changes Using Conventional Commits**
+### 5. **Retrieve and Disable Repository-Level Rulesets**
+   Repository-level rulesets (such as required status checks) must also be disabled:
+   - Run `gh api repos/{org}/{repo}/rulesets --jq '.[] | {id, name, enforcement}'`
+   - For each ruleset with `enforcement: "active"`:
+     - Store the ruleset ID and original enforcement state
+     - Disable by changing enforcement to `disabled`:
+       ```powershell
+       gh api repos/{org}/{repo}/rulesets/{ruleset-id} | ConvertFrom-Json | ForEach-Object { $_.enforcement = "disabled"; $_ } | ConvertTo-Json -Depth 10 | Out-File -FilePath update-repo-ruleset-{ruleset-id}.json -Encoding utf8
+       ```
+     - Apply the update:
+       ```powershell
+       gh api repos/{org}/{repo}/rulesets/{ruleset-id} -X PUT --input update-repo-ruleset-{ruleset-id}.json
+       ```
+     - Verify enforcement is now `disabled`:
+       ```powershell
+       gh api repos/{org}/{repo}/rulesets/{ruleset-id} --jq '.enforcement'
+       ```
+     - Clean up: `Remove-Item update-repo-ruleset-{ruleset-id}.json`
+
+### 6. **Commit Changes Using Conventional Commits**
    - Execute the `/commit-code` command workflow
    - This command will:
      - Check git status and identify changes
@@ -67,20 +86,20 @@ When `/force-push` is invoked:
    - **Important**: Skip the branch validation step in `/commit-code` if the current branch is `main`, `master`, or `develop` since force-pushing to these branches is the intended use case
    - Capture the commit hash for the summary report
 
-### 6. **Push to Remote**
+### 7. **Push to Remote**
    - Run `git push origin {current-branch}`
    - Verify push was successful
    - Display confirmation with commit details
 
-### 7. **Re-enable Organization Rules**
-   For each ruleset that was modified:
-   - Remove the repository from the exclude list:
-     ```powershell
-     gh api orgs/{org}/rulesets/{ruleset-id} | ConvertFrom-Json | ForEach-Object { $_.conditions.repository_name.exclude = $_.conditions.repository_name.exclude | Where-Object { $_ -ne "{repo}" }; $_ } | ConvertTo-Json -Depth 10 | Out-File -FilePath restore-ruleset-{ruleset-id}.json -Encoding utf8
-     ```
-   - If the exclude array becomes empty, use this approach instead:
+### 8. **Re-enable Organization Rules**
+   For each organization ruleset that was modified:
+   - Remove the repository from the exclude list. **Important**: Always use explicit empty array `@()` to avoid invalid JSON when filtering produces null:
      ```powershell
      gh api orgs/{org}/rulesets/{ruleset-id} | ConvertFrom-Json | ForEach-Object { $_.conditions.repository_name.exclude = @(); $_ } | ConvertTo-Json -Depth 10 | Out-File -FilePath restore-ruleset-{ruleset-id}.json -Encoding utf8
+     ```
+   - If there were other repositories in the exclude list that should remain, use filtering instead:
+     ```powershell
+     gh api orgs/{org}/rulesets/{ruleset-id} | ConvertFrom-Json | ForEach-Object { $_.conditions.repository_name.exclude = @($_.conditions.repository_name.exclude | Where-Object { $_ -ne "{repo}" }); $_ } | ConvertTo-Json -Depth 10 | Out-File -FilePath restore-ruleset-{ruleset-id}.json -Encoding utf8
      ```
    - Apply the restore:
      ```powershell
@@ -92,17 +111,35 @@ When `/force-push` is invoked:
      ```
    - Clean up: `Remove-Item restore-ruleset-{ruleset-id}.json`
 
-### 8. **Restore Original GitHub Account**
+### 9. **Re-enable Repository-Level Rulesets**
+   For each repository ruleset that was disabled in step 5:
+   - Restore enforcement to `active`:
+     ```powershell
+     gh api repos/{org}/{repo}/rulesets/{ruleset-id} | ConvertFrom-Json | ForEach-Object { $_.enforcement = "active"; $_ } | ConvertTo-Json -Depth 10 | Out-File -FilePath restore-repo-ruleset-{ruleset-id}.json -Encoding utf8
+     ```
+   - Apply the restore:
+     ```powershell
+     gh api repos/{org}/{repo}/rulesets/{ruleset-id} -X PUT --input restore-repo-ruleset-{ruleset-id}.json
+     ```
+   - Verify enforcement is restored:
+     ```powershell
+     gh api repos/{org}/{repo}/rulesets/{ruleset-id} --jq '.enforcement'
+     ```
+   - Clean up: `Remove-Item restore-repo-ruleset-{ruleset-id}.json`
+
+### 10. **Restore Original GitHub Account**
    - If the account was switched in step 2:
      - Run `gh auth switch -u {original-account}`
 
-### 9. **Summary Report**
+### 11. **Summary Report**
    Display a summary:
    ```
    ✓ Organization rules temporarily bypassed
+   ✓ Repository rules temporarily bypassed
    ✓ Changes committed: {commit-hash} - {commit-message}
    ✓ Pushed to {remote}/{branch}
    ✓ Organization rules restored
+   ✓ Repository rules restored
    ✓ GitHub account restored to {original-account}
    ```
 
@@ -118,16 +155,21 @@ When `/force-push` is invoked:
   - Check if authentication has proper scopes
   - Verify organization name is correct
   - Display helpful error message with actual API response
+- If 422 errors occur when restoring rulesets:
+  - This typically indicates invalid JSON structure (e.g., null array from filtering)
+  - Use explicit empty array `@()` instead of filtering when the exclude list would become empty
 
 ### Push Failures
-- If push fails even after disabling rules:
-  - Wait 5 seconds and retry once (rules may need time to propagate)
-  - If still failing, display error and instructions to manually check GitHub
+- If push fails even after disabling organization rules:
+  - Check for repository-level rulesets that may also be blocking the push
+  - Common blockers include required status checks (e.g., CI/CD pipelines, code analysis)
+  - Disable repository rulesets as described in step 5
+  - Retry the push after disabling all applicable rulesets
   - Do NOT restore rules until push succeeds or user confirms abort
 
 ### Partial Completion
 - If any step fails after rules are disabled:
-  - Attempt to restore rules before exiting
+  - Attempt to restore all rules (both organization and repository) before exiting
   - Clearly indicate which steps completed and which failed
   - Provide manual restoration commands if automatic restore fails
 
@@ -144,7 +186,11 @@ Switching to account with admin:org permissions...
 ✓ Switched to admin-account
 
 Temporarily disabling organization rules...
-✓ Added my-repo to ruleset exclude list (ID: 12345678)
+✓ Added my-repo to organization ruleset exclude list (ID: 12345678)
+
+Checking for repository-level rulesets...
+✓ Found repository ruleset: require-status-checks (ID: 87654321)
+✓ Disabled repository ruleset enforcement
 
 Analyzing changes...
 Proposed commit message:
@@ -162,20 +208,29 @@ Confirm this commit message? (yes/no/edit)
 ✓ Pushed to origin/main
 
 Restoring organization rules...
-✓ Removed my-repo from ruleset exclude list
+✓ Removed my-repo from organization ruleset exclude list
+
+Restoring repository rules...
+✓ Re-enabled repository ruleset enforcement
+
 ✓ Switched back to user-account
 
 Summary:
 ✓ Organization rules temporarily bypassed
+✓ Repository rules temporarily bypassed
 ✓ Changes committed: abc1234 - feat: add new user dashboard
 ✓ Pushed to origin/main
 ✓ Organization rules restored
+✓ Repository rules restored
 ✓ GitHub account restored to user-account
 ```
 
 ## Notes
 - This command is designed for PowerShell on Windows
-- Requires organization administrator privileges
-- Always restores rules even if push fails
+- Requires organization administrator privileges for organization rulesets
+- Requires repository admin privileges for repository-level rulesets
+- Always restores all rules (organization and repository) even if push fails
 - Maintains audit trail of all GitHub API operations
-- Compatible with both repository-level and organization-level rulesets
+- Organization rulesets use exclude lists; repository rulesets use enforcement toggling
+- When restoring exclude lists, always wrap filtered results in `@()` to ensure valid array structure
+- Common repository-level blockers include required status checks for CI/CD pipelines and code analysis tools

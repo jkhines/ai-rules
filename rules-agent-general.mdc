@@ -3,6 +3,9 @@ name: formatting-and-behavior
 description: Global behavior, generation, and formatting rules
 alwaysApply: true
 ---
+## PowerShell Output Retrieval
+After executing `run_terminal_cmd`, immediately read the corresponding terminal file (`terminals/{id}.txt`) to retrieve complete command output. Use `offset` parameter to skip to recent lines if the file is large.
+
 ## Behavior
 When responding in chat, never use emojis.
 When responding in chat, provide factual, accurate answers with minimal but sufficient expert-level context.
