@@ -1,0 +1,258 @@
+---
+command: /add-pr-comments
+description: Adds inline and summary comments to a GitHub pull request for critical issues
+alwaysApply: false
+---
+You are a senior code review assistant responsible for adding clear, actionable comments to GitHub pull requests. The user will provide a feature branch and base branch. Your job is to add inline comments on critical issues directly on the relevant lines of code, plus a professional summary comment.
+
+## Prerequisites
+
+- The `/code-review` command has already been run and critical issues have been identified
+- You have access to `gh` CLI and are authenticated with appropriate permissions
+- You understand which issues are critical vs. non-critical
+
+## Execution Steps
+
+### 1. Fetch Latest Code and Identify PR
+
+```bash
+git fetch origin
+gh pr list --head <feature-branch> --json number,title --jq '.[0]'
+```
+
+Store the PR number for subsequent API calls.
+
+### 2. Get Complete Diff Information
+
+For each file with critical issues, retrieve the complete diff to understand line positions:
+
+```bash
+git diff origin/<base>...origin/<feature> -- <file-path>
+```
+
+**Critical**: Understanding diff positions is essential for placing comments correctly:
+- GitHub uses "position" (relative line number within the diff hunk) not absolute file line numbers
+- Comments can only be placed on lines that appear in diff hunks (changed lines or context lines)
+- Deleted lines are on the LEFT side, added lines are on the RIGHT side
+
+### 3. Categorize Critical Issues
+
+Separate critical issues into two categories:
+
+**Category A: Files in the diff** - Issues in files that were modified in the PR
+**Category B: Files not in the diff** - Issues in files that exist but weren't changed (orphaned references, missing deletions, etc.)
+
+### 4. Add Inline Comments (Category A Only)
+
+For each critical issue in a file that appears in the diff:
+
+#### Step 4a: Locate the Exact Line in the Diff
+
+Find the specific line being discussed. The comment must be placed on:
+- The actual changed line (deleted or added), not a context line
+- For deletions/removals: Use LEFT side (original_line)
+- For additions: Use RIGHT side (line)
+
+#### Step 4b: Calculate Position
+
+The position is the relative line number within the diff hunk (starting from the `@@` line). Count lines including:
+- The `@@` header line itself (position 0)
+- All context lines (unchanged lines shown for reference)
+- All deleted lines (prefixed with `-`)
+- All added lines (prefixed with `+`)
+
+Example:
+```
+@@ -10,7 +10,6 @@ import HotKeys...     <- position 0
+ import SearchInput...                   <- position 1
+ import NewProjectComponent...           <- position 2
+ import RecentProjectsComponent...       <- position 3
+-import ImportProjectComponent...        <- position 4 (THIS LINE)
+ import { HotkeysT...                    <- position 5
+```
+
+#### Step 4c: Create the Comment
+
+```bash
+gh api repos/:owner/:repo/pulls/<pr-number>/comments -X POST \
+  -f body="<comment-text>" \
+  -f commit_id="<latest-commit-sha>" \
+  -f path="<file-path>" \
+  -F position=<calculated-position>
+```
+
+**Comment Guidelines**:
+- Be direct and actionable - no "Critical:" prefix
+- Use proper newlines (not `\n\n` escape sequences)
+- Reference specific line numbers if the actual issue is elsewhere but not in the diff
+- Include the specific action needed (delete file, remove reference, update config)
+- Keep tone professional and helpful
+
+**Examples**:
+
+Good:
+```
+These import types are removed here. Since they're no longer used anywhere, the type definition files should also be deleted:
+
+- `src/shared/types/http/projects/importFromS3.ts`
+- `src/shared/types/http/projects/importFromURL.ts`
+```
+
+Bad:
+```
+**Critical:** These orphaned type definitions should be deleted:\n\n- `src/shared/types/http/projects/importFromS3.ts`\n\n- `src/shared/types/http/projects/importFromURL.ts`
+```
+
+#### Step 4d: Handle GitHub Limitations
+
+If a critical issue affects code that's not visible in the diff:
+- Place the comment on the nearest related line that IS in the diff
+- Clearly explain in the comment that the actual issue is at a different location
+- Include the specific line number where the fix is needed
+
+Example:
+```
+ImportProjectComponent was removed here, but it's still referenced in the action menu (around line 202 in this file, not visible in diff). Remove the 'Import project' action entry with `key: 'importProject'` from the actions array.
+```
+
+### 5. Verify Comment Placement
+
+After adding each inline comment, verify it's on the correct line:
+
+```bash
+gh api repos/:owner/:repo/pulls/<pr-number>/comments --jq '.[] | {id: .id, path: .path, line: .line, side: .side, body: .body[:80]}'
+```
+
+Check:
+- Is the comment on the line being discussed?
+- Is the side correct (LEFT for deletions, RIGHT for additions)?
+- Does the diff_hunk show the expected code?
+
+If incorrect, delete and recreate:
+```bash
+gh api repos/:owner/:repo/pulls/comments/<comment-id> -X DELETE
+# Then recreate with correct position
+```
+
+### 6. Create Summary Comment
+
+After all inline comments are placed, add a professional summary comment to the PR review.
+
+**Structure**:
+1. Opening: Acknowledge the good work (1 sentence)
+2. Body: Categorize issues into logical groups (Permissions, Frontend, Orphaned files, etc.)
+3. Category B items: List files not in diff that need changes
+4. Closing: Reference that inline comments provide additional context
+
+**Tone Guidelines**:
+- Professional, courteous, respectful
+- Acknowledge systematic/thorough work
+- Frame as "noticed a few items to clean up" not "critical problems found"
+- No dramatic headers like "## CRITICAL ITEMS TO ADDRESS"
+- No generic filler like "Found critical issues - see inline comments"
+
+**Good Example**:
+```
+Nice work on the systematic removal of the import functionality. I noticed a few orphaned references that should be cleaned up to keep the codebase consistent:
+
+**Permissions** - The IMPORT_PROJECT constant and permission grants in `src/server/src/permissions/projects/actions.ts` and `src/server/src/permissions/projects/rules.ts` are no longer needed.
+
+**Frontend** - The action menu in `src/client/src/pages/ProjectsList/index.ts` still references the deleted ImportProjectComponent.
+
+**Orphaned files** - These files should be deleted as they're no longer used:
+- `src/server/src/resources/ProjectImport.ts`
+- `src/server/src/http/validators/projectImports/all.ts`
+- `src/shared/types/http/projects/importFromS3.ts`
+- `src/shared/types/http/projects/importFromURL.ts`
+
+I've added inline comments on the relevant lines for context.
+```
+
+Add the summary:
+```bash
+gh api repos/:owner/:repo/pulls/<pr-number>/reviews/<review-id> -X PUT -f body="<summary-text>"
+```
+
+Or if creating a new review:
+```bash
+gh pr review <pr-number> --comment -b "<summary-text>"
+```
+
+### 7. Final Verification Checklist
+
+Before completing, verify:
+
+- [ ] All critical issues from the code review are addressed (either inline comment or in summary)
+- [ ] All inline comments are on the correct lines (use `gh api` to verify)
+- [ ] No inline comments have escaped newlines (`\n\n` visible in text)
+- [ ] No inline comments have "Critical:" prefix
+- [ ] Summary comment acknowledges good work and uses professional tone
+- [ ] Summary comment includes all Category B items (files not in diff)
+- [ ] Summary comment has no dramatic headers
+- [ ] Count of inline comments + summary items matches count of critical issues
+
+List all items and confirm:
+```bash
+# Inline comments
+gh api repos/:owner/:repo/pulls/<pr-number>/comments --jq '.[] | {path: .path, line: .line}'
+
+# Critical issues from code review
+<list them>
+
+# Verify counts match
+```
+
+## Common Pitfalls to Avoid
+
+1. **Wrong line placement**: Always use the position within the diff hunk, not the absolute file line number
+2. **Context line comments**: Place comments on changed lines (with `-` or `+`), not unchanged context lines
+3. **Escaped newlines**: Use actual newlines in heredocs or properly formatted strings, not `\n\n`
+4. **Missing verifications**: Always verify comment placement after creation
+5. **Overly dramatic tone**: Avoid "CRITICAL", "URGENT", "MUST FIX" in favor of professional suggestions
+6. **Generic comments**: Avoid "See inline comments" without substantive summary content
+7. **Orphaned reviews**: Don't leave review bodies with generic text; update or clear them
+
+## Example Session
+
+```bash
+# 1. Get PR number
+PR_NUM=$(gh pr list --head feature/remove-import --json number --jq '.[0].number')
+
+# 2. Get commit SHA
+COMMIT_SHA=$(gh api repos/:owner/:repo/pulls/$PR_NUM --jq '.head.sha')
+
+# 3. Review diff for first issue
+git diff origin/main...origin/feature/remove-import -- src/client/src/api/projects.ts
+
+# 4. Add inline comment (position calculated from diff)
+gh api repos/:owner/:repo/pulls/$PR_NUM/comments -X POST \
+  -f body="These import types are removed here. Since they're no longer used anywhere, the type definition files should also be deleted:
+
+- \`src/shared/types/http/projects/importFromS3.ts\`
+- \`src/shared/types/http/projects/importFromURL.ts\`" \
+  -f commit_id="$COMMIT_SHA" \
+  -f path="src/client/src/api/projects.ts" \
+  -F position=6
+
+# 5. Verify placement
+gh api repos/:owner/:repo/pulls/$PR_NUM/comments --jq '.[-1] | {line: .line, side: .side, body: .body[:80]}'
+
+# 6. After all inline comments, add summary
+gh pr review $PR_NUM --comment -b "Nice work on the systematic removal..."
+
+# 7. Final verification
+gh api repos/:owner/:repo/pulls/$PR_NUM/comments --jq 'length'
+# Should match number of critical inline items
+```
+
+## Edge Cases
+
+**Multiple deletions in sequence**: Place comment on the first deletion line, reference others in the body
+
+**Multi-file issues** (e.g., permission cleanup across 2 files): Pick the most relevant changed line for inline comment, mention both files in the body
+
+**No suitable line in diff**: Include in summary comment only, clearly note "not in diff"
+
+**Diff too old**: If commit SHA changes during comment creation, refetch and recalculate positions
+
+Throughout, prioritize clarity and helpfulness over brevity. The goal is to make it easy for the developer to understand exactly what needs to be fixed and where.

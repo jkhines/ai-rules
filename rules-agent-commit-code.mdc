@@ -133,6 +133,8 @@ feature/issue-123-add-dark-mode
 
 When `/commit-code` is invoked:
 
+- Automatically stage all changes and commit with a self-determined Conventional Commit message. Do not prompt the user to approve or edit the message.
+
 1. **Check Git Status**
    - Run `git status` to identify staged and unstaged changes
    - If no changes are present, inform the user and exit
@@ -180,7 +182,7 @@ When `/commit-code` is invoked:
      - `chore`: Maintenance tasks
 
 5. **Generate Commit Message**
-   - Propose a commit message following the format:
+   - Determine a commit message following the format:
      ```
      <type>[optional scope]: <description>
      
@@ -188,7 +190,6 @@ When `/commit-code` is invoked:
      
      [optional footer]
      ```
-   - Ask user to confirm or modify the commit message
    - Validate the message against rules:
      - Type is one of the allowed types
      - Description is present and in imperative mood
@@ -197,8 +198,7 @@ When `/commit-code` is invoked:
      - Breaking changes are properly indicated with `!` or `BREAKING CHANGE:` footer
 
 6. **Execute Commit**
-   - If changes are unstaged, ask: "Stage all changes before committing?"
-   - If yes: `git add .` or `git add -A`
+   - Stage all changes: `git add -A`
    - Execute: `git commit -m "<commit-message>"`
    - Confirm commit was successful
    - Display commit hash and message
@@ -217,5 +217,4 @@ Before committing, verify:
 - [ ] Breaking changes are properly indicated with `!` or `BREAKING CHANGE:` footer
 - [ ] Branch name follows `<type>/<description>` format (unless on main/master/develop)
 - [ ] Branch description uses only lowercase, numbers, and hyphens
-- [ ] User has reviewed and approved the commit message
 
