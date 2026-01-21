@@ -31,5 +31,5 @@ When writing comments, use complete, capitalized sentences terminated with a per
 When interacting with external third-party systems such as Jira, Confluence, GitHub, SonarQube, or any other platform, always check environment variables for API keys, tokens, or credentials instead of using built-in web browser authentication or prompting for manual input.
 
 ## System Requirements
-When providing OS-specific information, default to POP!_OS 24.04 Linux.
+When providing OS-specific information, default to POP!_OS 24.04 Linux using the COSMIC desktop.
 When providing command line instructions, default to bash.
