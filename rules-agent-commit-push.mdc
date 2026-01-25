@@ -1,5 +1,5 @@
 ---
-command: /commit-code
+command: /commit-push
 description: Commits code changes following Conventional Commits v1.0.0 and validates branch naming
 alwaysApply: false
 ---
@@ -131,9 +131,9 @@ feature/issue-123-add-dark-mode
 
 ## Execution Steps
 
-When `/commit-code` is invoked:
+When `/commit-push` is invoked:
 
-- Automatically stage all changes and commit with a self-determined Conventional Commit message. Do not prompt the user to approve or edit the message.
+- Automatically stage all changes, commit with a self-determined Conventional Commit message, and push to the remote. Do not prompt for any confirmation.
 
 1. **Check Git Status**
    - Run `git status` to identify staged and unstaged changes
@@ -146,26 +146,8 @@ When `/commit-code` is invoked:
    - Exception: `main`, `master`, `develop` are valid without prefix
    
 3. **If Branch is Non-Standard**
-   - Display message:
-     ```
-     The current branch '[branch-name]' does not follow conventional branch naming guidelines.
-     
-     Expected format: <type>/<description>
-     Valid types: feature/, feat/, bugfix/, fix/, hotfix/, release/, chore/, docs/, refactor/, test/, perf/, ci/
-     
-     Examples:
-       feature/add-user-login
-       fix/resolve-memory-leak
-       docs/update-api-documentation
-     ```
-   - Ask: "Would you like to create a new branch following the guidelines?"
-   - If yes:
-     - Based on the changes, suggest an appropriate branch name
-     - Ask user to confirm or modify the suggested name
-     - Create and checkout the new branch: `git checkout -b <new-branch-name>`
-   - If no:
-     - Warn: "Proceeding with non-standard branch name (not recommended)"
-     - Continue to commit step
+   - Warn: "Branch '[branch-name]' does not follow conventional naming. Proceeding anyway."
+   - Continue to commit step
 
 4. **Analyze Changes**
    - Review the staged/unstaged changes
@@ -180,41 +162,39 @@ When `/commit-code` is invoked:
      - `build`: Build system or dependency changes
      - `ci`: CI/CD configuration changes
      - `chore`: Maintenance tasks
+   - Detect breaking changes by looking for:
+     - Removed or renamed public APIs, functions, classes, or exports
+     - Changed function signatures (parameters added/removed/reordered)
+     - Changed return types or data structures
+     - Removed configuration options or environment variables
+     - Changed default behavior
 
 5. **Generate Commit Message**
    - Determine a commit message following the format:
      ```
      <type>[optional scope]: <description>
-     
+
      [optional body]
-     
+
      [optional footer]
      ```
-   - Validate the message against rules:
+   - Rules:
      - Type is one of the allowed types
+     - Omit scope unless the affected area is obvious from file paths
      - Description is present and in imperative mood
      - Description starts with lowercase letter
      - Description does not end with a period
-     - Breaking changes are properly indicated with `!` or `BREAKING CHANGE:` footer
+     - If breaking changes detected, append `!` after type and include `BREAKING CHANGE:` footer
 
 6. **Execute Commit**
    - Stage all changes: `git add -A`
    - Execute: `git commit -m "<commit-message>"`
    - Confirm commit was successful
-   - Display commit hash and message
 
-7. **Post-Commit Summary**
-   - Show the commit details
-   - If on non-standard branch, remind: "Consider moving to a conventional branch name for future commits"
+7. **Push to Remote**
+   - Detect upstream tracking branch: `git rev-parse --abbrev-ref --symbolic-full-name @{u}`
+   - If tracking branch exists, push to it; otherwise push to `origin` with current branch name
+   - Execute: `git push`
 
-## Validation Checklist
-
-Before committing, verify:
-- [ ] Commit type is one of the allowed types
-- [ ] Commit description is present and in imperative mood
-- [ ] Commit description does not end with a period
-- [ ] Commit description starts with lowercase letter
-- [ ] Breaking changes are properly indicated with `!` or `BREAKING CHANGE:` footer
-- [ ] Branch name follows `<type>/<description>` format (unless on main/master/develop)
-- [ ] Branch description uses only lowercase, numbers, and hyphens
-
+8. **Post-Commit Summary**
+   - Show commit hash, message, and push destination

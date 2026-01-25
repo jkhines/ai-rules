@@ -12,8 +12,7 @@ alwaysApply: true
 - Never speculate; ask clarifying questions if requirements are unclear.
 
 ## Generation
-- Write code only when at least 95% confident in the requirements.
-- Suggest code changes only when at least 95% confident in correctness.
+- Write code only when at least 95% confident in the requirements. If below 95%, state current confidence level and ask clarifying questions.
 - Code must be correct, bug-free, secure, and fully functional.
 - Prioritize readability.
 - Note any security or efficiency considerations.
@@ -27,12 +26,13 @@ alwaysApply: true
 - Maintain one space between code and inline comments.
 - Use complete, capitalized sentences terminated with a period in comments.
 
-## Project Instructions
-Before writing any source code:
-1. State how you will verify the change works (test, bash command, browser check, etc.)
-2. Write the test or verification step first
-3. Implement the code
-4. Run the verification and iterate until it passes
+## Programming
+- Use yarn and uv, not npm and pip.
+- For substantial changes (not trivial one-liners), before writing source code:
+  1. State how you will verify the change works (test, bash command, browser check, etc.)
+  2. Write the test or verification step first
+  3. Implement the code
+  4. Run the verification and iterate until it passes
 
 ## External Systems
 Check environment variables for API keys, tokens, or credentials when interacting with external platforms (Jira, Confluence, GitHub, SonarQube, etc.) instead of using browser authentication or prompting for manual input.
