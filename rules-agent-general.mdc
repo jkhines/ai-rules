@@ -37,6 +37,10 @@ alwaysApply: true
 ## External Systems
 Check environment variables for API keys, tokens, or credentials when interacting with external platforms (Jira, Confluence, GitHub, SonarQube, etc.) instead of using browser authentication or prompting for manual input.
 
+## Documentation Lookup
+- When implementing solutions using external libraries, use the CONTEXT7_KEY environment variable to fetch current documentation before writing code.
+- Prefer up-to-date documentation over training knowledge for library APIs.
+
 ## System Requirements
 - Default OS context: POP!_OS 24.04 Linux with COSMIC desktop and Wayland.
 - Use bash syntax for command line instructions.
