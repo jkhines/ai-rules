@@ -4,27 +4,19 @@ description: Global behavior, generation, and formatting rules
 alwaysApply: true
 ---
 ## Behavior
-- Never use emojis in responses.
-- Provide factual, accurate answers with minimal but sufficient expert-level context.
-- Eliminate unnecessary explanation or verbosity.
-- If no correct answer exists, say so explicitly.
-- Never fabricate functionality or details.
-- Never speculate; ask clarifying questions if requirements are unclear.
+- Never use emojis.
+- Factual, accurate answers with minimal but sufficient expert-level context.
+- If no correct answer exists, say so. Never fabricate or speculate; ask clarifying questions instead.
 
 ## Generation
-- Write code only when at least 95% confident in the requirements. If below 95%, state current confidence level and ask clarifying questions.
-- Code must be correct, bug-free, secure, and fully functional.
-- Prioritize readability.
-- Note any security or efficiency considerations.
-- Include all required imports.
+- Write code only when at least 95% confident in requirements. If below 95%, state confidence and ask clarifying questions.
+- Code must be correct, secure, and fully functional with all required imports.
+- Prioritize readability. Note security or efficiency considerations.
 
 ## Formatting
 - Do not break lines unless they exceed 120 characters.
 - Never remove existing inline comments.
-- Only add comments when code may be non-obvious to an expert.
-- Never add comments with emojis, ASCII formatting, arrows, or extra spaces.
-- Maintain one space between code and inline comments.
-- Use complete, capitalized sentences terminated with a period in comments.
+- Only add comments when code may be non-obvious to an expert. Use complete, capitalized sentences with a period. One space between code and comment. No emojis, ASCII formatting, arrows, or extra spaces in comments.
 
 ## Programming
 - Use yarn and uv, not npm and pip.
@@ -34,13 +26,47 @@ alwaysApply: true
   3. Implement the code
   4. Run the verification and iterate until it passes
 
-## External Systems
-Check environment variables for API keys, tokens, or credentials when interacting with external platforms (Jira, Confluence, GitHub, SonarQube, etc.) instead of using browser authentication or prompting for manual input.
+## External Systems — MANDATORY
+
+Before ANY interaction with a third-party service or API:
+1. Check the shell environment for required credentials and use them. NEVER skip this step.
+2. NEVER attempt unauthenticated requests, browser-based login, public URLs, OAuth flows, or prompt the user for credentials available in the environment.
+3. If a required variable is not set, say so and stop.
+
+Environment variables — use these for their respective services:
+
+| Service | Variables |
+|---|---|
+| Jira Cloud | `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN` |
+| Confluence Cloud | `CONFLUENCE_BASE_URL`, `CONFLUENCE_EMAIL`, `CONFLUENCE_API_TOKEN` |
+| GitHub | `GITHUB_PAT` |
+| SonarQube | `SONAR_TOKEN` |
+| DeepL | `DEEPL_AUTH_KEY` |
+| PyPI / Twine | `TWINE_USERNAME`, `TWINE_PASSWORD`, `TWINE_TEST_USERNAME`, `TWINE_TEST_PASSWORD` |
+| Lucidchart | `LUCID_API_KEY` |
+| Context7 | `CONTEXT7_KEY` |
+| Anthropic | `ANTHROPIC_API_KEY` |
+| Terraform Enterprise | `TFE_TOKEN` |
+| Resend | `RESEND_API_KEY` |
+| Auth0 (sandbox) | `AUTH0_SB_CLIENT_ID`, `AUTH0_SB_CLIENT_SECRET`, `AUTH0_SB_DOMAIN` |
+| Auth0 (dev) | `AUTH0_DEV_CLIENT_ID`, `AUTH0_DEV_CLIENT_SECRET`, `AUTH0_DEV_DOMAIN` |
+| Auth0 (prod) | `AUTH0_PROD_CLIENT_ID`, `AUTH0_PROD_CLIENT_SECRET`, `AUTH0_PROD_DOMAIN` |
+
+General rules:
+- Assume Cloud-hosted versions of all services unless told otherwise.
+- Use the latest stable API version. Use Context7 (`CONTEXT7_KEY`) to confirm API versions and usage before making calls.
+- Always handle pagination. Never assume a single response contains all results.
+
+Authentication:
+- Jira / Confluence: HTTP Basic Auth with the service-specific `*_EMAIL` as username and `*_API_TOKEN` as password. Use `*_BASE_URL` as the host — never construct URLs from scratch.
+- GitHub: Prefer `gh` CLI for all operations. Fall back to raw API with `GITHUB_PAT` as Bearer token only when `gh` cannot accomplish the task.
+- SonarQube: `SONAR_TOKEN` as Bearer token.
+- Auth0: Client ID, client secret, and domain for the appropriate environment (sb/dev/prod).
+
+If the service is not listed above, check the environment anyway (`env | grep -i <service>`).
 
 ## Documentation Lookup
-- When implementing solutions using external libraries, use the CONTEXT7_KEY environment variable to fetch current documentation before writing code.
-- Prefer up-to-date documentation over training knowledge for library APIs.
+- Use `CONTEXT7_KEY` to fetch current documentation before writing code with external libraries. Prefer up-to-date docs over training knowledge.
 
 ## System Requirements
-- Default OS context: POP!_OS 24.04 Linux with COSMIC desktop and Wayland.
-- Use bash syntax for command line instructions.
+- POP!_OS 24.04 Linux, COSMIC desktop, Wayland. Use bash syntax.
