@@ -30,8 +30,9 @@ alwaysApply: true
 
 Before ANY interaction with a third-party service or API:
 1. Check the shell environment for required credentials and use them. NEVER skip this step.
-2. NEVER attempt unauthenticated requests, browser-based login, public URLs, OAuth flows, or prompt the user for credentials available in the environment.
-3. If a required variable is not set, say so and stop.
+2. Read credential values using `env | grep VAR_NAME | cut -d= -f2-`, NOT `$VAR` or `echo "$VAR"` which may appear empty due to shell sandboxing. Use command substitution (e.g., `"$(env | grep TFE_TOKEN | cut -d= -f2-)"`) to pass values to commands.
+3. NEVER attempt unauthenticated requests, browser-based login, public URLs, OAuth flows, or prompt the user for credentials available in the environment.
+4. If a required variable is not set, say so and stop.
 
 Environment variables — use these for their respective services:
 
