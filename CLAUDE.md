@@ -52,6 +52,7 @@ Environment variables — use these for their respective services:
 | Auth0 (sandbox) | `AUTH0_SB_CLIENT_ID`, `AUTH0_SB_CLIENT_SECRET`, `AUTH0_SB_DOMAIN` |
 | Auth0 (dev) | `AUTH0_DEV_CLIENT_ID`, `AUTH0_DEV_CLIENT_SECRET`, `AUTH0_DEV_DOMAIN` |
 | Auth0 (prod) | `AUTH0_PROD_CLIENT_ID`, `AUTH0_PROD_CLIENT_SECRET`, `AUTH0_PROD_DOMAIN` |
+| AWS | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION` |
 
 General rules:
 - Assume Cloud-hosted versions of all services unless told otherwise.
@@ -63,6 +64,7 @@ Authentication:
 - GitHub: Prefer `gh` CLI for all operations. Fall back to raw API with `GITHUB_PAT` as Bearer token only when `gh` cannot accomplish the task.
 - SonarQube: `SONAR_TOKEN` as Bearer token.
 - Auth0: Client ID, client secret, and domain for the appropriate environment (sb/dev/prod).
+- AWS: Use the AWS CLI. First check for valid environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`). If none are set, use the named profiles in `~/.aws/config`: `sb` for sandbox, `dev` for development, `prod` for production. Pass the profile with `--profile <name>`.
 
 If the service is not listed above, check the environment anyway (`env | grep -i <service>`).
 
