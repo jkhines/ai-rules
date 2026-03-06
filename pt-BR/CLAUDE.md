@@ -1,7 +1,7 @@
 ---
-name: formatação-e-comportamento
-description: Regras globais de comportamento, geração e formatação
-alwaysApply: true
+nome: formatação-e-comportamento
+descrição: Regras globais de comportamento, geração e formatação
+aplicar sempre: verdadeiro
 ---
 ## Comportamento
 - Nunca use emojis.
@@ -9,7 +9,7 @@ alwaysApply: true
 - Se não houver resposta correta, diga isso. Nunca invente ou especule; em vez disso, faça perguntas para esclarecer.
 
 ## Geração
-- Escreva código apenas quando tiver pelo menos 95% de confiança nos requisitos. Se estiver abaixo de 95%, indique o nível de confiança e faça perguntas esclarecedoras.
+- Escreva código apenas quando tiver pelo menos 95% de confiança nos requisitos. Se estiver abaixo de 95%, declare sua confiança e faça perguntas esclarecedoras.
 - O código deve estar correto, seguro e totalmente funcional com todas as importações necessárias.
 - Priorize a legibilidade. Observe as considerações de segurança ou eficiência.
 
@@ -21,7 +21,7 @@ alwaysApply: true
 ## Programação
 - Use yarn e uv, não npm e pip.
 - Para alterações substanciais (não linhas únicas triviais), antes de escrever o código-fonte:
-  1. Declare como você verificará se a alteração funciona (teste, comando bash, verificação do navegador, etc.)
+  1. Declare como você verificará se a alteração funciona (teste, comando bash, verificação do navegador etc.)
   2. Escreva primeiro a etapa de teste ou verificação
   3. Implemente o código
   4. Execute a verificação e repita até que ela seja aprovada
@@ -30,8 +30,9 @@ alwaysApply: true
 
 Antes de QUALQUER interação com um serviço ou API de terceiros:
 1. Verifique o ambiente do shell para obter as credenciais necessárias e use-as. NUNCA pule esta etapa.
-2. NUNCA tente solicitações não autenticadas, login baseado em navegador, URLs públicas, fluxos OAuth ou solicite ao usuário credenciais disponíveis no ambiente.
-3. Se uma variável necessária não estiver definida, informe isso e pare.
+2. Leia os valores das credenciais usando `env | grep VAR_NAME | cut -d= -f2-`, NÃO `$VAR` ou `echo "$VAR"`, que podem parecer vazios devido ao sandboxing do shell. Use a substituição de comando (por exemplo, `"$(env | grep TFE_TOKEN | cut -d= -f2-)"`) para passar valores para os comandos.
+3. NUNCA tente solicitações não autenticadas, login baseado em navegador, URLs públicas, fluxos OAuth ou solicite ao usuário as credenciais disponíveis no ambiente.
+4. Se uma variável necessária não estiver definida, informe isso e pare.
 
 Variáveis de ambiente — use-as para seus respectivos serviços:
 
@@ -51,9 +52,10 @@ Variáveis de ambiente — use-as para seus respectivos serviços:
 | Auth0 (sandbox) | `AUTH0_SB_CLIENT_ID`, `AUTH0_SB_CLIENT_SECRET`, `AUTH0_SB_DOMAIN` |
 | Auth0 (dev) | `AUTH0_DEV_CLIENT_ID`, `AUTH0_DEV_CLIENT_SECRET`, `AUTH0_DEV_DOMAIN` |
 | Auth0 (prod) | `AUTH0_PROD_CLIENT_ID`, `AUTH0_PROD_CLIENT_SECRET`, `AUTH0_PROD_DOMAIN` |
+| AWS | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION` |
 
 Regras gerais:
-- Presuma que todas as versões dos serviços são hospedadas na nuvem, a menos que seja informado o contrário.
+- Presuma que todas as versões dos serviços são hospedadas na nuvem, salvo indicação em contrário.
 - Use a versão mais recente e estável da API. Use o Context7 (`CONTEXT7_KEY`) para confirmar as versões e o uso da API antes de fazer chamadas.
 - Sempre lide com a paginação. Nunca presuma que uma única resposta contém todos os resultados.
 
@@ -62,6 +64,7 @@ Autenticação:
 - GitHub: prefira `gh` CLI para todas as operações. Recorra à API bruta com `GITHUB_PAT` como token Bearer somente quando `gh` não puder realizar a tarefa.
 - SonarQube: `SONAR_TOKEN` como token Bearer.
 - Auth0: ID do cliente, segredo do cliente e domínio para o ambiente apropriado (sb/dev/prod).
+- AWS: use a CLI da AWS. Primeiro, verifique se há variáveis de ambiente válidas (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`). Se nenhuma estiver definida, use os perfis nomeados em `~/.aws/config`: `sb` para sandbox, `dev` para desenvolvimento, `prod` para produção. Passe o perfil com `--profile <name>`.
 
 Se o serviço não estiver listado acima, verifique o ambiente de qualquer maneira (`env | grep -i <service>`).
 
@@ -69,4 +72,4 @@ Se o serviço não estiver listado acima, verifique o ambiente de qualquer manei
 - Use `CONTEXT7_KEY` para obter a documentação atual antes de escrever código com bibliotecas externas. Dê preferência a documentos atualizados em vez de conhecimento de treinamento.
 
 ## Requisitos do sistema
-- POP!_OS 24.04 Linux, desktop COSMIC, Wayland. Use sintaxe bash.
+- POP!_OS 24.04 Linux, desktop COSMIC, Wayland. Use a sintaxe bash.
