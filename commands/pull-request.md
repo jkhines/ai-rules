@@ -152,16 +152,23 @@ When `/pull-request` is invoked:
    - If no Jira ticket is available, use a module scope or omit scope entirely.
    - Keep the title concise. Aim for brevity but up to ~100 characters is acceptable.
 
-7. **Create the PR (Minimal Body First)**
-   - Create the PR immediately with a minimal placeholder body so that GitHub Actions begin running:
+7. **Create the PR with the Default Template**
+   - Check if the repository has a PR template at `.github/pull_request_template.md`.
+   - If the template exists, create the PR using it as the initial body:
      ```
-     gh pr create --base <base-branch> --title "<title>" --body "PR description pending..."
+     gh pr create --base <base-branch> --title "<title>" --body-file .github/pull_request_template.md
+     ```
+   - If no template exists, create the PR with an empty body:
+     ```
+     gh pr create --base <base-branch> --title "<title>" --body ""
      ```
    - Record the PR number from the output.
 
 8. **Generate Full PR Description**
-   - Populate the repository's PR template (from `.github/pull_request_template.md`) with content from the
-     diff analysis in step 5. Fill in each section as follows:
+   - If a PR template was used in step 7, use its section headings and placeholder comments as the base
+     structure. Populate each section with content from the diff analysis in step 5, preserving the template
+     headings. If no template exists, use the standard template defined in this command.
+   - Fill in each section as follows:
      - **Jira Activity** -- Link to the Jira ticket: `[<jira-id>](https://<jira-base-url>/browse/<jira-id>)`.
        If no Jira ticket, write "None".
      - **What was done?** -- Summarize the changes as a bullet list. Use **bold lead-ins** for each item
