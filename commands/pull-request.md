@@ -165,20 +165,24 @@ When `/pull-request` is invoked:
    - Record the PR number from the output.
 
 8. **Generate Full PR Description**
-   - Write the entire description in plain, straightforward English. Use short sentences, common words, and
-     active voice. Avoid idioms, jargon, abbreviations, and culturally specific references so that non-native
-     English speakers can read it easily.
-   - If a PR template was used in step 7, use its section headings and placeholder comments as the base
-     structure. Populate each section with content from the diff analysis in step 5, preserving the template
-     headings. If no template exists, use the standard template defined in this command.
+   - Write in a **conversational, developer-to-developer tone** -- the way one engineer would explain
+     the change to a teammate. Plain English, short sentences, active voice. Avoid resource names,
+     config keys, or implementation details that only make sense when reading the diff.
+   - If a PR template was used in step 7, preserve its section headings. If no template exists, use
+     the standard template defined in this command.
    - Fill in each section as follows:
      - **Jira Activity** -- Link to the Jira ticket: `[<jira-id>](https://<jira-base-url>/browse/<jira-id>)`.
        If no Jira ticket, write "None".
-     - **What was done?** -- Summarize the changes as a bullet list. Use **bold lead-ins** for each item
-       when multiple areas are affected (e.g., `- **Auth module**: Refactored JWT validation...`).
-       Focus on the purpose of the change, not line-by-line diffs.
-     - **How to Test?** -- Provide specific numbered steps to validate the changes.
-     - **Expected Result:** -- Describe what the reviewer should observe after following the test steps.
+     - **What was done?** -- Summarize the *purpose* and *effect* of the changes as a short bullet list.
+       Write as if explaining to a teammate who has not seen the code. Focus on *what changed and why*,
+       not on Terraform resource names, variable definitions, or file paths. Use **bold lead-ins** only
+       when multiple unrelated areas are affected.
+     - **How to Test?** -- Write numbered steps that a **QA engineer** could follow without reading the
+       code. Each step must say *who* does *what*, *where*, and *how*. For infrastructure (Terraform)
+       changes, testing happens through **Terraform Cloud** (plan/apply in the appropriate workspace),
+       not local CLI commands. For application changes, describe concrete user-facing actions
+       (click, navigate, call an endpoint, etc.).
+     - **Expected Result:** -- Describe what the tester should observe after following the test steps.
      - **Risks and Impacts** -- Note any risks, breaking changes, or side effects. Write "None" if none.
      - **Screenshots / GIFs** -- Write "N/A" if not applicable.
      - **Author Checklist** -- Include the three checklist items (unchecked), with the base branch name

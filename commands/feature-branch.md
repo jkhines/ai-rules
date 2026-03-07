@@ -69,7 +69,8 @@ When `/feature-branch` is invoked:
 
 6. **Create and Switch to the Branch**
    - Run `git fetch origin`
-   - Run `git checkout -b <branch-name> origin/<base-branch>`
+   - Run `git checkout -b <branch-name> --no-track origin/<base-branch>`
+   - Run `git push -u origin <branch-name>` to set the upstream tracking branch.
    - Confirm the branch was created and is active.
 
 7. **Summary**
