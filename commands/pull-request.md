@@ -163,6 +163,7 @@ When `/pull-request` is invoked:
      gh pr create --base <base-branch> --title "<title>" --body ""
      ```
    - Record the PR number from the output.
+   - Assign the PR to the current user: `gh pr edit <pr-number> --add-assignee @me`
 
 8. **Generate Full PR Description**
    - Write in a **conversational, developer-to-developer tone** -- the way one engineer would explain
