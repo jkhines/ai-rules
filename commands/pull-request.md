@@ -165,6 +165,9 @@ When `/pull-request` is invoked:
    - Record the PR number from the output.
 
 8. **Generate Full PR Description**
+   - Write the entire description in plain, straightforward English. Use short sentences, common words, and
+     active voice. Avoid idioms, jargon, abbreviations, and culturally specific references so that non-native
+     English speakers can read it easily.
    - If a PR template was used in step 7, use its section headings and placeholder comments as the base
      structure. Populate each section with content from the diff analysis in step 5, preserving the template
      headings. If no template exists, use the standard template defined in this command.
