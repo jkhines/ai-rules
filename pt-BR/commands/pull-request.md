@@ -8,31 +8,27 @@ alwaysApply: false
 
 Cria uma solicitação pull seguindo os padrões da equipe definidos nos Padrões de Desenvolvimento da Equipe.
 
-### Formato do título da PR
+### Formato do título da solicitação pull
 
-Para PRs de desenvolvimento, use o formato Conventional Commits com o ID do ticket Jira na posição de escopo:
+Para solicitações pull de desenvolvimento, use o formato Conventional Commits com o ID do ticket Jira na posição do escopo:
 
-```
-<type>(<jira-id>): <description>
-```
+```<type>(<jira-id>): <description>```
 
 Exemplo: `feat(PROJ-451): implementar login social`
 
 Se nenhum ticket Jira estiver disponível, mas um escopo de módulo for apropriado:
 
-```
-<type>(<scope>): <description>
-```
+```<type>(<scope>): <description>```
 
-Exemplo: `feat(ci): refinar configurações de concorrência no fluxo de trabalho de publicação`
+Exemplo: `feat(ci): refinar configurações de simultaneidade no fluxo de trabalho de publicação`
 
-Mantenha o título conciso, mas não imponha um limite rígido de caracteres. Procure ser breve; até ~100 caracteres é
-aceitável quando a descrição assim o exigir.
+Mantenha o título conciso, mas não imponha um limite rígido de caracteres. Busque a brevidade; até ~100 caracteres são
+aceitáveis quando a descrição assim o exigir.
 
 ### Modelo de descrição de PR
 
 O `.github/pull_request_template.md` do repositório fornece a estrutura da descrição do PR. O GitHub preenche
-este modelo automaticamente ao criar um PR. O comando deve preencher as seções do modelo com conteúdo
+esse modelo automaticamente ao criar um PR. O comando deve preencher as seções do modelo com conteúdo
 derivado da análise de diferenças, em vez de substituir o modelo por um formato personalizado.
 
 O modelo padrão em todos os repositórios da equipe é:
@@ -47,17 +43,11 @@ O modelo padrão em todos os repositórios da equipe é:
 <!-- Clearly and concisely describe the changes made in this Pull Request, focusing on the purpose of the change. -->
 
 ### Como testar?
-
 <!-- Provide a clear step-by-step guide for the reviewer to validate your changes. Be specific. -->
-
 ### Resultado esperado:
-
 <!-- Describe what the reviewer should see or what should happen at the end of the tests. -->
-
 ### Riscos e impactos
-
 <!-- List any risks or impacts that this change may cause (e.g., in other parts of the system, performance, etc.). If none, write "None". -->
-
 ### Capturas de tela/GIFs (se aplicável)
 
 ### Lista de verificação do autor
@@ -67,75 +57,74 @@ O modelo padrão em todos os repositórios da equipe é:
 [ ] A documentação relevante foi atualizada.
 ```
 
-Observação: a lista de verificação do autor deve fazer referência à ramificação base real (por exemplo, `main`), não a um espaço reservado.
+Observação: a lista de verificação do autor deve fazer referência ao branch base real (por exemplo, `main`), não a um espaço reservado.
 
 ## Etapas de execução
 
 Quando `/pull-request` é invocado:
 
 1. **Verifique se há alterações não confirmadas**
-   - Execute `git status` para verificar se há alterações em fase de preparação ou não preparadas (incluindo arquivos não rastreados).
-   - Se houver alterações não confirmadas, informe ao usuário: “Há alterações não confirmadas nesta ramificação.
+   - Execute `git status` para verificar se há alterações em fase de preparação ou não (incluindo arquivos não rastreados).
+   - Se houver alterações não confirmadas, informe ao usuário: “Existem alterações não confirmadas neste branch.
      Primeiro, confirme e envie suas alterações (por exemplo, `/commit-push`), depois execute novamente `/pull-request`.”
    - Interrompa a execução. Não prossiga até que a árvore de trabalho esteja limpa.
 
 2. **Certifique-se de que o branch foi enviado**
    - Verifique se o branch atual tem um branch de rastreamento upstream: `git rev-parse --abbrev-ref --symbolic-full-name @{u}`
    - Se não houver upstream, envie o branch: `git push -u origin <current-branch>`
-   - Se existir um upstream, verifique se há commits não enviados: `git log @{u}..HEAD --oneline`
+   - Se houver upstream, verifique se há commits não enviados: `git log @{u}..HEAD --oneline`
    - Se houver commits não enviados, envie-os: `git push`
 
 3. **Determine o branch base (destino da mesclagem)**
 
 O Git não armazena metadados do branch pai, portanto, todos os métodos de detecção são heurísticos. A estratégia abaixo
-organiza vários sinais, do mais confiável ao menos confiável, para convergir na resposta correta.
+agrupa vários sinais, do mais confiável ao menos confiável, para convergir na resposta correta.
 
-- **Etapa A — Dica do reflog (melhor esforço, pode não estar disponível):**
-     - Execute: `git reflog show <current-branch> --format='%gs' | tail -1`
+   - **Etapa A — Dica do reflog (melhor esforço, pode não estar disponível):**
+- Execute: `git reflog show <current-branch> --format='%gs' | tail -1`
 - Procure por padrões: `branch: Created from origin/<branch>` ou `branch: Created from <branch>`.
-- Se `<branch>` for um nome de ramo (não um SHA bruto), registre-o como candidato a reflog.
-     - O reflog expira (padrão de 90 dias) e o formato varia entre as versões do Git, portanto, trate isso apenas como uma
-       **dica** — deve ser confirmado pela Etapa B.
+     - Se `<branch>` for um nome de branch (não um SHA bruto), registre-o como candidato ao reflog.
+- O reflog expira (padrão de 90 dias) e o formato varia entre as versões do Git, portanto, trate isso como uma
+   **dica apenas** — deve ser confirmado pela Etapa B.
 
    - **Etapa B — Comparação topológica da base de mesclagem (método principal):**
-     - Obtenha o estado remoto mais recente: `git fetch origin`
-     - Crie uma lista de candidatos de branches remotos, priorizados nesta ordem:
-       1. O candidato a reflog da Etapa A (se houver).
-       2. `main` (o branch de longa duração da equipe).
+- Obtenha o estado remoto mais recente: `git fetch origin`
+- Crie uma lista de candidatos de branches remotos, priorizados nesta ordem:
+1. O candidato a reflog da Etapa A (se houver).
+2. `main` (o branch de longa duração da equipe).
        3. Quaisquer outros branches remotos que não sejam o branch atual.
-     - Para cada candidato, calcule a base de mesclagem:
-       ```
-       git merge-base origin/<candidate> HEAD
-       ```
-- Colete todos os commits de base de mesclagem exclusivos e determine qual deles é **topologicamente mais próximo** do HEAD:
-       ```
+- Para cada candidato, calcule a base de mesclagem:
+```
+  git merge-base origin/<candidate> HEAD
+  ```
+- Colete todos os commits únicos da base de mesclagem e, em seguida, determine qual deles é **topologicamente mais próximo** do HEAD:
+```
        git rev-list --topo-order --max-count=1 <merge-base-1> <merge-base-2>...
        ```
-       O commit retornado é o ancestral comum mais recente entre todos os candidatos. O branch candidato
-       que produziu essa base de mesclagem é o branch base.
-- **Desempate:** Se vários candidatos compartilharem o mesmo commit da base de mesclagem, dê preferência nesta ordem:
-       o candidato do reflog da Etapa A, depois `main` e, em seguida, outros branches em ordem alfabética.
+       O commit retornado é o ancestral comum mais recente entre todos os candidatos. O ramo candidato
+       que produziu essa base de mesclagem é o ramo base.
+- **Desempate:** Se vários candidatos compartilharem o mesmo commit de base de mesclagem, dê preferência nesta ordem:
+       o candidato reflog da Etapa A, depois `main` e, em seguida, outros branches em ordem alfabética.
 
    - **Etapa C — Validar com o log de commit:**
-- Execute: `git log origin/<base>..HEAD --oneline`
-- Verifique se os commits listados pertencem ao trabalho de recurso atual. Se commits não relacionados de outros
-  ramos aparecerem, a base escolhida provavelmente está errada — reexamine os candidatos da Etapa B, excluindo a
-  escolha atual, e repita.
+     - Execute: `git log origin/<base>..HEAD --oneline`
+     - Verifique se os commits listados pertencem ao trabalho de recurso atual. Se commits não relacionados de outros
+   branches aparecerem, a base escolhida provavelmente está errada — reexamine os candidatos da Etapa B, excluindo a
+   escolha atual, e repita.
 
-   - **Etapa D — Lidar com ramificações pai excluídas:**
+   - **Etapa D — Lide com branches pai excluídos:**
      - Se o candidato do reflog da Etapa A não existir mais no remoto (`git ls-remote --heads origin <name>`
-       retorna vazio), a ramificação pai provavelmente foi mesclada e excluída.
-     - Nesse caso, recorra ao vencedor da base de mesclagem da Etapa B entre as ramificações remanescentes de longa duração
+       retorna vazio), o branch pai provavelmente foi mesclado e excluído.
+     - Nesse caso, recorra ao vencedor da base de mesclagem da Etapa B entre os branches de longa duração restantes
        (`main`).
 
-   - **Confirmação final:** exiba o ramo base determinado para o usuário e peça confirmação antes de
-     prosseguir. Exemplo: “Ramo base detectado: `main`. Está correto? (s/n)”
-   - O ramo base confirmado é o destino da mesclagem do PR. Pode ser `main` ou outro ramo de recurso.
+   - O branch base determinado é o destino da mesclagem do PR. Pode ser `main` ou outro branch de recurso.
+     Não solicite confirmação; prossiga automaticamente.
 
-4. **Extrair ticket Jira do nome do ramo**
-   - Analise o nome do ramo atual para um ID de ticket Jira que corresponda ao padrão `[A-Z]+-[0-9]+`.
-   - Se encontrado, busque o resumo do ticket do Jira usando `JIRA_BASE_URL`, `JIRA_EMAIL` e `JIRA_API_TOKEN`
-     (HTTP Basic Auth). Endpoint: `GET {JIRA_BASE_URL}/rest/api/3/issue/{jira-id}?fields=summary,issuetype`
+4. **Extraia o ticket Jira do nome do branch**
+   - Analise o nome do branch atual para um ID de ticket Jira que corresponda ao padrão `[A-Z]+-[0-9]+`.
+   - Se encontrado, busque o resumo do ticket no Jira usando `JIRA_BASE_URL`, `JIRA_EMAIL` e `JIRA_API_TOKEN`
+     (HTTP Basic Auth). Ponto final: `GET {JIRA_BASE_URL}/rest/api/3/issue/{jira-id}?fields=summary,issuetype`
    - Se nenhum ID de ticket for encontrado no nome do branch, solicite um ao usuário ou prossiga sem ele.
 
 5. **Analise as alterações para o PR**
@@ -146,7 +135,7 @@ organiza vários sinais, do mais confiável ao menos confiável, para convergir 
 
 6. **Gerar título do PR**
    - Siga o formato: `<type>(<jira-id>): <description>`
-   - O `<type>` deve corresponder ao prefixo do tipo de ramificação, mapeado para os tipos de commit convencionais:
+   - O `<type>` deve corresponder ao prefixo do tipo de branch, mapeado para os tipos de commit convencionais:
      `feature/` -&gt; `feat`, `fix/` -&gt; `fix`, `hotfix/` -&gt; `fix`, `chore/` -&gt; `chore`, etc.
    - Coloque o ID do ticket Jira na posição do escopo (parênteses).
    - Se nenhum ticket Jira estiver disponível, use um escopo de módulo ou omita o escopo completamente.
@@ -155,14 +144,14 @@ organiza vários sinais, do mais confiável ao menos confiável, para convergir 
 7. **Crie o PR com o modelo padrão**
    - Verifique se o repositório tem um modelo de PR em `.github/pull_request_template.md`.
    - Se o modelo existir, crie o PR usando-o como corpo inicial:
- ```
+     ```
      gh pr create --base <base-branch> --title "<title>" --body-file .github/pull_request_template.md
      ```
    - Se não houver modelo, crie o PR com um corpo vazio:
      ```
      gh pr create --base <base-branch> --title "<title>" --body ""
      ```
-   - Registre o número do PR a partir da saída.
+   - Registre o número do PR na saída.
    - Atribua o PR ao usuário atual: `gh pr edit <pr-number> --add-assignee @me`
 
 8. **Gere a descrição completa do PR**
@@ -178,7 +167,7 @@ organiza vários sinais, do mais confiável ao menos confiável, para convergir 
        Escreva como se estivesse explicando para um colega de equipe que não viu o código. Concentre-se no *que mudou e por quê*,
        não nos nomes dos recursos do Terraform, nas definições de variáveis ou nos caminhos dos arquivos. Use **introduções em negrito** apenas
        quando várias áreas não relacionadas forem afetadas.
-     - **Como testar?** — Escreva etapas numeradas que um **engenheiro de QA** possa seguir sem ler o
+     - **Como testar?** — Escreva etapas numeradas que um **engenheiro de controle de qualidade** possa seguir sem ler o
        código. Cada etapa deve dizer *quem* faz *o quê*, *onde* e *como*. Para alterações de infraestrutura (Terraform)
       , os testes são realizados por meio do **Terraform Cloud** (planejar/aplicar no espaço de trabalho apropriado),
        e não por comandos CLI locais. Para alterações na aplicação, descreva ações concretas voltadas para o usuário

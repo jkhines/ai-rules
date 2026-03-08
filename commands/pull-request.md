@@ -128,9 +128,8 @@ When `/pull-request` is invoked:
      - In this case, fall back to the merge-base winner from Step B among the remaining long-lived branches
        (`main`).
 
-   - **Final confirmation:** Display the determined base branch to the user and ask for confirmation before
-     proceeding. Example: "Detected base branch: `main`. Is this correct? (y/n)"
-   - The confirmed base branch is the PR merge target. This may be `main` or another feature branch.
+   - The determined base branch is the PR merge target. This may be `main` or another feature branch.
+     Do not prompt for confirmation; proceed automatically.
 
 4. **Extract Jira Ticket from Branch Name**
    - Parse the current branch name for a Jira ticket ID matching the pattern `[A-Z]+-[0-9]+`.
