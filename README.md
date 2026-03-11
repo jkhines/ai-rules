@@ -13,6 +13,9 @@ Custom rules and commands for AI coding assistants including Claude Code, Cursor
 - **commands/ask-questions.md** - `/ask-questions`: Systematic problem analysis and solution path optimization.
 - **commands/code-review.md** - `/code-review`: Reviews changes between two branches with prioritized feedback.
 - **commands/commit-push.md** - `/commit-push`: Commits and pushes changes following Conventional Commits v1.0.0.
+- **commands/feature-branch.md** - `/feature-branch`: Creates and checks out a Git feature branch from a ticket title.
+- **commands/pull-request.md** - `/pull-request`: Creates a PR with summary, test plan, and linked context.
+- **commands/spawn.md** - `/spawn`: Runs model-parallel delegated tasks with strict file outputs and optional fix implementation.
 
 ---
 
@@ -36,7 +39,7 @@ ln -s ~/src/ai-rules/CLAUDE.md ~/.claude/CLAUDE.md
 ln -s ~/src/ai-rules/commands ~/.claude/commands
 ```
 
-After setup, Claude Code automatically loads `CLAUDE.md` into every conversation and makes commands available via `/ask-questions`, `/code-review`, and `/commit-push`.
+After setup, Claude Code automatically loads `CLAUDE.md` into every conversation and makes commands available via `/ask-questions`, `/code-review`, `/commit-push`, `/feature-branch`, `/pull-request`, and `/spawn`.
 
 ### Cursor
 
@@ -52,11 +55,11 @@ To use these rules in Cursor:
 2. **For slash commands**: If the ~/.cursor/commands symlink has been set, slash commands will be imported into the Cursor IDE and cursor-agent.
 
 ```bash
-# Symlink commands for slash command support (/ask-questions, /code-review, /commit-push)
+# Symlink commands for slash command support (/ask-questions, /code-review, /commit-push, /feature-branch, /pull-request, /spawn)
 ln -s ~/src/ai-rules/commands ~/.cursor/commands
 ```
 
-After setup, invoke commands in Cursor's chat with `/ask-questions`, `/code-review`, or `/commit-push`.
+After setup, invoke commands in Cursor's chat with `/ask-questions`, `/code-review`, `/commit-push`, `/feature-branch`, `/pull-request`, or `/spawn`.
 
 ### ChatGPT
 
