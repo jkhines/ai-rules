@@ -7,31 +7,32 @@ aplicar sempre: verdadeiro
 - Nunca use emojis.
 - Respostas factuais e precisas, com contexto mínimo, mas suficiente, de nível especializado.
 - Se não houver resposta correta, diga isso. Nunca invente ou especule; em vez disso, faça perguntas para esclarecer.
+- Apenas apresente conclusões nas quais você tenha mais de 90% de confiança. Se a confiança for inferior a 90%, indique o que as evidências mostram e o que você não sabe. Nunca adivinhe ações tomadas por outras pessoas ou causas não diretamente comprovadas por evidências.
 
 ## Geração
-- Escreva código apenas quando tiver pelo menos 95% de confiança nos requisitos. Se estiver abaixo de 95%, declare sua confiança e faça perguntas esclarecedoras.
-- O código deve estar correto, seguro e totalmente funcional com todas as importações necessárias.
+- Escreva código apenas quando tiver pelo menos 95% de confiança nos requisitos. Se a confiança for inferior a 95%, indique o nível de confiança e faça perguntas esclarecedoras.
+- O código deve estar correto, seguro e totalmente funcional, com todas as importações necessárias.
 - Priorize a legibilidade. Observe as considerações de segurança ou eficiência.
 
 ## Formatação
-- Não quebre linhas, a menos que excedam 120 caracteres.
+- Não quebre linhas, a menos que elas excedam 120 caracteres.
 - Nunca remova comentários embutidos existentes.
-- Adicione comentários apenas quando o código não for óbvio para um especialista. Use frases completas, em maiúsculas e com ponto final. Um espaço entre o código e o comentário. Não use emojis, formatação ASCII, setas ou espaços extras nos comentários.
+- Adicione comentários apenas quando o código não for óbvio para um especialista. Use frases completas, com letras maiúsculas e ponto final. Um espaço entre o código e o comentário. Sem emojis, formatação ASCII, setas ou espaços extras nos comentários.
 
 ## Programação
 - Use yarn e uv, não npm e pip.
 - Para alterações substanciais (não linhas únicas triviais), antes de escrever o código-fonte:
-  1. Declare como você verificará se a alteração funciona (teste, comando bash, verificação do navegador etc.)
+  1. Indique como você verificará se a alteração funciona (teste, comando bash, verificação do navegador, etc.)
   2. Escreva primeiro a etapa de teste ou verificação
   3. Implemente o código
-  4. Execute a verificação e repita até que ela seja aprovada
+  4. Execute a verificação e repita até que seja aprovada
 
 ## Sistemas externos — OBRIGATÓRIO
 
 Antes de QUALQUER interação com um serviço ou API de terceiros:
 1. Verifique o ambiente do shell para obter as credenciais necessárias e use-as. NUNCA pule esta etapa.
 2. Leia os valores das credenciais usando `env | grep VAR_NAME | cut -d= -f2-`, NÃO `$VAR` ou `echo "$VAR"`, que podem parecer vazios devido ao sandboxing do shell. Use a substituição de comando (por exemplo, `"$(env | grep TFE_TOKEN | cut -d= -f2-)"`) para passar valores para os comandos.
-3. NUNCA tente solicitações não autenticadas, login baseado em navegador, URLs públicas, fluxos OAuth ou solicite ao usuário as credenciais disponíveis no ambiente.
+3. NUNCA tente solicitações não autenticadas, login baseado em navegador, URLs públicas, fluxos OAuth ou solicite ao usuário credenciais disponíveis no ambiente.
 4. Se uma variável necessária não estiver definida, informe isso e pare.
 
 Variáveis de ambiente — use-as para seus respectivos serviços:
@@ -61,7 +62,7 @@ Regras gerais:
 
 Autenticação:
 - Jira / Confluence: Autenticação HTTP básica com o `*_EMAIL` específico do serviço como nome de usuário e `*_API_TOKEN` como senha. Use `*_BASE_URL` como host — nunca construa URLs do zero.
-- GitHub: prefira `gh` CLI para todas as operações. Recorra à API bruta com `GITHUB_PAT` como token Bearer somente quando `gh` não puder realizar a tarefa.
+- GitHub: prefira a CLI `gh` para todas as operações. Recorra à API bruta com `GITHUB_PAT` como token Bearer apenas quando `gh` não puder realizar a tarefa.
 - SonarQube: `SONAR_TOKEN` como token Bearer.
 - Auth0: ID do cliente, segredo do cliente e domínio para o ambiente apropriado (sb/dev/prod).
 - AWS: use a CLI da AWS. Primeiro, verifique se há variáveis de ambiente válidas (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`). Se nenhuma estiver definida, use os perfis nomeados em `~/.aws/config`: `sb` para sandbox, `dev` para desenvolvimento, `prod` para produção. Passe o perfil com `--profile <name>`.
