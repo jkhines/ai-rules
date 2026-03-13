@@ -5,6 +5,14 @@ alwaysApply: false
 ---
 Run one task across multiple models in parallel, require each model to persist findings to a local markdown file, and optionally implement fixes from the combined findings.
 
+## Execution Rule
+
+Do not assume the built-in `Subagent` tool is the only valid execution path.
+
+If the local environment supports Cursor slash-command execution via `cursor-agent`, or otherwise allows spawning multiple `cursor-agent` processes, prefer that shell-driven path when it is required to target specific Cursor model IDs such as `opus-4.6`, `gpt-5.3-codex`, or `gemini-3.1-pro`.
+
+Use the built-in `Subagent` tool only when it can actually satisfy the requested model selection and concurrency requirements. If it cannot, fall back to spawning background `cursor-agent` processes, persist outputs to the required files, and poll the filesystem for completion exactly as this command describes.
+
 ## Inputs
 
 All inputs have defaults and only need to be specified when overriding.
@@ -36,6 +44,7 @@ All inputs have defaults and only need to be specified when overriding.
    - run the delegated `task`
    - write final findings to exactly `output_dir/cursor-<model-id>-<timestamp>.md`
    - end by reporting the exact local file path created
+   - when specific Cursor model IDs are requested and the built-in `Subagent` tool cannot target them, launch separate `cursor-agent` processes instead of downgrading to the built-in tool
 5. Poll `output_dir` until all expected files exist or `timeout_sec` is reached.
 6. Enforce strict completion by default:
    - if all files exist, continue

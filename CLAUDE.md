@@ -73,4 +73,4 @@ If the service is not listed above, check the environment anyway (`env | grep -i
 - Use `CONTEXT7_KEY` to fetch current documentation before writing code with external libraries. Prefer up-to-date docs over training knowledge.
 
 ## System Requirements
-- POP!_OS 24.04 Linux, COSMIC desktop, Wayland. Use bash syntax.
+- Detect POP!_OS 24.04 or CachyOS Linux. Assume COSMIC desktop, Wayland. Use bash syntax.
