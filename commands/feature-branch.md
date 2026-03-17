@@ -61,7 +61,7 @@ When `/feature-branch` is invoked:
      - Strip leading/trailing/consecutive hyphens.
      - Keep it concise (aim for 3-6 words).
    - Assemble: `<type>/<jira-id>-<short-description>`
-   - Present the proposed branch name to the user for confirmation.
+   - **Do not prompt for confirmation.** Proceed immediately to branch creation.
 
 5. **Determine Base Branch**
    - The base branch is `main`.
