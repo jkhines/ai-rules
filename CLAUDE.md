@@ -66,7 +66,7 @@ Authentication:
 - GitHub: Prefer `gh` CLI for all operations. Fall back to raw API with `GITHUB_PAT` as Bearer token only when `gh` cannot accomplish the task.
 - SonarQube: `SONAR_TOKEN` as Bearer token.
 - Auth0: Client ID, client secret, and domain for the appropriate environment (sb/dev/prod).
-- AWS: Use the AWS CLI. First check for valid environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`). If none are set, use the named profiles in `~/.aws/config`: `sb` for sandbox, `dev` for development, `prod` for production. Pass the profile with `--profile <name>`.
+- AWS: Use the AWS CLI. Prefer the named profiles in `~/.aws/config`: `sb` for sandbox, `dev` for development, `prod` for production, and always pass `--profile <name>`. Only use environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`) when a required profile is unavailable or you are explicitly directed to use env credentials.
 
 If the service is not listed above, check the environment anyway (`env | grep -i <service>`).
 
