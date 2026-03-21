@@ -75,3 +75,4 @@ If the service is not listed above, check the environment anyway (`env | grep -i
 
 ## System Requirements
 - Detect POP!_OS 24.04 or CachyOS Linux. Assume COSMIC desktop, Wayland. Use bash syntax.
+- On CachyOS (and other Arch-based systems), prefer paru over yay when installing packages from AUR or official repos.
