@@ -43,13 +43,13 @@ Quando `/feature-branch` é invocado:
    - Use a API do Jira para buscar o resumo do ticket. Use `JIRA_BASE_URL`, `JIRA_EMAIL` e `JIRA_API_TOKEN`
      do ambiente para autenticação (HTTP Basic Auth).
    - Endpoint: `GET {JIRA_BASE_URL}/rest/api/3/issue/{jira-id}?fields=summary,issuetype`
-   - Extraia o resumo e o tipo de issue para definir o tipo de branch e a descrição.
+   - Extraia o resumo e o tipo de issue para definir o tipo e a descrição do branch.
 
 3. **Determinar o tipo de branch**
    - Mapeie o tipo de issue do Jira para um tipo de branch:
      - Bug -&gt; `fix`
-     - Story, Task ou tipos semelhantes a feature -&gt; `feature`
-     - Sub-tarefa -&gt; deduzir a partir do pai ou usar `feature` como padrão
+     - Story, Tarefa ou tipos semelhantes a recursos -&gt; `feature`
+     - Subtarefa -&gt; deduza a partir do pai ou use `feature` como padrão
      - Outros -&gt; `chore`
    - Se o mapeamento for ambíguo, pergunte ao usuário qual tipo usar.
 
@@ -67,11 +67,20 @@ Quando `/feature-branch` é invocado:
    - O branch base é `main`.
    - Busque a versão mais recente de `main` antes de criar o novo branch.
 
-6. **Criar e alternar para o branch**
+6. **Lidar com alterações não confirmadas**
+   - Execute `git status` para verificar se há alterações não confirmadas (preparadas, não preparadas ou não rastreadas).
+   - Se a árvore de trabalho estiver limpa, prossiga diretamente para a etapa 7.
+   - Se houver alterações não confirmadas, armazene-as antes de trocar de ramificação:
+     - Execute `git stash --include-untracked`
+     - Após criar e mudar para o novo branch (passo 7), execute `git stash pop` para restaurar as alterações.
+   - **Não** armazene se a árvore de trabalho estiver limpa — um stash/pop desnecessário pode causar confusão.
+
+7. **Crie e mude para o branch**
    - Execute `git fetch origin`
    - Execute `git checkout -b <branch-name> --no-track origin/<base-branch>`
+   - Se as alterações foram armazenadas no passo 6, execute `git stash pop` agora.
    - Execute `git push -u origin <branch-name>` para definir o branch de rastreamento upstream.
    - Confirme se o branch foi criado e está ativo.
 
-7. **Resumo**
+8. **Resumo**
    - Exiba o nome do novo branch, o branch base e o link do ticket do Jira.

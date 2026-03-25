@@ -67,11 +67,20 @@ When `/feature-branch` is invoked:
    - The base branch is `main`.
    - Fetch the latest version of `main` before creating the new branch.
 
-6. **Create and Switch to the Branch**
+6. **Handle Uncommitted Changes**
+   - Run `git status` to check for uncommitted changes (staged, unstaged, or untracked).
+   - If the working tree is clean, proceed directly to step 7.
+   - If there are uncommitted changes, stash them before switching branches:
+     - Run `git stash --include-untracked`
+     - After creating and switching to the new branch (step 7), run `git stash pop` to restore changes.
+   - Do **not** stash if the working tree is clean -- an unnecessary stash/pop risks confusion.
+
+7. **Create and Switch to the Branch**
    - Run `git fetch origin`
    - Run `git checkout -b <branch-name> --no-track origin/<base-branch>`
+   - If changes were stashed in step 6, run `git stash pop` now.
    - Run `git push -u origin <branch-name>` to set the upstream tracking branch.
    - Confirm the branch was created and is active.
 
-7. **Summary**
+8. **Summary**
    - Display the new branch name, base branch, and Jira ticket link.
