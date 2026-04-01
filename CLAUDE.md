@@ -63,6 +63,7 @@ Environment variables — use these for their respective services:
 | Auth0 (dev) | `AUTH0_DEV_CLIENT_ID`, `AUTH0_DEV_CLIENT_SECRET`, `AUTH0_DEV_DOMAIN` |
 | Auth0 (prod) | `AUTH0_PROD_CLIENT_ID`, `AUTH0_PROD_CLIENT_SECRET`, `AUTH0_PROD_DOMAIN` |
 | AWS | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION` |
+| Unblocked | `UNBLOCKED_API_TOKEN` |
 
 General rules:
 - Assume Cloud-hosted versions of all services unless told otherwise.

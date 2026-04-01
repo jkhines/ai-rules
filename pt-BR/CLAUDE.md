@@ -26,7 +26,7 @@ sempreAplicar: true
 ## Formatação
 - Não quebre linhas, a menos que excedam 120 caracteres.
 - Nunca remova comentários embutidos existentes.
-- Adicione comentários apenas quando o código não for óbvio para um especialista. Use frases completas, em maiúsculas e com ponto final. Um espaço entre o código e o comentário. Não use emojis, formatação ASCII, setas ou espaços extras nos comentários.
+- Adicione comentários apenas quando o código não for óbvio para um especialista. Use frases completas, em maiúsculas e com ponto final. Deixe um espaço entre o código e o comentário. Não use emojis, formatação ASCII, setas ou espaços extras nos comentários.
 
 ## Programação
 - Use yarn e uv, não npm e pip.
@@ -40,7 +40,7 @@ sempreAplicar: true
 
 Antes de QUALQUER interação com um serviço ou API de terceiros:
 1. Verifique o ambiente do shell para obter as credenciais necessárias e use-as. NUNCA pule esta etapa.
-2. Leia os valores das credenciais usando `env | grep VAR_NAME | cut -d= -f2-`, NÃO `$VAR` ou `echo "$VAR"`, que podem aparecer vazios devido ao sandboxing do shell. Use substituição de comando (por exemplo, `"$(env | grep TFE_TOKEN | cut -d= -f2-)"`) para passar valores aos comandos.
+2. Leia os valores das credenciais usando `env | grep VAR_NAME | cut -d= -f2-`, NÃO `$VAR` ou `echo "$VAR"`, que podem parecer vazios devido ao sandboxing do shell. Use substituição de comando (por exemplo, `"$(env | grep TFE_TOKEN | cut -d= -f2-)"`) para passar valores aos comandos.
 3. NUNCA tente fazer solicitações não autenticadas, login via navegador, URLs públicas, fluxos OAuth ou solicitar ao usuário credenciais disponíveis no ambiente.
 4. Se uma variável necessária não estiver definida, informe isso e interrompa o processo.
 
@@ -63,6 +63,7 @@ Variáveis de ambiente — use-as para os respectivos serviços:
 | Auth0 (dev) | `AUTH0_DEV_CLIENT_ID`, `AUTH0_DEV_CLIENT_SECRET`, `AUTH0_DEV_DOMAIN` |
 | Auth0 (prod) | `AUTH0_PROD_CLIENT_ID`, `AUTH0_PROD_CLIENT_SECRET`, `AUTH0_PROD_DOMAIN` |
 | AWS | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION` |
+| Desbloqueado | `UNBLOCKED_API_TOKEN` |
 
 Regras gerais:
 - Presuma que todas as versões dos serviços são hospedadas na nuvem, a menos que seja indicado o contrário.
@@ -74,7 +75,7 @@ Autenticação:
 - GitHub: Prefira a CLI `gh` para todas as operações. Recorra à API bruta com `GITHUB_PAT` como token Bearer apenas quando `gh` não puder realizar a tarefa.
 - SonarQube: `SONAR_TOKEN` como token Bearer.
 - Auth0: ID do cliente, segredo do cliente e domínio para o ambiente apropriado (sb/dev/prod).
-- AWS: Use a CLI da AWS. Dê preferência aos perfis nomeados em `~/.aws/config`: `sb` para sandbox, `dev` para desenvolvimento, `prod` para produção, e sempre passe `--profile <name>`. Use variáveis de ambiente (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`) apenas quando um perfil necessário não estiver disponível ou você for explicitamente orientado a usar credenciais de ambiente.
+- AWS: Use a CLI da AWS. Dê preferência aos perfis nomeados em `~/.aws/config`: `sb` para sandbox, `dev` para desenvolvimento, `prod` para produção, e sempre passe `--profile <name>`. Use variáveis de ambiente (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`) apenas quando um perfil necessário estiver indisponível ou você for explicitamente orientado a usar credenciais de ambiente.
 
 Se o serviço não estiver listado acima, verifique o ambiente de qualquer maneira (`env | grep -i <service>`).
 
@@ -82,5 +83,5 @@ Se o serviço não estiver listado acima, verifique o ambiente de qualquer manei
 - Use `CONTEXT7_KEY` para buscar a documentação atual antes de escrever código com bibliotecas externas. Dê preferência a documentos atualizados em vez de conhecimento adquirido em treinamentos.
 
 ## Requisitos do sistema
-- Detecte o POP!_OS 24.04 ou o CachyOS Linux. Presuma um desktop COSMIC, Wayland. Use a sintaxe do bash.
+- Detecte o POP!_OS 24.04 ou o CachyOS Linux. Presuma um ambiente COSMIC desktop, Wayland. Use a sintaxe do bash.
 - No CachyOS (e em outros sistemas baseados no Arch), prefira o paru ao yay ao instalar pacotes do AUR ou de repositórios oficiais.
