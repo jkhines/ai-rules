@@ -38,7 +38,13 @@ alwaysApply: true
 
 ## External Systems — MANDATORY
 
-Before ANY interaction with a third-party service or API:
+Before ANY interaction with a third-party service or API, follow this resolution order:
+
+### 1. Prefer MCP servers
+If an MCP server is available for the service (check available tools via `ToolSearch`), use it. MCP servers handle authentication, pagination, and API versioning automatically. Do not fall back to direct API calls when an MCP tool can accomplish the task.
+
+### 2. Fall back to environment variables and direct API calls
+If no MCP server covers the needed operation:
 1. Check the shell environment for required credentials and use them. NEVER skip this step.
 2. Read credential values using `env | grep VAR_NAME | cut -d= -f2-`, NOT `$VAR` or `echo "$VAR"` which may appear empty due to shell sandboxing. Use command substitution (e.g., `"$(env | grep TFE_TOKEN | cut -d= -f2-)"`) to pass values to commands.
 3. NEVER attempt unauthenticated requests, browser-based login, public URLs, OAuth flows, or prompt the user for credentials available in the environment.
@@ -70,14 +76,14 @@ General rules:
 - Use the latest stable API version. Use Context7 (`CONTEXT7_KEY`) to confirm API versions and usage before making calls.
 - Always handle pagination. Never assume a single response contains all results.
 
-Authentication:
+Authentication (when not using MCP):
 - Jira / Confluence: HTTP Basic Auth with the service-specific `*_EMAIL` as username and `*_API_TOKEN` as password. Use `*_BASE_URL` as the host — never construct URLs from scratch.
 - GitHub: Prefer `gh` CLI for all operations. Fall back to raw API with `GITHUB_PAT` as Bearer token only when `gh` cannot accomplish the task.
 - SonarQube: `SONAR_TOKEN` as Bearer token.
 - Auth0: Client ID, client secret, and domain for the appropriate environment (sb/dev/prod).
 - AWS: Use the AWS CLI. Prefer the named profiles in `~/.aws/config`: `sb` for sandbox, `dev` for development, `prod` for production, and always pass `--profile <name>`. Only use environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`) when a required profile is unavailable or you are explicitly directed to use env credentials.
 
-If the service is not listed above, check the environment anyway (`env | grep -i <service>`).
+If the service is not listed above, check for an MCP server first (`ToolSearch`), then check the environment (`env | grep -i <service>`).
 
 ## Documentation Lookup
 - Use `CONTEXT7_KEY` to fetch current documentation before writing code with external libraries. Prefer up-to-date docs over training knowledge.
