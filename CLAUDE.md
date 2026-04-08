@@ -43,6 +43,8 @@ Before ANY interaction with a third-party service or API, follow this resolution
 ### 1. Prefer MCP servers
 If an MCP server is available for the service (check available tools via `ToolSearch`), use it. MCP servers handle authentication, pagination, and API versioning automatically. Do not fall back to direct API calls when an MCP tool can accomplish the task.
 
+**Jira and Confluence:** Always use the `Atlassian-MCP-Server` tools (e.g., `searchJiraIssuesUsingJql`, `getJiraIssue`, `getConfluencePage`, `searchConfluenceUsingCql`). Never use the Jira/Confluence environment variables or direct REST API calls when the Atlassian MCP server is available. Do not use Unblocked tools (`data_retrieval`, `research_task`, `unblocked_context_engine`) for Jira or Confluence queries that the Atlassian MCP server can handle directly.
+
 ### 2. Fall back to environment variables and direct API calls
 If no MCP server covers the needed operation:
 1. Check the shell environment for required credentials and use them. NEVER skip this step.

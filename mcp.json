@@ -4,10 +4,12 @@
       "url": "https://mcp.context7.com/mcp"
     },
     "Unblocked": {
-      "url": "https://getunblocked.com/api/mcpsse"
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://getunblocked.com/api/mcpsse"]
     },
     "Atlassian-MCP-Server": {
-      "url": "https://mcp.atlassian.com/v1/mcp"
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.atlassian.com/v1/mcp"]
     }
   }
 }
