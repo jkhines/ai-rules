@@ -164,7 +164,20 @@ When `/pull-request` is invoked:
    - Record the PR number from the output.
    - Assign the PR to the current user: `gh pr edit <pr-number> --add-assignee @me`
 
-8. **Generate Full PR Description**
+8. **Apply Labels**
+   - List available labels: `gh label list --repo <owner>/<repo>`
+   - Select the label(s) that best match the nature of the PR and Jira task (e.g., `bug`, `enhancement`,
+     `documentation`). Use the conventional commit type and Jira issue type as signals.
+   - Apply the labels: `gh pr edit <pr-number> --add-label "<label1>,<label2>"`
+   - If no labels are a reasonable match, skip this step.
+
+9. **Add Reviewers**
+   - If the user specifies reviewers (via command arguments or conversation), add them:
+     `gh pr edit <pr-number> --add-reviewer <user1>,<user2>`
+   - If the user does not specify reviewers, ask who should review the PR before proceeding.
+   - Do not silently skip reviewer assignment.
+
+10. **Generate Full PR Description**
    - Write in a **conversational, developer-to-developer tone** -- the way one engineer would explain
      the change to a teammate. Plain English, short sentences, active voice. Avoid resource names,
      config keys, or implementation details that only make sense when reading the diff.
@@ -188,14 +201,20 @@ When `/pull-request` is invoked:
      - **Author Checklist** -- Include the three checklist items (unchecked), with the base branch name
        substituted into the first item: `[ ] My branch is up to date with \`<base-branch>\`.`
 
-9. **Update the PR Description**
+11. **Update the PR Description**
    - Update the PR body with the full description:
      ```
      gh pr edit <pr-number> --body "<full-description>"
      ```
    - Use a HEREDOC for correct formatting.
 
-10. **Summary**
+12. **Clean Up Temporary Files**
+    - If any files were created or modified solely to assist with PR creation (e.g., temporary diff files,
+      scratch notes), remove them from the local file system.
+    - Do not remove files that are part of the repository or the user's working tree.
+    - Run `git status` to confirm the working tree is still clean after cleanup.
+
+13. **Summary**
     - Display the PR URL, title, base branch, and Jira ticket link (if applicable).
     - Remind the user of the review requirements:
       - PRs to `main`: Requires senior involvement (as author or reviewer).
