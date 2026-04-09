@@ -3,7 +3,7 @@ command: /code-review
 description: Reviews two branches and provides feedback
 alwaysApply: false
 ---
-Review code changes between two user-specified branches. The user provides both branch names (e.g., `feature/auth` and `main`).
+Review code changes between two branches. By default, compare the current branch against `main`. The user may override either branch explicitly (e.g., `/code-review feature/auth dev`).
 
 ## Severity Definitions
 
@@ -20,18 +20,44 @@ When in doubt between two adjacent levels, prefer the higher severity. A finding
 
 ## Process
 
-### 1. Fetch and Scope the Diff
+### 1. Resolve Branches and Fetch
+Determine the branches to compare:
+- **Feature branch**: first positional argument, or the current branch (`git branch --show-current`). If the current branch is `main`, ask the user which branch to review.
+- **Base branch**: second positional argument, or `main`.
+
+#### Ref resolution
+For each branch name, resolve it to a concrete git ref using this priority order:
+1. If HEAD is on that branch and the local ref exists, use the **local** ref (so unpushed commits are included).
+2. Otherwise, if `origin/<name>` exists, use the **remote** ref.
+3. Otherwise, if the local ref exists, use it.
+4. If neither exists, stop and report the error.
+
 ```bash
 git fetch origin
-git diff --name-only origin/<base>...origin/<feature>
+# Resolve refs (example: feature branch is local, base is remote)
+git rev-parse --verify <feature>          # check local
+git rev-parse --verify origin/<feature>   # check remote
+git rev-parse --verify <base>
+git rev-parse --verify origin/<base>
 ```
-For each file, verify actual changes exist with `git diff --quiet`. Skip files with no diff hunks.
+
+#### Compute the diff via merge-base
+Use `git merge-base` to find the common ancestor, then diff from that point. This correctly scopes the diff to only changes introduced on the feature branch, even after rebases or merges into the base.
+
+```bash
+MERGE_BASE=$(git merge-base <resolved-base> <resolved-feature>)
+git diff --name-only $MERGE_BASE <resolved-feature>
+```
+
+If `git merge-base` fails, stop and report the error.
+
+For each file in the diff output, verify actual changes exist with `git diff --quiet`. Skip files with no diff hunks.
 
 **Critical**: Use Git commands to read branch contents, not filesystem tools. The working directory may be a different branch.
-- Check file existence: `git ls-tree -r --name-only origin/<branch> -- <path>`
-- Read file contents: `git show origin/<branch>:<path>`
+- Check file existence: `git ls-tree -r --name-only <resolved-feature> -- <path>`
+- Read file contents: `git show <resolved-feature>:<path>`
 
-For each changed file, read the full file with `git show origin/<feature>:<path>` to understand:
+For each changed file, read the full file with `git show <resolved-feature>:<path>` to understand:
 - The complete function, class, or module containing each change
 - Imports and dependencies affected by the change
 - How callers or consumers use the modified code
@@ -39,7 +65,7 @@ For each changed file, read the full file with `git show origin/<feature>:<path>
 
 Do not review the diff in isolation. A change that looks correct in a hunk may break invariants visible only in the full file.
 
-If a change modifies an interface, type, config key, or export, use `git ls-tree` and `git show` to read all files that import or consume it and verify they remain compatible.
+If a change modifies an interface, type, config key, or export, use `git ls-tree` and `git show` (with the resolved feature ref) to read all files that import or consume it and verify they remain compatible.
 
 ### 2. Gather Organizational Context
 
