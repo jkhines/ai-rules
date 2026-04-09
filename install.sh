@@ -30,9 +30,14 @@ link() {
     echo "Linked $dest -> $src"
 }
 
+# Sync MCP servers from mcp.json into .claude.json
+"$REPO_DIR/mcp.sh"
+
+# ~/.claude.json (Claude Code application config)
+link "$REPO_DIR/.claude.json" "$HOME/.claude.json"
+
 # ~/.claude
 link "$REPO_DIR/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
-link "$REPO_DIR/mcp.json"  "$HOME/.claude/mcp.json"
 for file in "$REPO_DIR/commands/"*.md; do
     [ -e "$file" ] || continue
     link "$file" "$HOME/.claude/commands/$(basename "$file")"
