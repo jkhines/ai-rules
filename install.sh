@@ -42,12 +42,22 @@ for file in "$REPO_DIR/commands/"*.md; do
     [ -e "$file" ] || continue
     link "$file" "$HOME/.claude/commands/$(basename "$file")"
 done
+for skill_dir in "$REPO_DIR/skills/"*/; do
+    [ -d "$skill_dir" ] || continue
+    skill_name="$(basename "$skill_dir")"
+    link "$skill_dir" "$HOME/.claude/skills/$skill_name"
+done
 
 # ~/.cursor
 link "$REPO_DIR/mcp.json" "$HOME/.cursor/mcp.json"
 for file in "$REPO_DIR/commands/"*.md; do
     [ -e "$file" ] || continue
     link "$file" "$HOME/.cursor/commands/$(basename "$file")"
+done
+for skill_dir in "$REPO_DIR/skills/"*/; do
+    [ -d "$skill_dir" ] || continue
+    skill_name="$(basename "$skill_dir")"
+    link "$skill_dir" "$HOME/.cursor/skills/$skill_name"
 done
 
 echo "Done."

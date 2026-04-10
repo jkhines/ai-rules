@@ -6,6 +6,10 @@
     "Unblocked": {
       "command": "npx",
       "args": ["-y", "mcp-remote", "https://getunblocked.com/api/mcpsse"]
+    },
+    "Figma": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.figma.com/mcp"]
     }
   }
 }
