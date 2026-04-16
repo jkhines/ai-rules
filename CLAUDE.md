@@ -90,6 +90,9 @@ If the service is not listed above, check for an MCP server first (`ToolSearch`)
 ## Documentation Lookup
 - Use `CONTEXT7_KEY` to fetch current documentation before writing code with external libraries. Prefer up-to-date docs over training knowledge.
 
+## Terraform
+- All Terraform deployments use Terraform Cloud with VCS-driven runs. Evaluate Terraform behavior in that context, not the CLI.
+
 ## System Requirements
 - Detect POP!_OS 24.04 or CachyOS Linux. Assume COSMIC desktop, Wayland. Use bash syntax.
 - On CachyOS (and other Arch-based systems), prefer paru over yay when installing packages from AUR or official repos.
