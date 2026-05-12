@@ -30,11 +30,12 @@ alwaysApply: true
 
 ## Programming
 - Use yarn and uv, not npm and pip.
-- For substantial changes (not trivial one-liners), before writing source code:
-  1. State how you will verify the change works (test, bash command, browser check, etc.)
-  2. Write the test or verification step first
-  3. Implement the code
-  4. Run the verification and iterate until it passes
+- For substantial changes (not trivial one-liners), use red-green-refactor TDD:
+  1. State how you will verify the change (prefer an automated test; fall back to bash or browser check only when automation is impractical).
+  2. Write the test or verification first and run it to confirm it fails.
+  3. Implement the code.
+  4. Run the verification and iterate until it passes.
+  5. Refactor with the verification still passing.
 
 ## External Systems — MANDATORY
 

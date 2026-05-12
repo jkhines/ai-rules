@@ -11,7 +11,7 @@ sempreAplicar: true
 - **Fundamentação das evidências — OBRIGATÓRIO:** Toda afirmação factual deve ser rastreável até uma fonte específica (documento, página, resposta de API, resultado de pesquisa, código ou declaração explícita do usuário). Siga estas regras sem exceção:
   1. **Nunca extrapole o escopo a partir de evidências limitadas.** Um POC, avaliação, repositório ou configuração não prova adoção, um padrão ou uso generalizado. Afirme apenas o que a fonte diz explicitamente.
   2. **Nunca apresente inferências, deduções ou sínteses como fatos estabelecidos.** Se você combinou vários sinais fracos para chegar a uma conclusão, diga isso e identifique-a como inferência.
-  3. **Distinga o que você encontrou do que você concluiu.** Use frases como “O Confluence contém uma página comparando X e Y” em vez de “A organização usa X”.
+  3. **Distinga o que você encontrou do que você concluiu.** Use frases como “O Confluence contém uma página comparando X e Y” em vez de “A organização usa X.”
   4. **Nunca use linguagem de afirmações fortes sem uma fonte direta.** Termos como “padrão”, “amplamente utilizado”, “recomendado”, “preferido”, “em toda a empresa”, “melhor prática” ou “norma do setor” exigem uma fonte autorizada explícita. Se tal fonte não existir, não use esses termos.
   5. **Quando as evidências forem ambíguas ou incompletas, diga isso.** Indique o que as evidências mostram, o que não mostram e o que permanece desconhecido. Não preencha lacunas com afirmações que soem plausíveis.
   6. **Não invente fatos, estatísticas, datas, nomes, ferramentas, recursos, citações ou fontes.** Se você não souber, diga “Não sei” ou “Não consegui encontrar isso”.
@@ -19,22 +19,23 @@ sempreAplicar: true
 - Nunca apresente uma conclusão definitiva antes de concluir sua análise. Termine o raciocínio primeiro e, em seguida, comece com a resposta correta. Uma resposta que começa com uma resposta e conclui com o oposto é pior do que uma resposta mais lenta, mas correta.
 
 ## Geração
-- Escreva código somente quando estiver pelo menos 95% confiante nos requisitos. Se estiver abaixo de 95%, declare o nível de confiança e faça perguntas para esclarecer.
+- Escreva código somente quando tiver pelo menos 95% de confiança nos requisitos. Se for menos de 95%, indique o nível de confiança e faça perguntas para esclarecer.
 - O código deve estar correto, seguro e totalmente funcional com todas as importações necessárias.
 - Priorize a legibilidade. Anote considerações de segurança ou eficiência.
 
 ## Formatação
 - Não quebre linhas, a menos que excedam 120 caracteres.
-- Nunca remova comentários inline existentes.
+- Nunca remova comentários embutidos existentes.
 - Adicione comentários apenas quando o código possa não ser óbvio para um especialista. Use frases completas, em maiúsculas e com ponto final. Um espaço entre o código e o comentário. Sem emojis, formatação ASCII, setas ou espaços extras nos comentários.
 
 ## Programação
 - Use yarn e uv, não npm e pip.
-- Para alterações substanciais (não linhas únicas triviais), antes de escrever o código-fonte:
-  1. Indique como você verificará se a alteração funciona (teste, comando bash, verificação no navegador, etc.)
-  2. Escreva primeiro o teste ou a etapa de verificação
-  3. Implemente o código
-  4. Execute a verificação e repita até que seja aprovada
+- Para alterações substanciais (não linhas únicas triviais), use TDD vermelho-verde-refatoração:
+  1. Defina como você verificará a alteração (prefira um teste automatizado; recorra à verificação via bash ou navegador apenas quando a automação for impraticável).
+  2. Escreva o teste ou a verificação primeiro e execute-o para confirmar que ele falha.
+  3. Implemente o código.
+  4. Execute a verificação e itere até que ela seja aprovada.
+  5. Refatore com a verificação ainda aprovada.
 
 ## Sistemas externos — OBRIGATÓRIO
 
@@ -83,7 +84,7 @@ Autenticação (quando não estiver usando o MCP):
 - GitHub: Prefira a CLI `gh` para todas as operações. Recorra à API bruta com `GITHUB_PAT` como token Bearer apenas quando `gh` não puder realizar a tarefa.
 - SonarQube: `SONAR_TOKEN` como token Bearer.
 - Auth0: ID do cliente, segredo do cliente e domínio para o ambiente apropriado (sb/dev/prod).
-- AWS: Use a CLI da AWS. Dê preferência aos perfis nomeados em `~/.aws/config`: `sb` para sandbox, `dev` para desenvolvimento, `prod` para produção, e sempre passe `--profile <name>`. Use variáveis de ambiente (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`) apenas quando um perfil necessário não estiver disponível ou você for explicitamente orientado a usar credenciais de ambiente.
+- AWS: Use a CLI da AWS. Dê preferência aos perfis nomeados em `~/.aws/config`: `sb` para sandbox, `dev` para desenvolvimento, `prod` para produção, e sempre passe `--profile <name>`. Use variáveis de ambiente (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`) apenas quando um perfil necessário estiver indisponível ou você for explicitamente orientado a usar credenciais de ambiente.
 
 Se o serviço não estiver listado acima, verifique primeiro se há um servidor MCP (`ToolSearch`) e, em seguida, verifique o ambiente (`env | grep -i <service>`).
 
@@ -94,5 +95,5 @@ Se o serviço não estiver listado acima, verifique primeiro se há um servidor 
 - Todas as implantações do Terraform utilizam o Terraform Cloud com execuções orientadas por VCS. Avalie o comportamento do Terraform nesse contexto, não na CLI.
 
 ## Requisitos do sistema
-- Detecte o POP!_OS 24.04 ou o CachyOS Linux. Presuma um ambiente de desktop COSMIC, Wayland. Use a sintaxe do bash.
+- Detecte o POP!_OS 24.04 ou o CachyOS Linux. Presuma um desktop COSMIC, Wayland. Use sintaxe bash.
 - No CachyOS (e outros sistemas baseados em Arch), prefira o paru ao yay ao instalar pacotes do AUR ou de repositórios oficiais.
