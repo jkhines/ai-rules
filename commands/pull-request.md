@@ -139,8 +139,8 @@ When `/pull-request` is invoked:
 
 5. **Analyze Changes for the PR**
    - Compute the diff between the current branch and the base branch determined in step 3:
-     `git diff <base-branch>...HEAD`
-   - Review the full commit log since divergence: `git log <base-branch>..HEAD --oneline`
+     `git diff origin/<base-branch>...HEAD`
+   - Review the full commit log since divergence: `git log origin/<base-branch>..HEAD --oneline`
    - Understand the full scope of changes -- all commits, not just the latest one.
 
 6. **Generate PR Title**
