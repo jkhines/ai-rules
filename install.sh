@@ -33,6 +33,15 @@ link() {
 # Sync MCP servers from mcp.json into .claude.json
 "$REPO_DIR/mcp.sh"
 
+# Ensure required scripts are executable in this clone.
+chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh"
+
+# Ensure repository hooks are active for this clone.
+if git -C "$REPO_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git -C "$REPO_DIR" config core.hooksPath .githooks
+    echo "Configured git hooks path: .githooks"
+fi
+
 # ~/.claude.json (Claude Code application config)
 link "$REPO_DIR/.claude.json" "$HOME/.claude.json"
 
