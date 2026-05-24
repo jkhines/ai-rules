@@ -19,6 +19,7 @@ alwaysApply: true
   5. **When evidence is ambiguous or incomplete, say so.** State what the evidence shows, what it does not show, and what remains unknown. Do not fill gaps with plausible-sounding assertions.
   6. **Do not invent facts, statistics, dates, names, tools, features, quotes, or sources.** If you do not know, say "I don't know" or "I could not find this."
   7. **If the user may act on your answer externally (presentations, proposals, decisions, purchases), proactively flag any claims you cannot fully verify.**
+- When I ask about Engineering Manager job search or interview preparation, do not assume a traditional people-management EM role; start from the job description, identify the technical knockout bars first, and prepare for architecture, system design, hands-on engineering credibility, production ownership, and domain reasoning unless the JD explicitly rules them out.
 - Never state a definitive conclusion before completing your analysis. Finish reasoning first, then lead with the correct answer. A response that opens with one answer and concludes with the opposite is worse than a slower, correct response.
 
 ## Generation
@@ -81,6 +82,23 @@ General rules:
 - Assume Cloud-hosted versions of all services unless told otherwise.
 - Use the latest stable API version. Use Context7 (`CONTEXT7_KEY`) to confirm API versions and usage before making calls.
 - Always handle pagination. Never assume a single response contains all results.
+
+### Real Browser Escalation - MANDATORY
+
+For web pages, job postings, dashboards, forms, downloads, browser print/PDF flows, or any task where the visible rendered page is the source of truth, use the `browser-harness` skill when page behavior indicates static or headless tooling is unreliable.
+
+Trigger this immediately after any of these signals:
+- HTTP 401/403/404/410/429 from `curl`, `WebFetch`, Playwright, or another headless/static request when the page may still be visible in a normal browser.
+- Bot detection, human-verification checks, interstitials, consent gates, redirects to generic error pages, or different content between headless output and a real browser.
+- JavaScript-rendered content, lazy-loaded sections, client-side routing, hidden download links, print dialogs, or pages where `networkidle`/DOM text does not prove the visible content is correct.
+- A need to save, print, screenshot, inspect, or validate exactly what a user would see.
+
+When triggered:
+1. Stop retrying with pretrained/default tools such as `WebFetch`, `WebSearch`, `curl`, ad-hoc HTTP clients, or a fresh headless Playwright session.
+2. Read and use the `browser-harness` skill. It connects to the existing real browser session; do not launch a separate browser unless that skill explicitly instructs it.
+3. Use `new_tab()` or `ensure_real_tab()` according to the skill, then validate with `page_info()`, screenshots, DOM reads, or local file inspection as appropriate.
+4. If the harness requires user action, such as approving Chrome remote debugging, pause and ask for that action instead of falling back to static/headless tooling.
+5. After saving a file, validate the local artifact by reading/extracting it from disk and confirming it contains the expected title, role, company, or other task-specific evidence.
 
 Authentication (when not using MCP):
 - Jira / Confluence: HTTP Basic Auth with the service-specific `*_EMAIL` as username and `*_API_TOKEN` as password. Use `*_BASE_URL` as the host — never construct URLs from scratch.
