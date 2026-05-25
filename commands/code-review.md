@@ -67,24 +67,7 @@ Do not review the diff in isolation. A change that looks correct in a hunk may b
 
 If a change modifies an interface, type, config key, or export, use `git ls-tree` and `git show` (with the resolved feature ref) to read all files that import or consume it and verify they remain compatible.
 
-### 2. Gather Organizational Context
-
-If an Unblocked context engine tool is available (e.g., `unblocked_context_engine`), query it for context that a diff-based review would miss. If the tool is not available, skip this step and proceed to step 3.
-
-Call the tool with:
-- `projectPath`: the current working directory
-- `question`: a query that includes the feature branch name and the list of changed files from step 1, asking for:
-  - Team standards or conventions documented in wikis or knowledge bases
-  - Relevant past PR discussions, reviewer feedback, or decisions
-  - Related Slack or messaging threads about these modules or patterns
-  - Known issues, tickets, or constraints from issue trackers
-  - Architectural decisions or design rationale from any source
-
-Focus the query on what reviewers need to know that is NOT visible in the diff itself.
-
-Save the response as the **ORGANIZATIONAL CONTEXT** for use in step 3.
-
-### 3. Evaluate Each Change
+### 2. Evaluate Each Change
 For each changed hunk, use your understanding of the full file and its dependents to assess the change. Identify how inputs are derived, how outputs are consumed, and whether the change introduces side effects.
 
 Assess against these criteria (mark N/A if not applicable to this change):
@@ -106,9 +89,7 @@ Assess against these criteria (mark N/A if not applicable to this change):
 | CI/CD | Pipeline integrity, dependency declarations, deployment strategy |
 | Code Quality | Consistent style, no hidden dependencies, tests and docs included |
 
-If ORGANIZATIONAL CONTEXT was gathered in step 2, treat it as authoritative team-specific guidance. Prefer organizational conventions over generic best practices when they conflict. Flag deviations from documented team standards as at least Minor.
-
-### 4. Apply "What Could Break" Lens
+### 3. Apply "What Could Break" Lens
 After evaluating each change against the criteria table, actively look for the failure modes below. If you already reported an issue from the criteria table that covers the same root cause, do not report it again here -- this lens is a second pass to catch what the table missed, not a source of duplicates.
 - **Input boundaries**: Unvalidated or partially validated inputs, missing type guards, unhandled null/undefined
 - **Edge cases**: Empty collections, concurrent access, off-by-one, boundary values
@@ -119,12 +100,12 @@ After evaluating each change against the criteria table, actively look for the f
 
 For each item, check the full file and related files using `git show` -- not just the diff hunk. If the change introduces a new function, read its callers. If it modifies error handling, read the caller's catch blocks. If it changes a type, read all consumers.
 
-### 5. Preserve Branch Intent
+### 4. Preserve Branch Intent
 Identify the core purpose of the branch from the diff (e.g., adding a new resource, introducing an integration, implementing a feature). Issues that recommend **replacing or removing** the fundamental approach -- rather than improving it -- must be labeled **Advisory** and placed under Enhancement, not Critical or Major. A finding is Advisory when the only fix is to abandon the approach the branch exists to implement.
 
 Critical and Major findings must be **actionable within the current approach**. For example, if the branch introduces an externally-imported certificate, "add lifecycle protections" is actionable; "import the certificate outside Terraform instead" is Advisory because it negates the branch's purpose.
 
-### 6. Format Issues
+### 5. Format Issues
 For each issue:
 ```
 - File: `<path>:<line-range>`

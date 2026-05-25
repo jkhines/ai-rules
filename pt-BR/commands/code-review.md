@@ -67,24 +67,7 @@ Não analise o diff isoladamente. Uma alteração que pareça correta em um trec
 
 Se uma alteração modificar uma interface, tipo, chave de configuração ou exportação, use `git ls-tree` e `git show` (com a referência de recurso resolvida) para ler todos os arquivos que a importam ou consomem e verificar se eles permanecem compatíveis.
 
-### 2. Reúna o contexto organizacional
-
-Se uma ferramenta do mecanismo de contexto Unblocked estiver disponível (por exemplo, `unblocked_context_engine`), consulte-a para obter o contexto que uma revisão baseada em diffs deixaria passar. Se a ferramenta não estiver disponível, pule esta etapa e prossiga para a etapa 3.
-
-Chame a ferramenta com:
-- `projectPath`: o diretório de trabalho atual
-- `question`: uma consulta que inclua o nome do branch de recurso e a lista de arquivos alterados da etapa 1, solicitando:
-  - Padrões ou convenções da equipe documentados em wikis ou bases de conhecimento
-  - Discussões relevantes de PRs anteriores, feedback de revisores ou decisões
-  - Tópicos relacionados no Slack ou em mensagens sobre esses módulos ou padrões
-  - Problemas conhecidos, tickets ou restrições de rastreadores de problemas
-  - Decisões arquitetônicas ou justificativas de design de qualquer fonte
-
-Concentre a consulta no que os revisores precisam saber que NÃO está visível no próprio diff.
-
-Salve a resposta como **CONTEXTO ORGANIZACIONAL** para uso na etapa 3.
-
-### 3. Avalie cada alteração
+### 2. Avalie cada alteração
 Para cada trecho alterado, use seu entendimento do arquivo completo e de seus dependentes para avaliar a alteração. Identifique como as entradas são derivadas, como as saídas são consumidas e se a alteração introduz efeitos colaterais.
 
 Avalie com base nestes critérios (marque N/A se não for aplicável a esta alteração):
@@ -106,9 +89,7 @@ Avalie com base nestes critérios (marque N/A se não for aplicável a esta alte
 | CI/CD | Integridade do pipeline, declarações de dependências, estratégia de implantação |
 | Qualidade do código | Estilo consistente, sem dependências ocultas, testes e documentação incluídos |
 
-Se o CONTEXTO ORGANIZACIONAL foi coletado na etapa 2, trate-o como orientação oficial específica da equipe. Prefira as convenções organizacionais em vez de práticas recomendadas genéricas quando houver conflito. Sinalize desvios dos padrões documentados da equipe como, no mínimo, Menores.
-
-### 4. Aplique a lente “O que poderia dar errado”
+### 3. Aplique a lente “O que poderia dar errado”
 Após avaliar cada alteração em relação à tabela de critérios, procure ativamente pelos modos de falha abaixo. Se você já relatou um problema da tabela de critérios que abrange a mesma causa raiz, não o relate novamente aqui — essa lente é uma segunda verificação para detectar o que a tabela deixou passar, não uma fonte de duplicatas.
 - **Limites de entrada**: entradas não validadas ou parcialmente validadas, ausência de proteções de tipo, valores nulos/indefinidos não tratados
 - **Casos extremos**: coleções vazias, acesso simultâneo, erros de deslocamento de um, valores de limite
@@ -119,12 +100,12 @@ Após avaliar cada alteração em relação à tabela de critérios, procure ati
 
 Para cada item, verifique o arquivo completo e os arquivos relacionados usando `git show` — não apenas o trecho de diff. Se a alteração introduzir uma nova função, leia seus chamadores. Se modificar o tratamento de erros, leia os blocos catch do chamador. Se alterar um tipo, leia todos os consumidores.
 
-### 5. Preservar a intenção do branch
+### 4. Preservar a intenção do branch
 Identifique o objetivo principal do branch a partir do diff (por exemplo, adicionar um novo recurso, introduzir uma integração, implementar um recurso). Problemas que recomendam **substituir ou remover** a abordagem fundamental — em vez de melhorá-la — devem ser rotulados como **Recomendatórios** e colocados em Melhorias, não em Críticos ou Graves. Uma constatação é Recomendatória quando a única correção é abandonar a abordagem que o branch existe para implementar.
 
 As descobertas Críticas e Graves devem ser **exequíveis dentro da abordagem atual**. Por exemplo, se o branch introduz um certificado importado externamente, “adicionar proteções de ciclo de vida” é exequível; “importar o certificado fora do Terraform” é Consultivo porque nega o propósito do branch.
 
-### 6. Formato das questões
+### 5. Formato das questões
 Para cada questão:
 ```
 - Arquivo: `<path>:<line-range>`

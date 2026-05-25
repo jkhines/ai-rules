@@ -49,7 +49,7 @@ Before ANY interaction with a third-party service or API, follow this resolution
 ### 1. Prefer MCP servers
 If an MCP server is available for the service (check available tools via `ToolSearch`), use it. MCP servers handle authentication, pagination, and API versioning automatically. Do not fall back to direct API calls when an MCP tool can accomplish the task.
 
-**Jira and Confluence:** Always use the `Atlassian-MCP-Server` tools (e.g., `searchJiraIssuesUsingJql`, `getJiraIssue`, `getConfluencePage`, `searchConfluenceUsingCql`). Never use the Jira/Confluence environment variables or direct REST API calls when the Atlassian MCP server is available. Do not use Unblocked tools (`data_retrieval`, `research_task`, `unblocked_context_engine`) for Jira or Confluence queries that the Atlassian MCP server can handle directly.
+**Jira and Confluence:** Always use the `Atlassian-MCP-Server` tools (e.g., `searchJiraIssuesUsingJql`, `getJiraIssue`, `getConfluencePage`, `searchConfluenceUsingCql`). Never use the Jira/Confluence environment variables or direct REST API calls when the Atlassian MCP server is available.
 
 ### 2. Fall back to environment variables and direct API calls
 If no MCP server covers the needed operation:
@@ -77,7 +77,6 @@ Environment variables — use these for their respective services:
 | Auth0 (dev) | `AUTH0_DEV_CLIENT_ID`, `AUTH0_DEV_CLIENT_SECRET`, `AUTH0_DEV_DOMAIN` |
 | Auth0 (prod) | `AUTH0_PROD_CLIENT_ID`, `AUTH0_PROD_CLIENT_SECRET`, `AUTH0_PROD_DOMAIN` |
 | AWS | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION` |
-| Unblocked | `UNBLOCKED_API_TOKEN` |
 
 General rules:
 - Assume Cloud-hosted versions of all services unless told otherwise.
