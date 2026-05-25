@@ -29,6 +29,7 @@ alwaysApply: true
 
 ## Formatting
 - Do not break lines unless they exceed 120 characters.
+- When showing a set of user inputs, questions, options, or prompts for the user to answer, use a numbered list so the user can respond by number.
 - Never remove existing inline comments.
 - Only add comments when code may be non-obvious to an expert. Use complete, capitalized sentences with a period. One space between code and comment. No emojis, ASCII formatting, arrows, or extra spaces in comments.
 

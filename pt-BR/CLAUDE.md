@@ -10,7 +10,7 @@ sempreAplicar: true
 - Limite-se estritamente ao problema real do usuário e aos requisitos do repositório atual.
 - Antes de apresentar qualquer opção, verifique se ela se aplica a esta base de código e se não contradiz a documentação da fonte ou da plataforma.
 - Exclua opções irrelevantes ou inviáveis, a menos que o usuário peça explicitamente alternativas, comparações ou contexto.
-- Apenas apresente conclusões nas quais você tenha mais de 90% de confiança. Se for menos de 90%, indique o que as evidências mostram e o que você não sabe. Nunca adivinhe ações tomadas por outros ou causas não diretamente comprovadas por evidências.
+- Apenas apresente conclusões nas quais você tenha mais de 90% de certeza. Se for menos de 90%, indique o que as evidências mostram e o que você não sabe. Nunca adivinhe ações tomadas por outros ou causas não diretamente comprovadas por evidências.
 - **Fundamentação das evidências — OBRIGATÓRIO:** Toda afirmação factual deve ser rastreável a uma fonte específica (documento, página, resposta de API, resultado de pesquisa, código ou declaração explícita do usuário). Siga estas regras sem exceção:
   1. **Nunca extrapole o escopo a partir de evidências limitadas.** Um POC, avaliação, repositório ou configuração não prova adoção, um padrão ou uso generalizado. Indique apenas o que a fonte diz explicitamente.
   2. **Nunca apresente inferências, deduções ou sínteses como fatos estabelecidos.** Se você combinou vários sinais fracos para chegar a uma conclusão, diga isso e identifique-a como inferência.
@@ -29,17 +29,18 @@ sempreAplicar: true
 
 ## Formatação
 - Não quebre linhas, a menos que excedam 120 caracteres.
+- Ao mostrar um conjunto de entradas do usuário, perguntas, opções ou solicitações para o usuário responder, use uma lista numerada para que o usuário possa responder por número.
 - Nunca remova comentários embutidos existentes.
-- Adicione comentários apenas quando o código possa não ser óbvio para um especialista. Use frases completas, em maiúsculas e com ponto final. Um espaço entre o código e o comentário. Sem emojis, formatação ASCII, setas ou espaços extras nos comentários.
+- Adicione comentários apenas quando o código não for óbvio para um especialista. Use frases completas, em maiúsculas e com ponto final. Deixe um espaço entre o código e o comentário. Não use emojis, formatação ASCII, setas ou espaços extras nos comentários.
 
 ## Programação
 - Use yarn e uv, não npm e pip.
-- Para alterações substanciais (não linhas de código triviais), use TDD red-green-refactor:
-  1. Indique como você verificará a alteração (prefira um teste automatizado; recorra à verificação via bash ou navegador apenas quando a automação for impraticável).
-  2. Escreva primeiro o teste ou a verificação e execute-o para confirmar que falha.
+- Para alterações substanciais (não linhas de código triviais), use TDD (Test-Driven Development) com o ciclo vermelho-verde-refatoração:
+  1. Defina como você verificará a alteração (prefira um teste automatizado; recorra à verificação via bash ou navegador apenas quando a automação for impraticável).
+  2. Escreva o teste ou a verificação primeiro e execute-o para confirmar que ele falha.
   3. Implemente o código.
   4. Execute a verificação e itere até que ela seja aprovada.
-  5. Refatore com a verificação ainda sendo aprovada.
+  5. Refatore com a verificação ainda aprovada.
 
 ## Sistemas externos — OBRIGATÓRIO
 
@@ -48,7 +49,7 @@ Antes de QUALQUER interação com um serviço ou API de terceiros, siga esta ord
 ### 1. Prefira servidores MCP
 Se um servidor MCP estiver disponível para o serviço (verifique as ferramentas disponíveis via `ToolSearch`), use-o. Os servidores MCP lidam com autenticação, paginação e controle de versão da API automaticamente. Não recorra a chamadas diretas de API quando uma ferramenta MCP puder realizar a tarefa.
 
-**Jira e Confluence:** Sempre use as ferramentas `Atlassian-MCP-Server` (por exemplo, `searchJiraIssuesUsingJql`, `getJiraIssue`, `getConfluencePage`, `searchConfluenceUsingCql`). Nunca use as variáveis de ambiente do Jira/Confluence ou chamadas diretas à API REST quando o servidor MCP da Atlassian estiver disponível. Não use ferramentas Unblocked (`data_retrieval`, `research_task`, `unblocked_context_engine`) para consultas do Jira ou Confluence que o servidor Atlassian MCP possa processar diretamente.
+**Jira e Confluence:** Sempre use as ferramentas `Atlassian-MCP-Server` (por exemplo, `searchJiraIssuesUsingJql`, `getJiraIssue`, `getConfluencePage`, `searchConfluenceUsingCql`). Nunca use as variáveis de ambiente do Jira/Confluence ou chamadas diretas à API REST quando o servidor MCP da Atlassian estiver disponível. Não use ferramentas do Unblocked (`data_retrieval`, `research_task`, `unblocked_context_engine`) para consultas do Jira ou Confluence que o servidor Atlassian MCP possa processar diretamente.
 
 ### 2. Recorra às variáveis de ambiente e chamadas diretas à API
 Se nenhum servidor MCP cobrir a operação necessária:
@@ -95,13 +96,13 @@ Aciona isso imediatamente após qualquer um destes sinais:
 
 Quando acionado:
 1. Pare de tentar novamente com ferramentas pré-treinadas/padrão, como `WebFetch`, `WebSearch`, `curl`, clientes HTTP ad hoc ou uma nova sessão headless do Playwright.
-2. Leia e use a habilidade `browser-harness`. Ela se conecta à sessão real existente do navegador; não inicie um navegador separado, a menos que essa habilidade instrua explicitamente isso.
+2. Leia e use a habilidade `browser-harness`. Ela se conecta à sessão real existente do navegador; não inicie um navegador separado, a menos que essa habilidade o instrua explicitamente.
 3. Use `new_tab()` ou `ensure_real_tab()` de acordo com a habilidade e, em seguida, valide com `page_info()`, capturas de tela, leituras de DOM ou inspeção de arquivos locais, conforme apropriado.
 4. Se o harness exigir uma ação do usuário, como aprovar a depuração remota do Chrome, pause e solicite essa ação em vez de recorrer a ferramentas estáticas/headless.
 5. Após salvar um arquivo, valide o artefato local lendo-o/extraindo-o do disco e confirmando se ele contém o título, a função, a empresa ou outras evidências específicas da tarefa esperadas.
 
 Autenticação (quando não estiver usando o MCP):
-- Jira / Confluence: Autenticação HTTP Basic com o `*_EMAIL` específico do serviço como nome de usuário e `*_API_TOKEN` como senha. Use `*_BASE_URL` como host — nunca construa URLs do zero.
+- Jira / Confluence: Autenticação HTTP Básica com o `*_EMAIL` específico do serviço como nome de usuário e `*_API_TOKEN` como senha. Use `*_BASE_URL` como host — nunca construa URLs do zero.
 - GitHub: Prefira a CLI `gh` para todas as operações. Recorra à API bruta com `GITHUB_PAT` como token Bearer apenas quando `gh` não puder realizar a tarefa.
 - SonarQube: `SONAR_TOKEN` como token Bearer.
 - Auth0: ID do cliente, segredo do cliente e domínio para o ambiente apropriado (sb/dev/prod).
