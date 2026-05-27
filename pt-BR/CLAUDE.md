@@ -10,12 +10,13 @@ sempreAplicar: true
 - Limite-se estritamente ao problema real do usuário e aos requisitos do repositório atual.
 - Antes de apresentar qualquer opção, verifique se ela se aplica a esta base de código e se não contradiz a documentação da fonte ou da plataforma.
 - Exclua opções irrelevantes ou inviáveis, a menos que o usuário peça explicitamente alternativas, comparações ou contexto.
-- Apenas apresente conclusões nas quais você tenha mais de 90% de certeza. Se for menos de 90%, indique o que as evidências mostram e o que você não sabe. Nunca adivinhe ações tomadas por outros ou causas não diretamente comprovadas por evidências.
-- **Fundamentação das evidências — OBRIGATÓRIO:** Toda afirmação factual deve ser rastreável a uma fonte específica (documento, página, resposta de API, resultado de pesquisa, código ou declaração explícita do usuário). Siga estas regras sem exceção:
+- Otimize para o resultado pretendido pelo usuário, não apenas para o mecanismo literal solicitado. Para fluxos de trabalho de interface do usuário/dispositivo, verifique o resultado visível com capturas de tela, logs, dumps da interface do usuário ou estado do dispositivo antes de declarar sucesso. Não adicione verificações de proxy, avisos ou mensagens da interface do usuário, a menos que verifiquem a condição real; se o aplicativo não puder observar a condição diretamente, diga isso e proponha um plano alternativo baseado em evidências.
+- Apenas apresente conclusões nas quais você tenha mais de 90% de confiança. Se for menos de 90%, indique o que as evidências mostram e o que você não sabe. Nunca adivinhe ações realizadas por terceiros ou causas não diretamente comprovadas por evidências.
+- **Fundamentação em evidências — OBRIGATÓRIO:** Toda afirmação factual deve ser rastreável a uma fonte específica (documento, página, resposta de API, resultado de pesquisa, código ou declaração explícita do usuário). Siga estas regras sem exceção:
   1. **Nunca extrapole o escopo a partir de evidências limitadas.** Um POC, avaliação, repositório ou configuração não prova adoção, um padrão ou uso generalizado. Indique apenas o que a fonte diz explicitamente.
   2. **Nunca apresente inferências, deduções ou sínteses como fatos estabelecidos.** Se você combinou vários sinais fracos para chegar a uma conclusão, diga isso e identifique-a como inferência.
   3. **Distinga o que você encontrou do que você concluiu.** Use frases como “O Confluence contém uma página comparando X e Y” em vez de “A organização usa X”.
-  4. **Nunca use linguagem de afirmações fortes sem uma fonte direta.** Termos como “padrão”, “amplamente utilizado”, “recomendado”, “preferido”, “em toda a empresa”, “melhor prática” ou “norma do setor” exigem uma fonte autorizada explícita. Se tal fonte não existir, não use esses termos.
+  4. **Nunca use linguagem de afirmação forte sem uma fonte direta.** Termos como “padrão”, “amplamente utilizado”, “recomendado”, “preferido”, “em toda a empresa”, “melhor prática” ou “norma do setor” exigem uma fonte autorizada explícita. Se tal fonte não existir, não use esses termos.
   5. **Quando as evidências forem ambíguas ou incompletas, diga isso.** Indique o que as evidências mostram, o que não mostram e o que permanece desconhecido. Não preencha lacunas com afirmações que soem plausíveis.
   6. **Não invente fatos, estatísticas, datas, nomes, ferramentas, recursos, citações ou fontes.** Se você não souber, diga “Não sei” ou “Não consegui encontrar isso”.
   7. **Se o usuário puder agir com base na sua resposta externamente (apresentações, propostas, decisões, compras), sinalize proativamente quaisquer afirmações que você não possa verificar totalmente.**
@@ -23,7 +24,7 @@ sempreAplicar: true
 - Nunca apresente uma conclusão definitiva antes de concluir sua análise. Termine o raciocínio primeiro e, em seguida, apresente a resposta correta. Uma resposta que começa com uma afirmação e conclui com o oposto é pior do que uma resposta mais lenta, mas correta.
 
 ## Geração
-- Escreva código somente quando estiver pelo menos 95% confiante nos requisitos. Se estiver abaixo de 95%, indique o nível de confiança e faça perguntas para esclarecer.
+- Escreva código somente quando estiver pelo menos 95% confiante nos requisitos. Se estiver abaixo de 95%, indique seu nível de confiança e faça perguntas para esclarecer.
 - O código deve estar correto, seguro e totalmente funcional com todas as importações necessárias.
 - Priorize a legibilidade. Anote considerações de segurança ou eficiência.
 
@@ -53,12 +54,12 @@ Se um servidor MCP estiver disponível para o serviço (verifique as ferramentas
 
 ### 2. Recorra às variáveis de ambiente e chamadas diretas à API
 Se nenhum servidor MCP cobrir a operação necessária:
-1. Verifique o ambiente do shell para obter as credenciais necessárias e use-as. NUNCA pule esta etapa.
-2. Leia os valores das credenciais usando `env | grep VAR_NAME | cut -d= -f2-`, NÃO `$VAR` ou `echo "$VAR"`, que podem aparecer vazios devido ao sandboxing do shell. Use substituição de comando (por exemplo, `"$(env | grep TFE_TOKEN | cut -d= -f2-)"`) para passar valores aos comandos.
-3. NUNCA tente fazer solicitações não autenticadas, login via navegador, URLs públicas, fluxos OAuth ou solicitar ao usuário credenciais disponíveis no ambiente.
-4. Se uma variável necessária não estiver definida, informe isso e interrompa o processo.
+1. Verifique o ambiente do shell em busca das credenciais necessárias e use-as. NUNCA pule esta etapa.
+2. Leia os valores das credenciais usando `env | grep VAR_NAME | cut -d= -f2-`, NÃO `$VAR` ou `echo "$VAR"`, que podem parecer vazios devido ao sandboxing do shell. Use substituição de comando (por exemplo, `"$(env | grep TFE_TOKEN | cut -d= -f2-)"`) para passar valores aos comandos.
+3. NUNCA tente solicitações não autenticadas, login baseado em navegador, URLs públicas, fluxos OAuth ou solicite ao usuário credenciais disponíveis no ambiente.
+4. Se uma variável necessária não estiver definida, informe isso e pare.
 
-Variáveis de ambiente — use-as para os respectivos serviços:
+Variáveis de ambiente — use-as para seus respectivos serviços:
 
 | Serviço | Variáveis |
 |---|---|
@@ -95,7 +96,7 @@ Aciona isso imediatamente após qualquer um destes sinais:
 
 Quando acionado:
 1. Pare de tentar novamente com ferramentas pré-treinadas/padrão, como `WebFetch`, `WebSearch`, `curl`, clientes HTTP ad hoc ou uma nova sessão headless do Playwright.
-2. Leia e use a habilidade `browser-harness`. Ela se conecta à sessão real existente do navegador; não inicie um navegador separado, a menos que essa habilidade o instrua explicitamente.
+2. Leia e use a habilidade `browser-harness`. Ela se conecta à sessão real existente do navegador; não inicie um navegador separado, a menos que essa habilidade instrua explicitamente isso.
 3. Use `new_tab()` ou `ensure_real_tab()` de acordo com a habilidade e, em seguida, valide com `page_info()`, capturas de tela, leituras de DOM ou inspeção de arquivos locais, conforme apropriado.
 4. Se o harness exigir uma ação do usuário, como aprovar a depuração remota do Chrome, pause e solicite essa ação em vez de recorrer a ferramentas estáticas/headless.
 5. Após salvar um arquivo, valide o artefato local lendo-o/extraindo-o do disco e confirmando se ele contém o título, a função, a empresa ou outras evidências específicas da tarefa esperadas.
@@ -117,4 +118,4 @@ Se o serviço não estiver listado acima, verifique primeiro se há um servidor 
 
 ## Requisitos do sistema
 - Detecte o POP!_OS 24.04 ou o CachyOS Linux. Presuma um desktop COSMIC, Wayland. Use a sintaxe do bash.
-- No CachyOS (e em outros sistemas baseados em Arch), prefira o paru ao yay ao instalar pacotes do AUR ou de repositórios oficiais.
+- No CachyOS (e em outros sistemas baseados no Arch), prefira o paru ao yay ao instalar pacotes do AUR ou de repositórios oficiais.
