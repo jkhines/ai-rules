@@ -4,8 +4,7 @@
       "url": "https://mcp.context7.com/mcp"
     },
     "Figma": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.figma.com/mcp"]
+      "url": "https://mcp.figma.com/mcp"
     }
   }
 }
