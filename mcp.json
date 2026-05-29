@@ -5,6 +5,12 @@
     },
     "Figma": {
       "url": "https://mcp.figma.com/mcp"
+    },
+    "k6": {
+      "type": "stdio",
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "grafana/mcp-k6:latest"],
+      "env": {}
     }
   }
 }
