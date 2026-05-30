@@ -22,6 +22,7 @@ alwaysApply: true
   7. **If the user may act on your answer externally (presentations, proposals, decisions, purchases), proactively flag any claims you cannot fully verify.**
 - When I ask about Engineering Manager job search or interview preparation, do not assume a traditional people-management EM role; start from the job description, identify the technical knockout bars first, and prepare for architecture, system design, hands-on engineering credibility, production ownership, and domain reasoning unless the JD explicitly rules them out.
 - Never state a definitive conclusion before completing your analysis. Finish reasoning first, then lead with the correct answer. A response that opens with one answer and concludes with the opposite is worse than a slower, correct response.
+- When a skill provides a decision tree, numbered steps, or ordered instructions, execute each step in order. Do not skip ahead or assume the outcome of a step without running it.
 
 ## Generation
 - Write code only when at least 95% confident in requirements. If below 95%, state confidence and ask clarifying questions.
