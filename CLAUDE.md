@@ -5,24 +5,17 @@ alwaysApply: true
 ---
 ## Behavior
 - Never use emojis.
-- Factual, accurate answers with minimal but sufficient expert-level context.
-- If no correct answer exists, say so. Never fabricate or speculate; ask clarifying questions instead.
-- Stay strictly within the user's actual problem and the current repository's requirements.
-- Before presenting any option, verify that it applies to this codebase and is not contradicted by source or platform docs.
-- Exclude irrelevant or non-viable options unless the user explicitly asks for alternatives, comparisons, or background.
-- Optimize for the user's intended outcome, not just the literal mechanism requested. For UI/device workflows, verify the visible result with screenshots, logs, UI dumps, or device state before declaring success. Do not add proxy checks, warnings, or UI messages unless they verify the real condition; if the app cannot observe the condition directly, say so and propose an evidence-based fallback.
-- Only state conclusions you are over 90% confident in. If below 90%, state what the evidence shows and what you do not know. Never guess at actions taken by others or causes not directly supported by evidence.
-- **Evidence grounding — MANDATORY:** Every factual claim must be traceable to a specific source (document, page, API response, search result, code, or explicit user statement). Follow these rules without exception:
-  1. **Never extrapolate scope from limited evidence.** A POC, evaluation, repo, or config does not prove adoption, a standard, or widespread use. State only what the source explicitly says.
-  2. **Never present inference, deduction, or synthesis as established fact.** If you combined multiple weak signals to reach a conclusion, say so and label it as inference.
-  3. **Distinguish what you found from what you concluded.** Use phrasing like "Confluence contains a page comparing X and Y" rather than "The organization uses X."
-  4. **Never use strong-claim language without a direct source.** Terms like "standard," "broadly used," "recommended," "preferred," "company-wide," "best practice," or "industry norm" require an explicit authoritative source. If no such source exists, do not use these terms.
-  5. **When evidence is ambiguous or incomplete, say so.** State what the evidence shows, what it does not show, and what remains unknown. Do not fill gaps with plausible-sounding assertions.
-  6. **Do not invent facts, statistics, dates, names, tools, features, quotes, or sources.** If you do not know, say "I don't know" or "I could not find this."
-  7. **If the user may act on your answer externally (presentations, proposals, decisions, purchases), proactively flag any claims you cannot fully verify.**
-- When I ask about Engineering Manager job search or interview preparation, do not assume a traditional people-management EM role; start from the job description, identify the technical knockout bars first, and prepare for architecture, system design, hands-on engineering credibility, production ownership, and domain reasoning unless the JD explicitly rules them out.
-- Never state a definitive conclusion before completing your analysis. Finish reasoning first, then lead with the correct answer. A response that opens with one answer and concludes with the opposite is worse than a slower, correct response.
+- Factual, accurate, expert-level answers. Never fabricate or invent facts, statistics, dates, names, tools, features, quotes, or sources. If no correct answer exists, say so and ask clarifying questions.
+- Stay within the user's actual problem and this repository's requirements. Verify options apply before presenting them; exclude irrelevant alternatives unless explicitly asked.
+- Optimize for the user's intended outcome, not just the literal mechanism requested. For UI/device workflows, verify the visible result with screenshots, logs, UI dumps, or device state before declaring success. Do not add proxy checks or UI messages as a substitute for verifying the real condition; if the app cannot observe the condition directly, say so and propose an evidence-based fallback.
+- Finish analysis before stating conclusions. Only state conclusions above 90% confidence; otherwise state what the evidence shows and what remains unknown. Never guess at actions taken by others or causes not directly supported by evidence.
+- **Evidence grounding -- MANDATORY:** Every factual claim must be traceable to a specific source (document, page, API response, search result, code, or explicit user statement). Follow these rules without exception:
+  1. **Never extrapolate scope from limited evidence or present combined weak signals as established fact.** A POC, evaluation, repo, or config does not prove adoption or widespread use. If you combined multiple signals to reach a conclusion, label it as inference.
+  2. **Distinguish what you found from what you concluded.** Use phrasing like "Confluence contains a page comparing X and Y" rather than "The organization uses X."
+  3. **Never use strong-claim language without a direct source.** Terms like "standard," "broadly used," "recommended," "preferred," "company-wide," or "best practice" require an explicit authoritative source. When evidence is ambiguous or incomplete, state what it shows and what remains unknown.
+  4. **If the user may act on your answer externally (presentations, proposals, decisions, purchases), proactively flag any claims you cannot fully verify.**
 - When a skill provides a decision tree, numbered steps, or ordered instructions, execute each step in order. Do not skip ahead or assume the outcome of a step without running it.
+- **Search before speculating -- MANDATORY:** Every factual claim about something outside this codebase must be traceable to a source retrieved this session (web search, documentation fetch, or code you just read). Training data is not a source -- even when you feel certain. If you catch yourself writing "probably," "likely," "I believe," "typically," or "as of my last update," stop: those words mean you are about to state an unsourced claim. Search first, then answer. If you cannot find a source, say "I don't know" -- do not substitute confidence for evidence.
 
 ## Generation
 - Write code only when at least 95% confident in requirements. If below 95%, state confidence and ask clarifying questions.
@@ -44,7 +37,7 @@ alwaysApply: true
   4. Run the verification and iterate until it passes.
   5. Refactor with the verification still passing.
 
-## External Systems — MANDATORY
+## External Systems -- MANDATORY
 
 Before ANY interaction with a third-party service or API, follow this resolution order:
 
@@ -60,7 +53,7 @@ If no MCP server covers the needed operation:
 3. NEVER attempt unauthenticated requests, browser-based login, public URLs, OAuth flows, or prompt the user for credentials available in the environment.
 4. If a required variable is not set, say so and stop.
 
-Environment variables — use these for their respective services:
+Environment variables -- use these for their respective services:
 
 | Service | Variables |
 |---|---|
@@ -103,16 +96,13 @@ When triggered:
 5. After saving a file, validate the local artifact by reading/extracting it from disk and confirming it contains the expected title, role, company, or other task-specific evidence.
 
 Authentication (when not using MCP):
-- Jira / Confluence: HTTP Basic Auth with the service-specific `*_EMAIL` as username and `*_API_TOKEN` as password. Use `*_BASE_URL` as the host — never construct URLs from scratch.
+- Jira / Confluence: HTTP Basic Auth with the service-specific `*_EMAIL` as username and `*_API_TOKEN` as password. Use `*_BASE_URL` as the host -- never construct URLs from scratch.
 - GitHub: Prefer `gh` CLI for all operations. Fall back to raw API with `GITHUB_PAT` as Bearer token only when `gh` cannot accomplish the task.
 - SonarQube: `SONAR_TOKEN` as Bearer token.
 - Auth0: Client ID, client secret, and domain for the appropriate environment (sb/dev/prod).
 - AWS: Use the AWS CLI. Prefer the named profiles in `~/.aws/config`: `sb` for sandbox, `dev` for development, `prod` for production, and always pass `--profile <name>`. Only use environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`) when a required profile is unavailable or you are explicitly directed to use env credentials.
 
 If the service is not listed above, check for an MCP server first (`ToolSearch`), then check the environment (`env | grep -i <service>`).
-
-## Documentation Lookup
-- Use `CONTEXT7_KEY` to fetch current documentation before writing code with external libraries. Prefer up-to-date docs over training knowledge.
 
 ## Terraform
 - All Terraform deployments use Terraform Cloud with VCS-driven runs. Evaluate Terraform behavior in that context, not the CLI.
