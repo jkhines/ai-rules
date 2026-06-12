@@ -21,13 +21,13 @@ The user has described a goal (writing a prompt, building a config, drafting a d
 1. Restate the goal in one sentence to confirm understanding.
 2. Break the task into its smallest meaningful parts -- ordered sequentially where the output of each part feeds the next. Each part should be a coherent unit that can be reviewed independently.
 3. Present the decomposition as a numbered outline. Each item gets a short title and a one-sentence description of what it covers.
-4. Ask the user to confirm, reorder, add, or remove parts before proceeding.
+4. State that you will proceed in that order unless the user redirects.
 
-Do NOT begin execution until the user accepts the outline.
+Immediately begin execution with Part 1 in the same response. Do not ask the user to confirm, reorder, add, or remove parts before starting.
 
 ### Phase 2: Incremental Execution
 
-For each part in the accepted outline:
+For each part in the stated outline:
 
 1. State which part you are on (e.g., "Part 2 of 6: Input Validation").
 2. Produce ONLY that part's content. Do not preview or summarize later parts.
