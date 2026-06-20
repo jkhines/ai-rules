@@ -1,11 +1,11 @@
 ---
-name: iterate
+command: /iterate
 description: >-
   Decompose a task into incremental parts, executing one at a time with user acceptance before proceeding.
   Use when the user says "let's iterate", "take this incrementally", "one piece at a time", "step by step",
   or otherwise indicates they want to work through a task incrementally rather than receiving the full output at once.
+alwaysApply: false
 ---
-
 # Iterate
 
 Execute the user's task incrementally through a structured call-and-response loop. Do not produce the full output at once. Instead, decompose, present, get acceptance, and proceed one piece at a time.
