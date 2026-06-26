@@ -49,7 +49,7 @@ Show the diff at the level of facts and options preserved, so the writer can ver
 - **Curly quotation marks**: A weak paste-from-chat signal, meaningful mainly in plain-text contexts (code comments, commit messages) where nothing auto-curls. Word, Google Docs, macOS, and iOS curl quotes by default, so most human prose has them. Don't flag curly apostrophes alone. Replace with straight quotes in plain-text/code; leave them in finished publications.
 
 ### Sentence structure
-- **"It's not X — it's Y" / "This isn't about X, it's about Y"** (negative parallelism): Rewrite as a direct positive statement. Max one per piece, and only if it serves the argument.
+- **"It's not X — it's Y" / "This isn't about X, it's about Y" / "X is not Y, it's Z"** (negative parallelism): Rewrite as a direct positive statement. Target: zero. Remove every instance, including the negated-clause-first and reversed ("Y, not X") variants. Never keep one, even when it appears to serve the argument.
 - **Hollow intensifiers**: Cut `genuine`/`genuinely`, `real` ("a real improvement"), `truly`, `quite frankly`, `to be honest`, `let's be clear`, `it's worth noting that`. State the fact.
 - **Vague endorsement ("worth [verb]ing")**: Cut or replace `worth reading`, `worth paying attention to`, `worth a look`, `worth exploring`. Say why it matters instead.
 - **Hedging**: Cut `perhaps`, `could potentially`, `it's important to note that`, `to be clear`. Make the point directly.
@@ -70,6 +70,7 @@ Words are organized into three tiers by how reliably they signal AI text. Match 
 |---|---|
 | delve / delve into | explore, dig into, look at |
 | landscape (metaphor) | field, space, industry, world |
+| stream / workstream (work-grouping metaphor) | area |
 | tapestry | (describe the actual complexity) |
 | realm | area, field, domain |
 | paradigm | model, approach, framework |
