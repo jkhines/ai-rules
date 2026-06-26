@@ -12,8 +12,28 @@ if [ ! -f "$MCP_FILE" ]; then
     exit 1
 fi
 
+# Start from this repo's public servers, then merge any extra source files named in the
+# MCP_EXTRA_SOURCES environment variable (colon-separated absolute paths). Those files hold
+# internal-only servers that must stay out of this public repo; later sources win on collisions.
+SOURCES=("$MCP_FILE")
+if [ -n "${MCP_EXTRA_SOURCES:-}" ]; then
+    IFS=':' read -ra EXTRA <<< "$MCP_EXTRA_SOURCES"
+    for f in "${EXTRA[@]}"; do
+        [ -n "$f" ] || continue
+        if [ -f "$f" ]; then
+            echo "Merging MCP servers from $f"
+            SOURCES+=("$f")
+        else
+            echo "WARN: MCP_EXTRA_SOURCES entry not found: $f"
+        fi
+    done
+fi
+
 # Convert Cursor format to Claude Code format: add "type": "http" to URL-based servers.
-MCP_SERVERS=$(jq '(.mcpServers // {}) | map_values(if has("url") and (has("type") | not) then . + {"type": "http"} else . end)' "$MCP_FILE")
+CONVERT='map_values(if has("url") and (has("type") | not) then . + {"type": "http"} else . end)'
+
+# Reduce all sources left-to-right so later (sibling) entries override earlier (public) ones.
+MCP_SERVERS=$(jq -s "(reduce .[] as \$s ({}; . + (\$s.mcpServers // {}))) | $CONVERT" "${SOURCES[@]}")
 
 if [ -f "$CLAUDE_FILE" ]; then
     jq --argjson servers "$MCP_SERVERS" '.mcpServers = $servers' "$CLAUDE_FILE" > "${CLAUDE_FILE}.tmp"
