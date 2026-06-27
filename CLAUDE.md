@@ -78,7 +78,15 @@ Authentication (when not using MCP):
 - AWS: use the AWS CLI with the named profiles in `~/.aws/config` (`sb`, `dev`, `prod`) and always pass `--profile <name>`. Use env credentials only when a profile is unavailable or I direct it.
 
 ### Real browser escalation
-When the visible rendered page is the source of truth (web pages, dashboards, forms, downloads, print/PDF flows), use the `browser-harness` skill instead of retrying static or headless tools. Trigger it on: 401/403/404/410/429 from `curl`, `WebFetch`, or Playwright when the page may still load in a real browser; bot detection, consent gates, interstitials, or content that differs from headless output; JavaScript-rendered or lazy-loaded content, client-side routing, hidden download links, or print dialogs (a passing `networkidle` or DOM read does not prove the visible content is correct); or any need to save, screenshot, or validate exactly what I would see. Then: stop retrying headless tools; read and use the skill (it connects to the existing browser -- do not launch a separate one unless it says to); validate with `page_info()`, screenshots, or DOM reads; if it needs me to act (e.g., approve remote debugging), pause and ask. After saving a file, re-read it from disk to confirm it contains the expected content.
+When the visible rendered page is the source of truth (web pages, dashboards, forms, downloads, print/PDF flows), use the `browser-harness` skill instead of retrying static or headless tools. Trigger it on: 401/403/404/410/429 from `curl`, `WebFetch`, or Playwright when the page may still load in a real browser; bot detection, consent gates, interstitials, or content that differs from headless output; JavaScript-rendered or lazy-loaded content, client-side routing, hidden download links, or print dialogs (a passing `networkidle` or DOM read does not prove the visible content is correct); or any need to save, screenshot, or validate exactly what I would see.
+
+Then:
+- Stop retrying headless tools; read and use the skill.
+- Connect to the existing browser; do not launch a separate one unless the skill says to.
+- Exception: if `browser-harness` hangs or `browser-harness --doctor` reports `chrome running` as `FAIL`, launch Chrome or Chromium to `chrome://inspect/#remote-debugging`, then retry.
+- If Chrome needs the remote debugging checkbox or permission popup, pause and ask me to approve it.
+- Validate with `page_info()`, screenshots, or DOM reads.
+- After saving a file, re-read it from disk to confirm it contains the expected content.
 
 ## Environment
 - Terraform: all deployments use Terraform Cloud with VCS-driven runs. Evaluate behavior in that context, not the CLI.
