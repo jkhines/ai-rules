@@ -30,11 +30,11 @@ link() {
     echo "Linked $dest -> $src"
 }
 
-# Sync MCP servers from mcp.json into .claude.json
-"$REPO_DIR/mcp.sh"
-
 # Ensure required scripts are executable in this clone.
 chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh"
+
+# Sync MCP servers from mcp.json into generated app configs.
+"$REPO_DIR/mcp.sh"
 
 # Ensure repository hooks are active for this clone.
 if git -C "$REPO_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -53,7 +53,7 @@ for file in "$REPO_DIR/commands/"*.md; do
 done
 
 # ~/.cursor
-link "$REPO_DIR/mcp.json" "$HOME/.cursor/mcp.json"
+link "$REPO_DIR/.cursor.mcp.json" "$HOME/.cursor/mcp.json"
 for file in "$REPO_DIR/commands/"*.md; do
     [ -e "$file" ] || continue
     link "$file" "$HOME/.cursor/commands/$(basename "$file")"
