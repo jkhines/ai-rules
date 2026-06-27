@@ -31,7 +31,7 @@ link() {
 }
 
 # Ensure required scripts are executable in this clone.
-chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh"
+chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/scripts/open-google-chrome-cdp.sh"
 
 # Sync MCP servers from mcp.json into generated app configs.
 "$REPO_DIR/mcp.sh"
@@ -58,5 +58,8 @@ for file in "$REPO_DIR/commands/"*.md; do
     [ -e "$file" ] || continue
     link "$file" "$HOME/.cursor/commands/$(basename "$file")"
 done
+
+# ~/.local/bin
+link "$REPO_DIR/scripts/open-google-chrome-cdp.sh" "$HOME/.local/bin/open-google-chrome-cdp.sh"
 
 echo "Done."

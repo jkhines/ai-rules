@@ -78,15 +78,34 @@ Authentication (when not using MCP):
 - AWS: use the AWS CLI with the named profiles in `~/.aws/config` (`sb`, `dev`, `prod`) and always pass `--profile <name>`. Use env credentials only when a profile is unavailable or I direct it.
 
 ### Real browser escalation
-When the visible rendered page is the source of truth (web pages, dashboards, forms, downloads, print/PDF flows), use the `browser-harness` skill instead of retrying static or headless tools. Trigger it on: 401/403/404/410/429 from `curl`, `WebFetch`, or Playwright when the page may still load in a real browser; bot detection, consent gates, interstitials, or content that differs from headless output; JavaScript-rendered or lazy-loaded content, client-side routing, hidden download links, or print dialogs (a passing `networkidle` or DOM read does not prove the visible content is correct); or any need to save, screenshot, or validate exactly what I would see.
+When the visible rendered page is the source of truth, use the `browser-harness` skill before any other browser,
+scraping, static fetch, or headless tool.
+Browser automation must use Google Chrome explicitly. Do not use Vivaldi, Firefox, or another browser as a substitute
+unless I explicitly override this requirement. Use `open-google-chrome-cdp.sh` to launch the controllable Chrome instance.
 
-Then:
-- Stop retrying headless tools; read and use the skill.
-- Connect to the existing browser; do not launch a separate one unless the skill says to.
-- Exception: if `browser-harness` hangs or `browser-harness --doctor` reports `chrome running` as `FAIL`, launch Chrome or Chromium to `chrome://inspect/#remote-debugging`, then retry.
-- If Chrome needs the remote debugging checkbox or permission popup, pause and ask me to approve it.
-- Validate with `page_info()`, screenshots, or DOM reads.
-- After saving a file, re-read it from disk to confirm it contains the expected content.
+Mandatory order:
+1. Read the `browser-harness` skill.
+2. Run `command -v open-google-chrome-cdp.sh` and stop if it is unavailable.
+3. Launch or reuse the controlled browser only through `open-google-chrome-cdp.sh <url>`.
+4. Use the printed `BU_CDP_WS=ws://...` value for every `browser-harness` command in that task.
+5. Do not rely on `browser-harness` default attachment, existing browser sessions, default browser handlers, or
+   Chromium-compatible browsers.
+6. If `browser-harness` opens or attaches to any non-Google-Chrome browser, stop immediately and report failure.
+7. Non-Google-Chrome browsers include Vivaldi, Chromium, Firefox, and any other Chrome-compatible browser.
+8. Run the requested browser action with `BU_CDP_WS="$ws" browser-harness` only after verifying the controlled browser
+   is Google Chrome.
+9. If `browser-harness` fails in any way, the very next command must be `browser-harness --doctor`.
+10. Failures include non-zero exit, traceback, import error, command not found, connection error, timeout, hang, or
+    unexpected daemon behavior.
+11. Before `browser-harness --doctor` has run, do not debug, patch, reinstall, inspect wrappers, or retry.
+12. Before `browser-harness --doctor` has run, do not use `curl`, `WebFetch`, Playwright, or another browser.
+13. If `browser-harness --doctor` reports `chrome running` as `FAIL`, run
+    `open-google-chrome-cdp.sh chrome://inspect/#remote-debugging`.
+14. After launching Chrome from the doctor step, retry the original `browser-harness` command with the script's printed
+    `BU_CDP_WS`.
+15. If Chrome asks for the remote debugging checkbox or permission popup, stop and ask me to approve it.
+16. Validate success with `page_info()`, screenshots, or DOM reads.
+17. After saving a file, re-read it from disk to confirm it contains the expected content.
 
 ## Environment
 - Terraform: all deployments use Terraform Cloud with VCS-driven runs. Evaluate behavior in that context, not the CLI.
