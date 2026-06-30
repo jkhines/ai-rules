@@ -71,6 +71,8 @@ Words are organized into three tiers by how reliably they signal AI text. Match 
 | delve / delve into | explore, dig into, look at |
 | landscape (metaphor) | field, space, industry, world |
 | stream / workstream (work-grouping metaphor) | area |
+| path / pathway (route/plan metaphor) | approach |
+| gate / gating (checkpoint metaphor) | prerequisite |
 | tapestry | (describe the actual complexity) |
 | realm | area, field, domain |
 | paradigm | model, approach, framework |
