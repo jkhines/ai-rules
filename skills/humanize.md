@@ -82,6 +82,7 @@ Words are organized into three tiers by how reliably they signal AI text. Match 
 | robust | strong, reliable, solid |
 | comprehensive | thorough, complete, full |
 | cutting-edge | latest, newest, advanced |
+| lane | area |
 | leverage (verb) | use |
 | pivotal | important, key, critical |
 | underscores | highlights, shows |

@@ -47,16 +47,16 @@ link "$REPO_DIR/.claude.json" "$HOME/.claude.json"
 
 # ~/.claude
 link "$REPO_DIR/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
-for file in "$REPO_DIR/commands/"*.md; do
+for file in "$REPO_DIR/skills/"*.md; do
     [ -e "$file" ] || continue
-    link "$file" "$HOME/.claude/commands/$(basename "$file")"
+    link "$file" "$HOME/.claude/skills/$(basename "$file")"
 done
 
 # ~/.cursor
 link "$REPO_DIR/.cursor.mcp.json" "$HOME/.cursor/mcp.json"
-for file in "$REPO_DIR/commands/"*.md; do
+for file in "$REPO_DIR/skills/"*.md; do
     [ -e "$file" ] || continue
-    link "$file" "$HOME/.cursor/commands/$(basename "$file")"
+    link "$file" "$HOME/.cursor/skills/$(basename "$file")"
 done
 
 # ~/.local/bin
