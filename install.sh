@@ -30,6 +30,27 @@ link() {
     echo "Linked $dest -> $src"
 }
 
+# Remove symlinks previously installed from this repository (including stale names/layouts).
+cleanup_repo_symlinks() {
+    local dir="$1"
+    local entry target
+
+    [ -d "$dir" ] || return 0
+
+    for entry in "$dir"/*; do
+        [ -e "$entry" ] || [ -L "$entry" ] || continue
+        [ -L "$entry" ] || continue
+
+        target="$(readlink "$entry")"
+        case "$target" in
+            "$REPO_DIR"/*)
+                rm "$entry"
+                echo "Removed stale link: $entry"
+                ;;
+        esac
+    done
+}
+
 # Ensure required scripts are executable in this clone.
 chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/scripts/open-google-chrome-cdp.sh"
 
@@ -46,17 +67,21 @@ fi
 link "$REPO_DIR/.claude.json" "$HOME/.claude.json"
 
 # ~/.claude
+mkdir -p "$HOME/.claude/skills"
+cleanup_repo_symlinks "$HOME/.claude/skills"
 link "$REPO_DIR/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
-for file in "$REPO_DIR/skills/"*.md; do
-    [ -e "$file" ] || continue
-    link "$file" "$HOME/.claude/skills/$(basename "$file")"
+for dir in "$REPO_DIR/skills/"*/; do
+    [ -e "$dir" ] || continue
+    link "$dir" "$HOME/.claude/skills/$(basename "$dir")"
 done
 
 # ~/.cursor
+mkdir -p "$HOME/.cursor/skills"
+cleanup_repo_symlinks "$HOME/.cursor/skills"
 link "$REPO_DIR/.cursor.mcp.json" "$HOME/.cursor/mcp.json"
-for file in "$REPO_DIR/skills/"*.md; do
-    [ -e "$file" ] || continue
-    link "$file" "$HOME/.cursor/skills/$(basename "$file")"
+for dir in "$REPO_DIR/skills/"*/; do
+    [ -e "$dir" ] || continue
+    link "$dir" "$HOME/.cursor/skills/$(basename "$dir")"
 done
 
 # ~/.local/bin

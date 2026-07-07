@@ -1,7 +1,6 @@
 ---
-command: /code-review
+name: code-review
 description: Reviews two branches and provides feedback
-alwaysApply: false
 ---
 Review code changes between two branches. By default, compare the current branch against `main`. The user may override either branch explicitly (e.g., `/code-review feature/auth dev`).
 

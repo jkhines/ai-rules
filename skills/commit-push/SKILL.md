@@ -1,7 +1,6 @@
 ---
-command: /commit-push
+name: commit-push
 description: Commits code changes following Conventional Commits v1.0.0 and validates branch naming
-alwaysApply: false
 ---
 
 ## Conventional Commits (v1.0.0)

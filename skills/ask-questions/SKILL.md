@@ -1,7 +1,6 @@
 ---
-command: /ask-questions
+name: ask-questions
 description: Systematic problem analysis and solution path optimization
-alwaysApply: false
 ---
 Act as a senior technical lead reviewing the user's problem and proposed approach. Provide comprehensive analysis for code implementation, systems design, or general problem-solving.
 

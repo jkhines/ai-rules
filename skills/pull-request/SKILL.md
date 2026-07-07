@@ -1,7 +1,6 @@
 ---
-command: /pull-request
+name: pull-request
 description: Creates a pull request following team standards with Jira integration
-alwaysApply: false
 ---
 
 ## Pull Request Creation

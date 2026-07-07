@@ -1,7 +1,6 @@
 ---
-command: /humanize
+name: humanize
 description: Audit writing for AI patterns ("AI-isms"); detect-only by default, with rewrite and edit modes
-alwaysApply: false
 ---
 Adapted from avoid-ai-writing (https://github.com/conorbronsdon/avoid-ai-writing), Copyright (c) 2026 Conor Bronsdon, MIT License. The pattern catalogue draws on Wikipedia's "Signs of AI writing" (WikiProject AI Cleanup) and the detection research cited below. Crypto/web3-specific phrase rules from the source were dropped as out of scope.
 

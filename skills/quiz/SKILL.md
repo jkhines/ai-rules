@@ -1,7 +1,6 @@
 ---
-command: /quiz
+name: quiz
 description: Build a mnemonic recall scaffold and quiz the user one question at a time
-alwaysApply: false
 ---
 # Quiz
 

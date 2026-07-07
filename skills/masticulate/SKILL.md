@@ -1,11 +1,10 @@
 ---
-command: /masticulate
+name: masticulate
 description: >-
   Work through an existing numbered list one item at a time: present each item, ask for changes,
   then ask whether to proceed. Use when the user says "masticulate", "go item by item",
   "walk through this list", or otherwise wants lightweight iteration over a list, diff, plan, or
   similar ordered items.
-alwaysApply: false
 ---
 # Masticulate
 

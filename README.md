@@ -9,14 +9,15 @@ Custom rules and commands for AI coding assistants including Claude Code, Cursor
   - Note: These settings can also be copy-pasted into the Cursor IDE in order to apply globally.
 - **CHATGPT.md** - Concise rules for ChatGPT emphasizing direct, brief responses.
 
-### Commands
-- **commands/ask-questions.md** - `/ask-questions`: Systematic problem analysis and solution path optimization.
-- **commands/code-review.md** - `/code-review`: Reviews changes between two branches with prioritized feedback.
-- **commands/commit-push.md** - `/commit-push`: Commits and pushes changes following Conventional Commits v1.0.0.
-- **commands/feature-branch.md** - `/feature-branch`: Creates and checks out a Git feature branch from a ticket title.
-- **commands/quiz.md** - `/quiz`: Builds a mnemonic recall scaffold and quizzes one prompt at a time.
-- **commands/pull-request.md** - `/pull-request`: Creates a PR with summary, test plan, and linked context.
-- **commands/spawn.md** - `/spawn`: Runs model-parallel delegated tasks with strict file outputs and optional fix implementation.
+### Skills
+- **skills/ask-questions/** - Systematic problem analysis and solution path optimization.
+- **skills/code-review/** - Reviews changes between two branches with prioritized feedback.
+- **skills/commit-push/** - Commits and pushes changes following Conventional Commits v1.0.0.
+- **skills/feature-branch/** - Creates and checks out a Git feature branch from a Jira ticket.
+- **skills/humanize/** - Audits writing for AI patterns; detect, rewrite, or edit modes.
+- **skills/masticulate/** - Walks through an existing numbered list one item at a time.
+- **skills/quiz/** - Builds a mnemonic recall scaffold and quizzes one prompt at a time.
+- **skills/pull-request/** - Creates a PR with summary, test plan, and linked context.
 
 ---
 
@@ -36,31 +37,32 @@ mkdir -p ~/.claude
 # Symlink global rules
 ln -s ~/src/ai-rules/CLAUDE.md ~/.claude/CLAUDE.md
 
-# Symlink commands directory
-ln -s ~/src/ai-rules/commands ~/.claude/commands
+# Symlink skills directory
+ln -s ~/src/ai-rules/skills/ask-questions ~/.claude/skills/ask-questions
+# Repeat for each skill, or run ./install.sh to link all skills at once.
 ```
 
-After setup, Claude Code automatically loads `CLAUDE.md` into every conversation and makes commands available via `/ask-questions`, `/code-review`, `/commit-push`, `/feature-branch`, `/quiz`, `/pull-request`, and `/spawn`.
+After setup, Claude Code automatically loads `CLAUDE.md` into every conversation and discovers skills from `~/.claude/skills/*/SKILL.md`.
 
 ### Cursor
 
 [Cursor](https://cursor.com/) uses a similar structure to Claude Code:
 - **Global rules** are set in the IDE: `Cursor Settings > General > Rules for AI`
 - **Project rules** go in `.cursor/rules/` within each project (`.mdc` format)
-- **Slash commands** go in `.cursor/commands/` within each project (`.md` format)
+- **Skills** go in `~/.cursor/skills/` (personal) or `.cursor/skills/` within each project (`skill-name/SKILL.md` format)
 
 To use these rules in Cursor:
 
 1. **For global rules**: Open `Cursor Settings > General > Rules for AI` and paste the contents of `CLAUDE.md`
 
-2. **For slash commands**: If the ~/.cursor/commands symlink has been set, slash commands will be imported into the Cursor IDE and cursor-agent.
+2. **For skills**: Run `./install.sh` from this repository, or symlink each skill directory into `~/.cursor/skills/`.
 
 ```bash
-# Symlink commands for slash command support (/ask-questions, /code-review, /commit-push, /feature-branch, /quiz, /pull-request, /spawn)
-ln -s ~/src/ai-rules/commands ~/.cursor/commands
+# Symlink all skills at once
+./install.sh
 ```
 
-After setup, invoke commands in Cursor's chat with `/ask-questions`, `/code-review`, `/commit-push`, `/feature-branch`, `/quiz`, `/pull-request`, or `/spawn`.
+After setup, Cursor discovers skills from `~/.cursor/skills/*/SKILL.md` and applies them when relevant.
 
 ### ChatGPT
 

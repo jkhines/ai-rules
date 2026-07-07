@@ -1,7 +1,6 @@
 ---
-command: /feature-branch
+name: feature-branch
 description: Creates a feature branch following team naming conventions with Jira ticket traceability
-alwaysApply: false
 ---
 
 ## Feature Branch Creation
