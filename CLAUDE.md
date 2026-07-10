@@ -77,6 +77,11 @@ Authentication (when not using MCP):
 - Auth0: client ID, secret, and domain for the target environment (sb/dev/prod).
 - AWS: use the AWS CLI with the named profiles in `~/.aws/config` (`sb`, `dev`, `prod`) and always pass `--profile <name>`. Use env credentials only when a profile is unavailable or I direct it.
 
+### Web research
+When asked to "search the web," research online, or look something up, use the agent's built-in search, fetch, and
+documentation tools. Do not launch, open, or attach to a web browser unless the task specifically requires interaction
+with or inspection of a rendered page.
+
 ### Real browser escalation
 When the visible rendered page is the source of truth, use the `browser-harness` skill before any other browser,
 scraping, static fetch, or headless tool.
