@@ -77,18 +77,29 @@ Authentication (when not using MCP):
 - Auth0: client ID, secret, and domain for the target environment (sb/dev/prod).
 - AWS: use the AWS CLI with the named profiles in `~/.aws/config` (`sb`, `dev`, `prod`) and always pass `--profile <name>`. Use env credentials only when a profile is unavailable or I direct it.
 
-### Web research
-When asked to "search the web," research online, or look something up, use the agent's built-in search, fetch, and
-documentation tools. Do not launch, open, or attach to a web browser unless the task specifically requires interaction
-with or inspection of a rendered page.
+### Web and browser tool selection
+Resolve web tasks in this order:
+1. For web search, research, or documentation, use built-in search, fetch, and documentation tools. Do not launch or
+   attach to a browser unless interaction with or inspection of the rendered page is necessary.
+2. For a third-party service with an available MCP server or API, follow the external-system rules above unless the
+   visible UI itself is the source of truth.
+3. When a browser is required, choose the harness by task:
+   - Use Chrome DevTools MCP first for web development, debugging, repeatable QA, DOM or accessibility inspection,
+     console and network analysis, Lighthouse, performance traces, memory analysis, and browser emulation.
+   - Use `browser-harness` first for open-ended user workflows, unusual visual interactions, arbitrary Python or raw
+     CDP, custom or persistent site helpers, and Browser Use cloud browsers.
+   - Prefer Chrome DevTools MCP when both tools clearly cover the task.
+   - If the selected tool lacks a required capability or repeatedly fails for a technical reason, use the other as a
+     fallback and state why. Do not use fallback tooling to bypass authentication, authorization, or consent.
+4. Validate browser work from rendered or runtime state with screenshots, DOM or accessibility reads, console or
+   network evidence, or another direct observation appropriate to the task.
 
-### Real browser escalation
-When the visible rendered page is the source of truth, use the `browser-harness` skill before any other browser,
-scraping, static fetch, or headless tool.
-Browser automation must use Google Chrome explicitly. Do not use Vivaldi, Firefox, or another browser as a substitute
-unless I explicitly override this requirement. Use `open-google-chrome-cdp.sh` to launch the controllable Chrome instance.
+Browser automation must use Google Chrome explicitly. Chrome DevTools MCP may launch Chrome or connect to it through its
+own supported configuration. Do not use Vivaldi, Firefox, Chromium, or another browser unless I explicitly override this
+requirement.
 
-Mandatory order:
+### browser-harness execution
+When the routing rules select `browser-harness`, follow this mandatory order:
 1. Read the `browser-harness` skill.
 2. Run `command -v open-google-chrome-cdp.sh` and stop if it is unavailable.
 3. Launch or reuse the controlled browser only through `open-google-chrome-cdp.sh <url>`.
@@ -96,21 +107,17 @@ Mandatory order:
 5. Do not rely on `browser-harness` default attachment, existing browser sessions, default browser handlers, or
    Chromium-compatible browsers.
 6. If `browser-harness` opens or attaches to any non-Google-Chrome browser, stop immediately and report failure.
-7. Non-Google-Chrome browsers include Vivaldi, Chromium, Firefox, and any other Chrome-compatible browser.
-8. Run the requested browser action with `BU_CDP_WS="$ws" browser-harness` only after verifying the controlled browser
+7. Run the requested browser action with `BU_CDP_WS="$ws" browser-harness` only after verifying the controlled browser
    is Google Chrome.
-9. If `browser-harness` fails in any way, the very next command must be `browser-harness --doctor`.
-10. Failures include non-zero exit, traceback, import error, command not found, connection error, timeout, hang, or
-    unexpected daemon behavior.
-11. Before `browser-harness --doctor` has run, do not debug, patch, reinstall, inspect wrappers, or retry.
-12. Before `browser-harness --doctor` has run, do not use `curl`, `WebFetch`, Playwright, or another browser.
-13. If `browser-harness --doctor` reports `chrome running` as `FAIL`, run
+8. If `browser-harness` fails in any way, the very next command must be `browser-harness --doctor`.
+9. Failures include non-zero exit, traceback, import error, command not found, connection error, timeout, hang, or
+   unexpected daemon behavior.
+10. Before `browser-harness --doctor` has run, do not debug, patch, reinstall, inspect wrappers, retry, or use `curl`,
+    `WebFetch`, Playwright, or another browser.
+11. If `browser-harness --doctor` reports `chrome running` as `FAIL`, run
     `open-google-chrome-cdp.sh chrome://inspect/#remote-debugging`.
-14. After launching Chrome from the doctor step, retry the original `browser-harness` command with the script's printed
-    `BU_CDP_WS`.
-15. If Chrome asks for the remote debugging checkbox or permission popup, stop and ask me to approve it.
-16. Validate success with `page_info()`, screenshots, or DOM reads.
-17. After saving a file, re-read it from disk to confirm it contains the expected content.
+12. Retry the original `browser-harness` command with the new `BU_CDP_WS`.
+13. If Chrome asks for the remote debugging checkbox or permission popup, stop and ask me to approve it.
 
 ## Environment
 - Terraform: all deployments use Terraform Cloud with VCS-driven runs. Evaluate behavior in that context, not the CLI.
