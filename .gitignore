@@ -1,2 +1,3 @@
 .claude.json
 .cursor.mcp.json
+*.sync-conflict-*
