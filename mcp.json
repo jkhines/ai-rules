@@ -11,6 +11,10 @@
       "command": "docker",
       "args": ["run", "--rm", "-i", "grafana/mcp-k6:latest"],
       "env": {}
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
     }
   }
 }
