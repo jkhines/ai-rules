@@ -83,15 +83,16 @@ Resolve web tasks in this order:
    attach to a browser unless interaction with or inspection of the rendered page is necessary.
 2. For a third-party service with an available MCP server or API, follow the external-system rules above unless the
    visible UI itself is the source of truth.
-3. When a browser is required, choose the harness by task:
-   - Use Chrome DevTools MCP first for web development, debugging, repeatable QA, DOM or accessibility inspection,
-     console and network analysis, Lighthouse, performance traces, memory analysis, and browser emulation.
-   - Use `browser-harness` first for open-ended user workflows, unusual visual interactions, arbitrary Python or raw
-     CDP, custom or persistent site helpers, and Browser Use cloud browsers.
-   - Prefer Chrome DevTools MCP when both tools clearly cover the task.
-   - If the selected tool lacks a required capability or repeatedly fails for a technical reason, use the other as a
-     fallback and state why. Do not use fallback tooling to bypass authentication, authorization, or consent.
-4. Validate browser work from rendered or runtime state with screenshots, DOM or accessibility reads, console or
+3. When a browser is required, use Chrome DevTools MCP by default. This includes web development, debugging,
+   performance work, accessibility inspection, repeatable QA, DOM inspection, console and network analysis, Lighthouse,
+   memory analysis, and browser emulation.
+4. Use `browser-harness` only when the task needs a capability Chrome DevTools MCP does not provide or cannot complete:
+   open-ended web operations requiring custom recovery, arbitrary Python or direct raw CDP, custom or persistent site
+   helpers, or Browser Use cloud integration. Treat it as the powerful fallback, not the default browser tool.
+5. State why before switching tools. Do not use fallback tooling to bypass authentication, authorization, or consent.
+6. Before using `browser-harness` with an authenticated or internal application, run
+   `browser-harness telemetry status` and, if enabled, run `browser-harness telemetry disable`.
+7. Validate browser work from rendered or runtime state with screenshots, DOM or accessibility reads, console or
    network evidence, or another direct observation appropriate to the task.
 
 Browser automation must use Google Chrome explicitly. Chrome DevTools MCP may launch Chrome or connect to it through its
