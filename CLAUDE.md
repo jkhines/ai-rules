@@ -66,6 +66,7 @@ Environment variables -- use these for their respective services:
 | Auth0 (dev) | `AUTH0_DEV_CLIENT_ID`, `AUTH0_DEV_CLIENT_SECRET`, `AUTH0_DEV_DOMAIN` |
 | Auth0 (prod) | `AUTH0_PROD_CLIENT_ID`, `AUTH0_PROD_CLIENT_SECRET`, `AUTH0_PROD_DOMAIN` |
 | AWS | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION` |
+| TestRail | `TESTRAIL_USERNAME`, `TESTRAIL_API_KEY` |
 
 - Assume Cloud-hosted services unless told otherwise. Use the latest stable API version (confirm with Context7 via `CONTEXT7_KEY`). Always handle pagination; never assume one response contains all results.
 - If a service is not listed, check for an MCP server first (`ToolSearch`), then the environment (`env | grep -i <service>`).
@@ -74,6 +75,7 @@ Authentication (when not using MCP):
 - Jira / Confluence: HTTP Basic Auth, `*_EMAIL` as username and `*_API_TOKEN` as password; use `*_BASE_URL` as the host, never a hand-built URL.
 - GitHub: prefer the `gh` CLI; fall back to the raw API with `GITHUB_PAT` as Bearer token only when `gh` cannot do it.
 - SonarQube: `SONAR_TOKEN` as Bearer token.
+- TestRail: HTTP Basic Auth against `https://sorenson.testrail.io`, `TESTRAIL_USERNAME` (account email) as username and `TESTRAIL_API_KEY` as password; API v2 base path `/index.php?/api/v2/`.
 - Auth0: client ID, secret, and domain for the target environment (sb/dev/prod).
 - AWS: use the AWS CLI with the named profiles in `~/.aws/config` (`sb`, `dev`, `prod`) and always pass `--profile <name>`. Use env credentials only when a profile is unavailable or I direct it.
 
