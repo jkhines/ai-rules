@@ -62,6 +62,7 @@ Environment variables -- use these for their respective services:
 | Anthropic | `ANTHROPIC_API_KEY` |
 | Terraform Enterprise | `TFE_TOKEN` |
 | Resend | `RESEND_API_KEY` |
+| SendGrid | `SENDGRID_ADMIN_API_KEY`, `SENDGRID_RESTRICTED_API_KEY` |
 | Auth0 (sandbox) | `AUTH0_SB_CLIENT_ID`, `AUTH0_SB_CLIENT_SECRET`, `AUTH0_SB_DOMAIN` |
 | Auth0 (dev) | `AUTH0_DEV_CLIENT_ID`, `AUTH0_DEV_CLIENT_SECRET`, `AUTH0_DEV_DOMAIN` |
 | Auth0 (prod) | `AUTH0_PROD_CLIENT_ID`, `AUTH0_PROD_CLIENT_SECRET`, `AUTH0_PROD_DOMAIN` |
@@ -77,6 +78,7 @@ Authentication (when not using MCP):
 - SonarQube: `SONAR_TOKEN` as Bearer token.
 - TestRail: HTTP Basic Auth against `https://sorenson.testrail.io`, `TESTRAIL_USERNAME` (account email) as username and `TESTRAIL_API_KEY` as password; API v2 base path `/index.php?/api/v2/`.
 - Auth0: client ID, secret, and domain for the target environment (sb/dev/prod).
+- SendGrid: Bearer token against `https://api.sendgrid.com/v3` (prefer `SENDGRID_RESTRICTED_API_KEY`; use `SENDGRID_ADMIN_API_KEY` only when broader scope is required). Email Activity feed: `GET /v3/messages?query=...` (query language, e.g. `last_event_time BETWEEN TIMESTAMP "..." AND TIMESTAMP "..."`).
 - AWS: use the AWS CLI with the named profiles in `~/.aws/config` (`sb`, `dev`, `prod`) and always pass `--profile <name>`. Use env credentials only when a profile is unavailable or I direct it.
 
 ### Web and browser tool selection
