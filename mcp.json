@@ -3,9 +3,6 @@
     "Context7": {
       "url": "https://mcp.context7.com/mcp"
     },
-    "Figma": {
-      "url": "https://mcp.figma.com/mcp"
-    },
     "k6": {
       "type": "stdio",
       "command": "docker",
