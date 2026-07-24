@@ -46,6 +46,7 @@ Show the diff at the level of facts and options preserved, so the writer can ver
 - **Emoji in headers**: Remove entirely. Exception: social posts may use one or two sparingly, at end of line, never mid-sentence.
 - **Excessive bullet lists**: Convert bullet-heavy sections into prose. Bullets only for genuinely list-like content (comparisons, steps, API parameters).
 - **Curly quotation marks**: A weak paste-from-chat signal, meaningful mainly in plain-text contexts (code comments, commit messages) where nothing auto-curls. Word, Google Docs, macOS, and iOS curl quotes by default, so most human prose has them. Don't flag curly apostrophes alone. Replace with straight quotes in plain-text/code; leave them in finished publications.
+- **Inline label-value notes**: Never use `Label: sentence` or `Label. sentence` in generated prose. Fold the label's meaning into a grammatical sentence or a connected paragraph. Preserve every fact carried by both parts, including the topic, named entities, ownership, status, decision, qualifier, and next action. For example, rewrite `Roadmap status: The transcript editor remains on track.` as `The roadmap remains on track, including the transcript editor.` Do not retain this construction even when the source uses it.
 
 ### Sentence structure
 - **"It's not X — it's Y" / "This isn't about X, it's about Y" / "X is not Y, it's Z"** (negative parallelism): Rewrite as a direct positive statement. Target: zero. Remove every instance, including the negated-clause-first and reversed ("Y, not X") variants. Never keep one, even when it appears to serve the argument.
@@ -330,7 +331,7 @@ Where voice and context govern the same rule and disagree, resolve toward the st
 
 **1. Issues found** — Bulleted list of every AI-ism, with offending text quoted.
 
-**2. Rewritten version** — The full rewritten content. Preserve the original structure, intent, and all specific technical details (apply Meaning preservation above). Only change what the guidelines require.
+**2. Rewritten version** — The full rewritten content. Preserve the intent and all specific technical details (apply Meaning preservation above). Convert inline label-value notes into connected prose, retaining the information conveyed by each label.
 
 **3. What changed** — Brief summary of the meaningful edits.
 
