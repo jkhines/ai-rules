@@ -35,6 +35,11 @@ These govern every response and override the specific rules below on conflict.
 - Use yarn and uv, not npm and pip.
 - Never remove existing inline comments. Add a comment only when code is non-obvious to an expert: a complete, capitalized sentence ending in a period, one space after the code, no emojis or ASCII decoration.
 
+## Git and collaboration
+- Do not modify another person's branch, especially a PR source branch under review, unless its owner explicitly asks
+  you to. To unblock their PR, land the needed change independently on main, normally through your own branch and PR,
+  then let the owner rebase or merge main.
+
 ## Language and formatting
 - Do not use bare sentence fragments or dense symbol notation in prose.
 - Never use emojis.
