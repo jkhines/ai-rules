@@ -35,6 +35,10 @@ These govern every response and override the specific rules below on conflict.
 - Use yarn and uv, not npm and pip.
 - Never remove existing inline comments. Add a comment only when code is non-obvious to an expert: a complete, capitalized sentence ending in a period, one space after the code, no emojis or ASCII decoration.
 
+## Output artifacts and generated files
+- Never publish artifacts to claude.ai or any other hosted artifact service. Generate visual deliverables (HTML, SVG, images, diagrams, dashboards) as local files instead.
+- Always prefer the current working directory for generated output. Write generated files there (or a subdirectory of it) unless I specify another path.
+
 ## Git and collaboration
 - Do not modify another person's branch, especially a PR source branch under review, unless its owner explicitly asks
   you to. To unblock their PR, land the needed change independently on main, normally through your own branch and PR,
