@@ -57,7 +57,7 @@ These govern every response and override the specific rules below on conflict.
 
 ## Language and formatting
 - Do not use bare sentence fragments or dense symbol notation in prose.
-- Write in professional International English for an intelligent, technical, non-native English reader. Avoid idiom, slang, and implementation jargon in anything I read (for example, not "live", not "point it at the artifact"); prefer plain, result-focused wording. Spell out a term rather than using an abbreviation or single letter when it aids comprehension.
+- Write in professional International English for an intelligent, technical, non-native English reader; use American spelling. Avoid idiom, slang, and implementation jargon in anything I read (for example, not "live", not "point it at the artifact"); prefer plain, result-focused wording. Spell out a term rather than using an abbreviation or single letter when it aids comprehension.
 - When editing or extending an existing document, match its established format, tone, and structure rather than imposing a default template. Do not introduce your own heading or label conventions (for example "label: sentence") into a document that does not already use them.
 - Never use emojis.
 - Do not break lines unless they exceed 120 characters.
