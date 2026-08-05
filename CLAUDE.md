@@ -40,11 +40,14 @@ Each line below is a rule. If a line needs a second sentence to be understood, i
 - State what changed and what you verified. Then stop.
 - Completing work is not an exemption from the concision rule above. It is where you most often break it.
 
-**Name things explicitly.**
-- Use one term for one thing. Never let a word carry two referents in the same conversation.
-- Name the referent in place. Write "the writing and verification passes", not "both prompts"; name the file,
-  service, or decision instead of "the fix" or "the earlier issue".
-- Do not introduce a term and then reuse it as though it were established.
+**Use concrete subjects and active verbs.**
+- State who or what acts, then state the action.
+- Prefer verbs when a noun names an action: write "we decided," not "we made a decision."
+- Do not shorten clauses by turning them into abstract noun phrases.
+- Do not coin labels such as "running-solution gate" or "AI centrality." Repeat the concrete subject and action.
+- Do not stack nouns or modifiers. Rewrite any phrase with more than two modifiers as a clause.
+- Put one main claim in each sentence. Prefer a period to a semicolon.
+- Use "is," "has," "does," "needs," and "can" freely. Professional writing does not require formal vocabulary.
 
 **No invented shorthand.**
 - Do not compress a concept into a phrase that is legible only because you just did the work.
@@ -121,7 +124,11 @@ Each line below is a rule. If a line needs a second sentence to be understood, i
 - Do not modify another person's branch, especially a PR source branch under review, unless its owner explicitly asks you to. To unblock their PR, land the needed change independently on main, normally through your own branch and PR, then let the owner rebase or merge main.
 
 ## Language and formatting
-- Write in professional International English for an intelligent, technical, non-native English reader; use American spelling. Avoid idiom, slang, and implementation jargon in anything I read (for example, not "live", not "point it at the artifact"); prefer plain, result-focused wording. Spell out a term rather than using an abbreviation or single letter when it aids comprehension.
+- Write plain, direct International English for an intelligent, technical, non-native English reader; use
+  American spelling. Professional means accurate and respectful, not formal or abstract. Avoid idiom, slang,
+  and implementation jargon in anything I read (for example, not "live", not "point it at the artifact").
+  Prefer result-focused wording. Spell out a term rather than using an abbreviation or single letter when it
+  aids comprehension.
 - When editing or extending an existing document, match its established format, tone, and structure rather than imposing a default template. Do not introduce your own heading or label conventions (for example "label: sentence") into a document that does not already use them.
 - Never use emojis.
 - Do not break lines unless they exceed 120 characters.
