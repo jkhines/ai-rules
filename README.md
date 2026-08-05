@@ -9,6 +9,9 @@ Custom rules and commands for AI coding assistants including Claude Code, Cursor
   - Note: These settings can also be copy-pasted into the Cursor IDE in order to apply globally.
 - **CHATGPT.md** - Concise rules for ChatGPT emphasizing direct, brief responses.
 
+### Statusline
+- **scripts/claude-statusline.js** - Claude Code `statusLine` command: model name, current directory, and a context-usage bar. `install.sh` links it to `~/.claude/statusline.js` and points `~/.claude/settings.json`'s `statusLine` key at it.
+
 ### Skills
 - **skills/ask-questions/** - Systematic problem analysis and solution path optimization.
 - **skills/code-review/** - Reviews changes between two branches with prioritized feedback.

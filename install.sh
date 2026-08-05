@@ -52,7 +52,7 @@ cleanup_repo_symlinks() {
 }
 
 # Ensure required scripts are executable in this clone.
-chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/scripts/open-google-chrome-cdp.sh"
+chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/scripts/open-google-chrome-cdp.sh" "$REPO_DIR/scripts/claude-statusline.js"
 
 # Sync MCP servers from mcp.json into generated app configs.
 "$REPO_DIR/mcp.sh"
@@ -74,6 +74,24 @@ for dir in "$REPO_DIR/skills/"*/; do
     [ -e "$dir" ] || continue
     link "$dir" "$HOME/.claude/skills/$(basename "$dir")"
 done
+
+# Statusline: link the script, then point Claude Code's statusLine setting at
+# it via a jq merge so the rest of ~/.claude/settings.json (hooks, model, etc.)
+# is left untouched.
+STATUSLINE_LINK="$HOME/.claude/statusline.js"
+link "$REPO_DIR/scripts/claude-statusline.js" "$STATUSLINE_LINK"
+
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+if command -v jq >/dev/null 2>&1; then
+    [ -f "$CLAUDE_SETTINGS" ] || echo '{}' > "$CLAUDE_SETTINGS"
+    jq --arg cmd "node \"$STATUSLINE_LINK\"" \
+        '.statusLine = {"type": "command", "command": $cmd}' \
+        "$CLAUDE_SETTINGS" > "${CLAUDE_SETTINGS}.tmp"
+    mv "${CLAUDE_SETTINGS}.tmp" "$CLAUDE_SETTINGS"
+    echo "Configured statusLine in $CLAUDE_SETTINGS -> $STATUSLINE_LINK"
+else
+    echo "WARN: jq not found; skipping statusLine configuration in $CLAUDE_SETTINGS"
+fi
 
 # ~/.cursor
 mkdir -p "$HOME/.cursor/skills"
