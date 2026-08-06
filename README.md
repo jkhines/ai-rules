@@ -13,9 +13,12 @@ Custom rules and commands for AI coding assistants including Claude Code, Cursor
 - **scripts/claude-statusline.js** - Claude Code `statusLine` command: model name, current directory, and a context-usage bar. `install.sh` links it to `~/.claude/statusline.js` and points `~/.claude/settings.json`'s `statusLine` key at it.
 
 ### Skills
+- **skills/agent-instructions/** - The AGENTS.md open standard for portable AI agent instructions.
 - **skills/ask-questions/** - Systematic problem analysis and solution path optimization.
+- **skills/browser-tools/** - Browser tool selection, Chrome isolation, and browser-harness execution.
 - **skills/code-review/** - Reviews changes between two branches with prioritized feedback.
 - **skills/commit-push/** - Commits and pushes changes following Conventional Commits v1.0.0.
+- **skills/external-services/** - Credentials, environment variables, and API conventions for third-party services.
 - **skills/feature-branch/** - Creates and checks out a Git feature branch from a Jira ticket.
 - **skills/humanize/** - Audits writing for AI patterns; detect, rewrite, or edit modes.
 - **skills/masticulate/** - Walks through an existing numbered list one item at a time.
