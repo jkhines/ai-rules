@@ -18,23 +18,19 @@ This is a writing-quality tool, not a verdict on authorship. Humans under deadli
 
 Audit whatever content the user supplies: a string in the request itself, a file path, or a URL. Fetch a URL before auditing it and name the URL you read. If the user supplies several inputs at once, audit them all and report on each separately.
 
-Routing: stay in detect unless the request says otherwise. Go to rewrite when the user says "rewrite," "clean this up," or "make it sound less like AI." Go to edit only when the user names a file and asks you to fix it in place; naming a file on its own is a request to audit it, not to change it. A supplied string or a URL can never be edited in place.
+Audit the text and change nothing unless the request asks for a change. "Rewrite," "clean this up," and "make it sound less like AI" ask for one. Naming a file on its own does not. An audit is also the right answer when the flagged patterns might be deliberate. It fits equally when the writer wants to decide for themselves what to fix.
 
-## Modes
+Where a change goes follows from the input. Text supplied in the request comes back rewritten as text. A file the user asks you to fix is changed in place. A URL can never be.
 
-**`detect`** (default) — Flag AI-isms only. No rewriting. Use this to show what's flagged and let the writer decide what to fix, when flagged patterns might be intentional, or when auditing text you don't want altered. Default to this mode if none is specified.
-
-**`rewrite`** — Flag AI-isms and return a clean rewritten version.
-
-**`edit`** — Edit a file in place rather than returning rewritten text. Make minimal, targeted edits to the flagged spans, not the whole document. Preserve passages that are already human. Do not edit quoted material, code blocks, or text attributed to someone else; flag those instead. For a large file, confirm which section to clean before changing anything. After editing, re-read the file and confirm the flagged patterns are resolved.
+Four more requirements apply when you change a file in place. Make minimal, targeted edits to the flagged spans rather than rewriting the whole document. Leave passages that are already human as they are. Confirm which section to clean first if the file is large. Re-read the file afterward and confirm the flagged patterns are resolved.
 
 **Every rule applies at full strength to every input.** There is no genre setting and no way to relax a rule for a given kind of text.
 
-**Fix, do not defer.** In rewrite and edit mode a flag is not an output. Every flag you raise gets a replacement written into the text. This is the only override, and it has a high bar: you may keep a flagged word only when replacing it would make the sentence factually wrong, and you must name the fact that breaks. "It is a term of art," "it is the writer's terminology," "it appears in a heading," and "changing it is the author's call" are not that fact. If a word is confusing, ambiguous, or undefined for the reader, it fails the three tests and it gets replaced, whatever else it is doing.
+**Fix, do not defer.** Whenever you change the text, a flag is not an output. Every flag you raise gets a replacement written into the text. This is the only override, and it has a high bar: you may keep a flagged word only when replacing it would make the sentence factually wrong, and you must name the fact that breaks. "It is a term of art," "it is the writer's terminology," "it appears in a heading," and "changing it is the author's call" are not that fact. If a word is confusing, ambiguous, or undefined for the reader, it fails the three tests and it gets replaced, whatever else it is doing.
 
 When no table entry fits, do not force one. Name the thing literally in the words the reader already has.
 
-## Meaning preservation (mandatory before any rewrite or edit)
+## Meaning preservation (mandatory before you change any sentence)
 
 Rewriting for cadence without re-parsing the sentence is how meaning drifts. Before changing a sentence:
 
@@ -45,6 +41,34 @@ Rewriting for cadence without re-parsing the sentence is how meaning drifts. Bef
 5. Read the rewrite cold, with the original hidden, to catch idiom and preposition failures that only surface when you hear the sentence as a reader would.
 
 Show the diff at the level of facts and options preserved, so the writer can verify meaning without re-parsing the sentence themselves.
+
+## Technical artifacts (never rewritten, always verified)
+
+This skill changes prose and nothing else. A reader copies, runs, or matches these against a real system, so one altered character makes them wrong:
+
+- commands and their flags
+- file paths, directory names, and file names
+- endpoints, HTTP verbs, and URLs
+- environment variable names and their values
+- default values, thresholds, and configuration settings
+- version numbers, quantities, dates, scores, and percentages
+- identifiers such as function, class, table, and field names
+
+Markup is not what protects them. They keep their exact characters wherever they sit. That includes a fenced block, an inline code span, a table cell, and bare prose with no markup at all. A flagged word inside one of them stays. Replacing it makes the text factually wrong, which is the override Fix, do not defer already allows, so flag it and move on.
+
+Two rules below legitimately change one of these. Spelling out an acronym on first use can alter a digit, as `E2E` becomes `end-to-end`. The rule on numbers and time periods rewrites `12 months` as `one year`. Nothing else may.
+
+### Compare the artifacts before and after
+
+Meaning preservation checks one sentence at a time, judged by the same reader who just changed it. This check is mechanical and covers the whole text, so it catches what per-sentence review misses. Run it every time you change anything, and report the result.
+
+1. Capture the original before the first edit, with `git show HEAD:<path>` for a tracked file or a scratch copy for anything else.
+2. Extract four sets from the original and from the changed version: every fenced code block, every inline code span, every URL, and every number.
+3. Compare each set as a multiset, so a repeated value has to repeat the same number of times.
+4. Name every difference in the report, along with the rule that caused it. The expected count is zero.
+5. Restore the original wherever a difference has no rule behind it.
+
+The check is order-insensitive and it only sees backticked code. So it passes a path moved between sentences, and it misses a path written without markup. Those two cases need your own reading.
 
 ## What to remove or fix
 
@@ -281,7 +305,7 @@ If the text has 5+ flagged vocabulary hits across multiple categories and 3+ dis
 
 ## Plain language
 
-Everything above removes what should not be there. This section checks that what remains can be understood. Apply it on every audit, in every mode.
+Everything above removes what should not be there. This section checks that what remains can be understood. Apply it on every audit, whatever the output.
 
 Plain English is a set of principles for writing clearly and accurately, such as using short sentences. Plain language modifies those techniques to suit the needs of the reader and adapts to what user research shows. So treat this section as a floor, not a ceiling: if the writer has evidence that their readers say something else, the readers win.
 
@@ -444,9 +468,11 @@ When triaging, prioritize by tier:
 
 Use P0+P1 for quick passes. Full audit covers all three tiers.
 
-## Self-reference escape hatch
+## Quoted and attributed text
 
-When writing *about* AI writing patterns, quoted examples are exempt. Text inside quotation marks, code blocks, or marked as illustrative ("for example, AI might write...") should not be rewritten. Only flag patterns in the author's own prose.
+Only the author's own prose is yours to change. Leave anything inside quotation marks, anything marked as illustrative ("for example, AI might write..."), and anything attributed to someone else. Flag the pattern and move on. Rewriting borrowed words puts claims in someone else's mouth. That makes the text factually wrong, which is the override Fix, do not defer already allows.
+
+This matters most when writing *about* AI writing patterns, where the quoted examples are supposed to contain the patterns.
 
 ## Preserve the writer's voice
 
@@ -456,7 +482,7 @@ Concretely: do not make casual writing more professional or formal writing more 
 
 ## Output format
 
-### Detect mode (default)
+### Audit report (default, when nothing is changed)
 
 **1. Issues found** — A bulleted list of every AI-ism and plain language failure identified, with the offending text quoted, grouped by severity (P0, P1, P2). Mark each one as an AI pattern, a comprehensibility problem, or both.
 
@@ -464,7 +490,7 @@ Concretely: do not make casual writing more professional or formal writing more 
 
 **3. Assessment** — For each flag, note whether it's a clear problem or a judgment call. Some AI-associated patterns are effective in context. Call out which to definitely fix vs. which are worth a second look. If the text is clean, say so. Say separately whether the text passes the three tests: can a reader find what they need, understand it, and act on it.
 
-### Rewrite mode
+### Rewritten text, returned in the reply
 
 **1. Issues found** — Bulleted list of every AI-ism, with offending text quoted.
 
@@ -474,9 +500,9 @@ Concretely: do not make casual writing more professional or formal writing more 
 
 **4. Second-pass audit** — Re-read the rewritten version from section 2. Identify any remaining AI tells and plain language failures that survived the first pass, fix them, return the corrected text inline, and note what changed. Check the longest sentence and paragraph against the 25-word and 5-sentence limits, and confirm every specialist term and acronym is explained on first use. If the rewrite is clean, say so.
 
-### Edit mode
+### Report after changing a file in place
 
-After editing the file in place, return a short report — not the full file:
+Return a short report rather than the full file:
 
 **1. Edits made** — Bulleted list of changes, each with the file location and before → after. Only the spans you touched.
 
