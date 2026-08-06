@@ -52,7 +52,7 @@ cleanup_repo_symlinks() {
 }
 
 # Ensure required scripts are executable in this clone.
-chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/scripts/open-google-chrome-cdp.sh" "$REPO_DIR/scripts/claude-statusline.js"
+chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/scripts/open-google-chrome-cdp.sh" "$REPO_DIR/scripts/claude-statusline.js" "$REPO_DIR/hooks/inject-contract.py" "$REPO_DIR/hooks/prose-check.py" "$REPO_DIR/hooks/prose-annotate.py" "$REPO_DIR/hooks/test-prose-check.py"
 
 # Sync MCP servers from mcp.json into generated app configs.
 "$REPO_DIR/mcp.sh"
@@ -81,16 +81,42 @@ done
 STATUSLINE_LINK="$HOME/.claude/statusline.js"
 link "$REPO_DIR/scripts/claude-statusline.js" "$STATUSLINE_LINK"
 
+# Output-conformance hooks: link the scripts, then register the two that enforce the writing
+# rules. CLAUDE.md loads once at the top of the context window, so a long session buries it;
+# UserPromptSubmit restates the contract next to the tokens being generated and Stop checks the
+# result. prose-annotate.py stays linked but unregistered, since it only annotates the display.
+HOOKS_DIR="$HOME/.claude/hooks"
+mkdir -p "$HOOKS_DIR"
+cleanup_repo_symlinks "$HOOKS_DIR"
+for hook in inject-contract.py prose-check.py prose-annotate.py output-contract.md; do
+    link "$REPO_DIR/hooks/$hook" "$HOOKS_DIR/$hook"
+done
+
+INJECT_CMD="python3 \"$HOOKS_DIR/inject-contract.py\""
+CHECK_CMD="python3 \"$HOOKS_DIR/prose-check.py\""
+
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 if command -v jq >/dev/null 2>&1; then
     [ -f "$CLAUDE_SETTINGS" ] || echo '{}' > "$CLAUDE_SETTINGS"
     jq --arg cmd "node \"$STATUSLINE_LINK\"" \
-        '.statusLine = {"type": "command", "command": $cmd}' \
+        --arg inject "$INJECT_CMD" \
+        --arg check "$CHECK_CMD" \
+        '
+        # Drop any earlier registration of the same command so reruns do not stack duplicates.
+        def prune($cmd): map(select([.hooks[]?.command] | index($cmd) | not));
+        .statusLine = {"type": "command", "command": $cmd}
+        | .hooks //= {}
+        | .hooks.UserPromptSubmit = ((.hooks.UserPromptSubmit // []) | prune($inject))
+            + [{"hooks": [{"type": "command", "command": $inject, "timeout": 5}]}]
+        | .hooks.Stop = ((.hooks.Stop // []) | prune($check))
+            + [{"hooks": [{"type": "command", "command": $check, "timeout": 20}]}]
+        ' \
         "$CLAUDE_SETTINGS" > "${CLAUDE_SETTINGS}.tmp"
     mv "${CLAUDE_SETTINGS}.tmp" "$CLAUDE_SETTINGS"
     echo "Configured statusLine in $CLAUDE_SETTINGS -> $STATUSLINE_LINK"
+    echo "Registered UserPromptSubmit and Stop hooks in $CLAUDE_SETTINGS"
 else
-    echo "WARN: jq not found; skipping statusLine configuration in $CLAUDE_SETTINGS"
+    echo "WARN: jq not found; skipping statusLine and hook configuration in $CLAUDE_SETTINGS"
 fi
 
 # ~/.cursor

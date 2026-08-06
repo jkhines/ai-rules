@@ -12,6 +12,28 @@ Custom rules and commands for AI coding assistants including Claude Code, Cursor
 ### Statusline
 - **scripts/claude-statusline.js** - Claude Code `statusLine` command: model name, current directory, and a context-usage bar. `install.sh` links it to `~/.claude/statusline.js` and points `~/.claude/settings.json`'s `statusLine` key at it.
 
+### Output-conformance hooks
+
+`CLAUDE.md` loads once, at the top of the context window, so a long session buries it and the model drifts back to preambles, em dashes, and flagged vocabulary. These hooks close that gap without asking you anything. `install.sh` links all four files into `~/.claude/hooks/` and registers the first two in `~/.claude/settings.json`.
+
+- **hooks/output-contract.md** - the `CLAUDE.md` output rules that fail most often, restated in positive form with three before-and-after examples. `CLAUDE.md` stays the source of truth.
+- **hooks/inject-contract.py** - `UserPromptSubmit` hook. Appends the contract to every prompt as `additionalContext`, so the rules sit beside the tokens the model is about to write instead of thousands of tokens above them.
+- **hooks/prose-check.py** - `Stop` hook. Reads the model's own last message from the session transcript and checks the rules a program can decide. A failure returns `decision: block` with the specific violations, so the model rewrites the message itself. Two rewrites at most, then the turn passes, so a bad rule cannot trap the session.
+- **hooks/test-prose-check.py** - fixtures for the checker, run with `python3 hooks/test-prose-check.py`. The negative fixtures matter more than the positive ones, because a false positive forces a rewrite the writer cannot satisfy.
+- **hooks/prose-annotate.py** - `MessageDisplay` hook, linked but not registered. Appends the softer findings as one grey line under the message. Add it to `~/.claude/settings.json` under `MessageDisplay` if you want them on screen.
+
+`prose-check.py` blocks on sentences over 25 words, em dashes, emoji, chatbot tics, filler transitions, and the Tier 1 and words-to-avoid entries in `skills/humanize/SKILL.md`. It also blocks on the three failures that hurt readers most:
+
+- **sentence fragments**, found with a verb lexicon rather than a part-of-speech tagger. The rules trade recall for precision, since a false positive forces a rewrite and a miss costs only a fragment.
+- **analogies and similes**, matched on `like a`, `as if`, `think of it as`, `akin to`, `is essentially a`, and their relatives. The message tells the model to name the mechanism instead.
+- **dense prose**, measured three ways: nouns built from verbs above 6% of the words, runs of five content words with no function word between them, and an estimated Flesch-Kincaid grade above 12 once the text passes 60 words.
+
+Everything else comes back as a note rather than a block. That covers paragraph length, negative parallelism, `Label: value` notes, hedges, Tier 2 clusters, Tier 3 density, and a grade above 10.
+
+Backticks and block quotations are the escape hatch. `prose-check.py` skips fenced code, inline code spans, tables, headings, and quoted lines, so a technical artifact or someone else's words pass untouched. Words in the humanize tables carrying a parenthetical condition, such as `deploy (unless military or software)`, warn rather than block, because no program can decide the exception.
+
+Vocabulary is read live from `skills/humanize/SKILL.md`, so editing the skill changes what the hook enforces. The scripts use only the Python standard library.
+
 ### Skills
 - **skills/agent-instructions/** - The AGENTS.md open standard for portable AI agent instructions.
 - **skills/ask-questions/** - Systematic problem analysis and solution path optimization.
