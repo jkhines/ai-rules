@@ -1,16 +1,24 @@
 ---
 name: humanize
-description: Audit writing for AI patterns ("AI-isms"); detect-only by default, with rewrite and edit modes
+description: Audits writing for AI patterns ("AI-isms") and plain language failures, then reports, rewrites, or edits the file in place. Use when the user asks to humanize text, strip AI tells, judge whether something sounds machine-generated, simplify or clarify wording, cut jargon, check reading level, or make a document easier to read.
 ---
-Adapted from avoid-ai-writing (https://github.com/conorbronsdon/avoid-ai-writing), Copyright (c) 2026 Conor Bronsdon, MIT License. The pattern catalogue draws on Wikipedia's "Signs of AI writing" (WikiProject AI Cleanup) and the detection research cited below. Crypto/web3-specific phrase rules from the source were dropped as out of scope.
+# Humanize
 
-You are auditing content to find and optionally remove AI writing patterns ("AI-isms") that make text sound machine-generated.
+## When to use
 
-## What this is and isn't
+Audit prose on two axes at once. First, remove AI writing patterns ("AI-isms") that make text sound machine-generated. Second, make it comprehensible, so a reader can find the information they need, understand what they find, and act on what they understand.
 
-This is a writing-quality tool, not a verdict. The patterns flagged here are statistically more common in LLM output, but humans on autopilot — under deadline, in unfamiliar genres, or writing in a second language — produce the same shapes. Independent audits of commercial AI detectors found false-positive rates above 60% on non-native English writers (Liang et al., Stanford, *Patterns* 2023) and overall misclassification above 70% on open-source detectors (Jabarian & Imas, BFI Working Paper 2025-116, 2025). Adversarial paraphrase cuts detection accuracy by ~88% across every method tested (arXiv:2506.07001, 2025).
+The two goals mostly agree. Both want short familiar words, active voice, and concrete claims. Where they disagree, plain language wins, and the conflicting rules below say so at the point of conflict.
 
-Treat the flags as signals worth acting on, never as proof. Pair them with context: who wrote it, what genre, what the writer's normal voice looks like.
+Do not use this to change how writing sounds. Register, warmth, formality, and stance belong to the writer (see Preserve the writer's voice).
+
+This is a writing-quality tool, not a verdict on authorship. Humans under deadline, in unfamiliar genres, or writing in a second language produce the same shapes, and commercial detectors misclassify their work at rates above 60%. Treat every flag as a writing problem worth fixing, never as proof a machine wrote it.
+
+## Input
+
+Audit whatever content the user supplies: a string in the request itself, a file path, or a URL. Fetch a URL before auditing it and name the URL you read. If the user supplies several inputs at once, audit them all and report on each separately.
+
+Routing: stay in detect unless the request says otherwise. Go to rewrite when the user says "rewrite," "clean this up," or "make it sound less like AI." Go to edit only when the user names a file and asks you to fix it in place; naming a file on its own is a request to audit it, not to change it. A supplied string or a URL can never be edited in place.
 
 ## Modes
 
@@ -20,11 +28,11 @@ Treat the flags as signals worth acting on, never as proof. Pair them with conte
 
 **`edit`** — Edit a file in place rather than returning rewritten text. Make minimal, targeted edits to the flagged spans, not the whole document. Preserve passages that are already human. Do not edit quoted material, code blocks, or text attributed to someone else; flag those instead. For a large file, confirm which section to clean before changing anything. After editing, re-read the file and confirm the flagged patterns are resolved.
 
-Trigger rewrite when the user says "rewrite," "clean this up," "make it sound less like AI." Trigger edit when the user names a file and asks you to fix it in place. Otherwise stay in detect.
+**Every rule applies at full strength to every input.** There is no genre setting and no way to relax a rule for a given kind of text.
 
-**Invocation.** Natural language is enough. Power users can pass explicit options: `[--mode detect|rewrite|edit]`, `[--voice casual|professional|technical|warm|blunt]`, `[--context blog|technical-blog|docs|linkedin|investor-email|casual]`, `[--file PATH]`, `[--iterate N]` (max 2).
+**Fix, do not defer.** In rewrite and edit mode a flag is not an output. Every flag you raise gets a replacement written into the text. This is the only override, and it has a high bar: you may keep a flagged word only when replacing it would make the sentence factually wrong, and you must name the fact that breaks. "It is a term of art," "it is the writer's terminology," "it appears in a heading," and "changing it is the author's call" are not that fact. If a word is confusing, ambiguous, or undefined for the reader, it fails the three tests and it gets replaced, whatever else it is doing.
 
-**Iterate to convergence (optional).** Rewrite mode already runs one corrective second pass (see Output format); that built-in pass is pass 2, so `--iterate` does not stack on top of it. When asked to iterate, repeat the audit→rewrite cycle until no patterns remain or N passes are reached. Cap N at 2; a third pass costs a full regeneration while rarely finding more. Report how many passes it took.
+When no table entry fits, do not force one. Name the thing literally in the words the reader already has.
 
 ## Meaning preservation (mandatory before any rewrite or edit)
 
@@ -44,13 +52,13 @@ Show the diff at the level of facts and options preserved, so the writer can ver
 - **Em dashes (— and --)**: Replace with commas, periods, parentheses, or two sentences. Target: zero. Hard max: one per 1,000 words. Applies to headings too. Catch both the Unicode em dash and the double-hyphen substitute.
 - **Bold overuse**: Strip bold from most phrases. One bolded phrase per major section at most. If something is important enough to bold, restructure the sentence to lead with it.
 - **Emoji in headers**: Remove entirely. Exception: social posts may use one or two sparingly, at end of line, never mid-sentence.
-- **Excessive bullet lists**: Convert bullet-heavy sections into prose. Bullets only for genuinely list-like content (comparisons, steps, API parameters).
-- **Curly quotation marks**: A weak paste-from-chat signal, meaningful mainly in plain-text contexts (code comments, commit messages) where nothing auto-curls. Word, Google Docs, macOS, and iOS curl quotes by default, so most human prose has them. Don't flag curly apostrophes alone. Replace with straight quotes in plain-text/code; leave them in finished publications.
+- **Malformed bullet lists**: Bullets make text easier to read, so keep them. Every list needs a lead-in line, more than one bullet, and bullets that read on grammatically from the lead-in. Each bullet starts lowercase and runs no longer than one sentence; use commas or dashes to extend an item. No "and" or "or" after the second-to-last bullet, no semicolons, no period after the last bullet. Numbered steps are the exception: use them for a process, skip the lead-in line, and end each step with a period.
+- **Curly quotation marks**: Replace with straight quotes in code and commit messages, where nothing auto-curls. Leave them everywhere else, and never flag a curly apostrophe alone.
 - **Inline label-value notes**: Never use `Label: sentence` or `Label. sentence` in generated prose. Fold the label's meaning into a grammatical sentence or a connected paragraph. Preserve every fact carried by both parts, including the topic, named entities, ownership, status, decision, qualifier, and next action. For example, rewrite `Roadmap status: The transcript editor remains on track.` as `The roadmap remains on track, including the transcript editor.` Do not retain this construction even when the source uses it.
 
 ### Sentence structure
-- **"It's not X — it's Y" / "This isn't about X, it's about Y" / "X is not Y, it's Z"** (negative parallelism): Rewrite as a direct positive statement. Target: zero. Remove every instance, including the negated-clause-first and reversed ("Y, not X") variants. Never keep one, even when it appears to serve the argument.
-- **Hollow intensifiers**: Cut `genuine`/`genuinely`, `real` ("a real improvement"), `truly`, `quite frankly`, `to be honest`, `let's be clear`, `it's worth noting that`. State the fact.
+- **"It's not X — it's Y" / "This isn't about X, it's about Y" / "X is not Y, it's Z"** (negative parallelism): Rewrite as a direct positive statement, including the negated-clause-first and reversed ("Y, not X") variants. Meaning preservation outranks this rule. When the negated half carries a fact the positive statement would lose, keep the fact and restructure around it. Deleting the clause to satisfy this rule is a meaning-drift failure, not a fix.
+- **Hollow intensifiers**: Cut `genuine`/`genuinely`, `real` ("a real improvement"), `truly`, `quite frankly`, `to be honest`, `let's be clear`. State the fact.
 - **Vague endorsement ("worth [verb]ing")**: Cut or replace `worth reading`, `worth paying attention to`, `worth a look`, `worth exploring`. Say why it matters instead.
 - **Hedging**: Cut `perhaps`, `could potentially`, `it's important to note that`, `to be clear`. Make the point directly.
 - **Missing bridge sentences**: Each paragraph should connect to the last. If paragraphs could be rearranged without the reader noticing, add connective tissue.
@@ -71,8 +79,10 @@ Words are organized into three tiers by how reliably they signal AI text. Match 
 | delve / delve into | explore, dig into, look at |
 | landscape (metaphor) | field, space, industry, world |
 | stream / workstream (work-grouping metaphor) | area |
+| thread (work-grouping metaphor) | flow |
 | path / pathway (route/plan metaphor) | approach |
-| gate / gating (checkpoint metaphor) | prerequisite |
+| gate / gating (checkpoint metaphor) | prerequisite, check |
+| seam (joining metaphor) | integration point |
 | tapestry | (describe the actual complexity) |
 | realm | area, field, domain |
 | paradigm | model, approach, framework |
@@ -179,7 +189,6 @@ Words are organized into three tiers by how reliably they signal AI text. Match 
 ### Transition phrases to remove or rewrite
 - "Moreover" / "Furthermore" / "Additionally" → restructure so the connection is obvious, or use "and," "also," "on top of that"
 - "In today's [X]" / "In an era where" → cut or state specific context
-- "It's worth noting that" / "Notably" → just state the fact
 - "Here's what's interesting" / "Here's what stood out" → let the content signal its own importance
 - "In conclusion" / "In summary" / "To summarize" → your conclusion should be obvious
 - "When it comes to" → talk about the thing directly
@@ -187,16 +196,15 @@ Words are organized into three tiers by how reliably they signal AI text. Match 
 - "That said" / "That being said" → cut or use "but," "yet," or "however"
 
 ### Structural issues
-- **Uniform paragraph length**: Vary deliberately. Include some 1-2 sentence paragraphs and some longer ones.
 - **Formulaic openings**: If the piece opens with broad context before the point ("In the rapidly evolving world of..."), rewrite to lead with the news or insight. Context can come second.
-- **Suspiciously clean grammar**: Don't sand away all personality. Deliberate fragments, sentences starting with "And" or "But," comma splices for effect: if the natural voice uses them, keep them.
+- **Suspiciously clean grammar**: Leave the writer's existing irregularities alone. Deliberate fragments, sentences starting with "And" or "But," comma splices for effect: if the natural voice uses them, keep them. Do not add new ones. Keep an irregularity only where it stays unambiguous; a comma splice that makes the reader reparse the sentence fails the second of the three tests and gets fixed.
 
 ### Significance inflation
 - "marking a pivotal moment in the evolution of..." or "a watershed moment for the industry" inflate routine events. State what happened and let the reader judge significance.
 - If the sentence still works after you delete the inflation clause, delete it.
 
 ### Copula avoidance
-- AI avoids "is" and "has" by substituting fancier verbs: "serves as," "features," "boasts," "presents," "represents." Default to "is" or "has" unless a more specific verb genuinely adds meaning.
+- AI avoids "is" and "has" by substituting fancier verbs ("presents," "represents," and the Tier 1 entries for `serves as`, `features`, `boasts`). Default to "is" or "has" unless a more specific verb adds meaning.
 
 ### Synonym cycling
 - AI rotates synonyms to avoid repeating a word: "developers… engineers… practitioners… builders" in one paragraph. Human writers repeat the clearest word. If the same word appears three times and it's the right word, keep all three.
@@ -230,11 +238,9 @@ Words are organized into three tiers by how reliably they signal AI text. Match 
 ### False ranges
 - Pairing unrelated extremes: "from the Big Bang to dark matter," "from ancient civilizations to modern startups." Sweeping but empty. List the actual topics or pick the one that matters.
 
-### Inline-header lists
-- Bullets where each item starts with a bold header repeating itself: "**Performance:** Performance improved by..." Strip the bold header and write the point directly. If items need headers, they should probably be paragraphs.
-
-### List-label periods
-- LLMs end a short bold label with a period then run the explanation as a separate sentence (`**Intros.** Years of conferences...`); a person uses a colon (`**Intros:** years of conferences...`). Fix the period to a colon and lowercase the gloss, or drop the label. Carve-out: when the label span is a full sentence on its own, the period is correct.
+### Bold labels on list items
+- A bold header that repeats the item ("**Performance:** Performance improved by...") gets the header stripped and the point written directly. If items need headers, they should probably be paragraphs.
+- A bold label ending in a period, with the explanation as a separate sentence (`**Intros.** Years of conferences...`), is a machine pattern; a person uses a colon (`**Intros:** years of conferences...`). Fix the period to a colon and lowercase the gloss, or drop the label. When the label is a full sentence on its own, the period is correct.
 
 ### Title case headings
 - AI over-capitalizes: "Strategic Negotiations And Key Partnerships" instead of "Strategic negotiations and key partnerships." Use sentence case for subheadings; title case only for the main title, if at all.
@@ -260,33 +266,181 @@ Words are organized into three tiers by how reliably they signal AI text. Match 
 
 ### Confidence calibration phrases
 - "It's worth noting that," "Interestingly," "Surprisingly," "Importantly," "Notably," "Certainly," "Undoubtedly" — these tell the reader how to feel instead of letting the fact speak. One "notably" in 2,000 words is fine; three in 500 is emphasis stacking. Flag by density.
-- Persuasive-authority tropes: "the real question is," "at its core," "fundamentally," "make no mistake," "the truth is." Cut the trope and lead with the substance.
+- Persuasive-authority tropes: "the real question is," "fundamentally," "make no mistake," "the truth is." Cut the trope and lead with the substance.
 
-### Rhythm and uniformity
+### Rhythm
 
-Structure is the strongest detection signal — AI text is metronomic; human text has varied rhythm. Fixing every flagged word but leaving the rhythm untouched still reads as AI.
+**Clarity outranks rhythm. Always.** Similar sentence lengths are a weak sign of machine writing, and chasing that sign costs more than it is worth. Uniform length is not a defect if every sentence is clear. Never lengthen, merge, or complicate a sentence to create variety, and never keep a confusing sentence because it reads better. Add a short sentence or a fragment where it costs no clarity. Otherwise let the lengths be similar.
 
-- **Sentence length uniformity**: If most sentences are 15–25 words, mix in short punchy ones (3–8 words) and longer flowing ones (20+). Fragments work.
-- **Paragraph length uniformity**: Vary deliberately. Some paragraphs should be one sentence.
-- **Read-aloud test**: If the text could be read by a text-to-speech engine without sounding weird, it's too uniform.
-- **Over-polishing**: Aggressively editing out every irregularity pushes human writing *toward* AI statistical profiles. Don't sand away all personality. If you apply every rule at maximum strictness, you risk creating the very uniformity you're trying to avoid.
+### Padding
 
-### Paragraph-reshuffle and treadmill tests (writer-side diagnostics)
-- Can you swap two body paragraphs without breaking the piece? If order doesn't matter, you've written a list, not an argument that builds. Establish a through-line where each paragraph depends on the one before it.
-- Read each paragraph and ask "what's actually new here?" If you could cut 40-60% and lose no information, the prose is restating the premise in fresh words instead of advancing it. Name the one fact or turn each paragraph contributes; if there isn't one, cut it.
+Read each paragraph and ask what is new in it. If you could cut half and lose no information, the prose is restating itself. Name the one fact each paragraph adds; if there is none, cut the paragraph.
 
 ### When to rewrite from scratch vs. patch
-If the text has 5+ flagged vocabulary hits across multiple categories, 3+ distinct pattern categories, and uniform sentence/paragraph length, patching won't fix it — the structure itself is AI-generated. Advise a full rewrite: state the core point in one sentence, then rebuild.
+If the text has 5+ flagged vocabulary hits across multiple categories and 3+ distinct pattern categories, patching won't fix it — the structure itself is AI-generated. Advise a full rewrite: state the core point in one sentence, then rebuild.
+
+## Plain language
+
+Everything above removes what should not be there. This section checks that what remains can be understood. Apply it on every audit, in every mode.
+
+Plain English is a set of principles for writing clearly and accurately, such as using short sentences. Plain language modifies those techniques to suit the needs of the reader and adapts to what user research shows. So treat this section as a floor, not a ceiling: if the writer has evidence that their readers say something else, the readers win.
+
+### The three tests
+
+Content passes when a reader can:
+
+- find the information they need
+- understand what they find
+- act on what they understand
+
+If a passage fails one of these, it fails the section, no matter how clean its vocabulary is.
+
+### Write clearly for specialists too
+
+Plain language is not a concession to non-experts. Research into specialist legal language found 80% of people preferred sentences written in clear English, and the preference grew as the issue got more complex, the reader got more educated, and their knowledge got more specialist. Experts can parse complex language. They do not want to when an alternative exists.
+
+So this section applies to technical and specialist writing exactly as it applies to general writing. A knowledgeable audience is not a reason to relax it.
+
+### Sentence and paragraph length
+
+- Split any sentence over 25 words.
+- Hold paragraphs to 5 sentences or fewer.
+- There is no minimum or maximum page length. A single paragraph of jargon is too long.
+
+The cap is a ceiling, not a target. Split a 40-word sentence; do not pad a 10-word one.
+
+### Active voice
+
+Prefer the active voice. It is more direct, it puts the focus on the reader and the action they need to take, and it keeps sentences short. The passive produces longer sentences and harder reading. "You need a permit" beats "A permit is needed."
+
+Two cases where the passive is correct:
+
+- the outcome matters more than whoever caused it, as in "the old system has been replaced"
+- the passive is the more reader-centered choice, as in "you'll be told what to do when you apply" rather than naming an organization the reader does not care about
+
+### Front-load
+
+Put the most important information first, then taper to smaller details. The faster you reach the point, the more likely the reader sees it. Readers skim: they take in roughly 20% to 28% of the text on a page, scanning in an F shape across the top, down the side, and across again until they find what they need. Many are stressed or in a hurry.
+
+### Headings
+
+Write headings that are:
+
+- descriptive, so avoid generic ones like "Introduction"
+- front-loaded, with the most important word first
+- active, starting with a verb where possible, so "Apply for a permit" rather than "You can apply for a permit"
+- removable, meaning the content still makes sense with every heading deleted
+
+Headings should not be questions, because questions are hard to front-load and readers want answers. They should not use technical terms you have not already explained.
+
+### Jargon and specialist terms
+
+Specialist terms are not automatically jargon. Use one when the reader needs it, then explain it in plain words the first time it appears on each page or screen. Write the term, then the gloss.
+
+Prefer the words readers already use. Search terms are good evidence for which of two synonyms readers reach for.
+
+Spell out an acronym in full the first time it appears on a page. If research shows readers know the acronym better than the expansion, lead with the acronym and put the expansion in parentheses. On a landing or start page, use the full name, then the acronym afterward.
+
+### Words to avoid
+
+Plain English rules out formal or long words where short familiar ones work: "buy" not "purchase", "help" not "assist", "about" not "approximately". Words ending in "-ion" and "-ment" make sentences longer and more complicated than they need to be; break the noun back into the verb it came from.
+
+This table overlaps the Tier 1 and Tier 2 tables above on `utilize`, `leverage`, `in order to`, `robust`, `streamline`, `facilitate`, `foster`, `empower`, and `overarching`. The suggested replacements are worded differently in the two places but point the same direction, so use whichever fits the sentence. The difference that matters is the trigger: the tiers flag these words because AI overuses them, and this table flags them because readers stumble on them, so a word listed here is worth replacing even in text no one suspects of being machine-generated.
+
+| Replace | With |
+|---|---|
+| agenda (unless a meeting agenda) | plan |
+| advance (verb) | improve, or something more specific |
+| collaborate | work with |
+| combat (unless military) | solve, fix, or something more specific |
+| commit / pledge | plan to, we're going to (with a specific verb) |
+| counter (verb) | prevent, or rephrase as a solution to a problem |
+| deliver (unless physical goods) | make, create, provide |
+| deploy (unless military or software) | use, build, put into place |
+| dialogue | discussion, spoke to |
+| disincentivize | discourage, deter |
+| drive (metaphor) | create, cause, encourage |
+| drive out | stop, avoid, prevent |
+| empower | allow, give permission |
+| facilitate | say specifically how you are helping; "run" if it is a workshop |
+| focus (verb) | work on, concentrate on |
+| foster (unless children) | encourage, help |
+| going forward / moving forward | from now on, in the future |
+| hub / portal / one-stop shop | website, service |
+| impact (unless a collision) | have an effect on, influence |
+| in order to | to, or cut entirely |
+| incentivize | encourage, motivate |
+| initiate | start, begin |
+| key (unless it unlocks something) | cut it, or use important, significant |
+| land (verb, unless aircraft) | get, achieve |
+| leverage (unless financial) | use, influence |
+| liaise | work with, work alongside |
+| overarching | cut it, or use encompassing |
+| progress (verb) | work on, develop, make progress |
+| promote (unless advertising or a career) | recommend, support |
+| ring-fencing | separate, or name what the money will be spent on |
+| robust (unless a sturdy object) | well thought out, thorough |
+| slim down | make smaller, reduce the size |
+| streamline | simplify, remove unnecessary administration |
+| strengthening (unless a physical structure) | name the action: increase funding, add staff |
+| tackle (unless physical) | stop, solve, deal with |
+| transform | describe what you are changing and how |
+| utilize | use |
+
+Avoid metaphors generally. They do not say what you mean and they slow comprehension.
+
+### Contractions
+
+Use positive contractions like "you'll". Avoid negative contractions like "can't" and "don't", because many readers find them harder to read or misread them as the opposite of what they say; write "cannot" instead. Avoid complex and conditional contractions too: "should've", "could've", "would've".
+
+### Requirement verbs
+
+- **must** for a legal requirement.
+- **legal requirement** or **legally entitled** where "must" does not carry enough weight.
+- **need** for a requirement that is procedural rather than legal, where not doing it stops the reader progressing but carries no penalty.
+- **can** for anything optional. Avoid "you may be able to".
+
+### Address the reader
+
+- Use "you" wherever possible.
+- In the third person, stay gender neutral: "they can", not "he or she can".
+- Name your organization in full before you start calling it "we". Do not assume the reader knows who "we" is.
+- Drop "please" and "please note", including in instructions.
+- Do not set large amounts of text in capitals. It is hard to read and it reads as shouting.
+- Avoid job titles as identifiers. Describe what the role does: "the person who manages your recruitment should upload the job advertisement" beats naming a title that varies between organizations and changes when they reorganize.
+- Do not write "you were unsuccessful". Move the failure off the person: "your application was unsuccessful on this occasion, but you can apply again."
+- Name both halves of a role pair rather than the dominant one, so the reader who holds the other half sees themselves.
+
+### Subjective adjectives
+
+Adjectives carrying a judgment rather than a fact make text read as spin, and they are the one part of register that is a construction problem: they add words without adding information. Cut them, or replace each one with the fact that earned it. This is not a rule about how warm or formal the writing should be, which is the writer's call.
+
+### Naming a product or service
+
+Use the name inside a sentence rather than as a bare noun. If you must use it as a noun, put it at the start of the sentence so it does not read as a typo. Capitalize only the first letter, skip the quotation marks, and do not append the word "service" unless it is genuinely part of the name.
+
+### Numbers and time periods
+
+Write time periods of 12 months or more consistently, in years and months: "this course takes about one year to complete", "this program takes 2 years and 6 months to complete."
+
+### Structure housekeeping
+
+- No footnotes. They are a print convention. If the information matters, put it in the body; if it does not, cut it.
+- Do not repeat the summary in the first paragraph.
+
+### Checking readability
+
+Check the reading grade with a readability tool such as Hemingway, or the Flesch-Kincaid grade level and reading ease scores in Word. Report the score alongside the findings. A score is evidence, not a pass mark: text can hit a low grade level and still fail the three tests above.
 
 ## Severity tiers
 
 When triaging, prioritize by tier:
 
-**P0 — Credibility killers (fix immediately):** cutoff disclaimers; chatbot artifacts; vague attributions without sources; significance inflation on routine events; chat markup leaks and unfilled placeholders.
+**P0 — Credibility killers and comprehension failures (fix immediately):** cutoff disclaimers; chatbot artifacts; vague attributions without sources; significance inflation on routine events; chat markup leaks and unfilled placeholders; unexplained specialist terms or acronyms; any passage that fails one of the three tests.
 
-**P1 — Obvious AI smell (fix before publishing):** Tier 1 word violations; template and slot-fill phrases; "let's" openers; synonym cycling; formulaic openings; bold overuse; em dash frequency; generic future-narrative closers; negative parallelism.
+**P1 — Obvious AI smell and plain language violations (fix before publishing):** Tier 1 word violations; words-to-avoid violations; template and slot-fill phrases; "let's" openers; synonym cycling; formulaic openings; bold overuse; em dash frequency; generic future-narrative closers; negative parallelism; sentences over 25 words; paragraphs over 5 sentences; passive voice outside its two exceptions; buried lead instead of front-loaded content; negative contractions.
 
-**P2 — Stylistic polish (fix when time allows):** generic conclusions; compulsive rule of three; uniform paragraph length; copula avoidance; transition phrases; Tier 3 density.
+**P2 — Stylistic polish (fix when time allows):** generic conclusions; compulsive rule of three; copula avoidance; transition phrases; Tier 3 density; malformed bullet lists; question headings and generic headings; footnotes; "please"; a summary repeated in the first paragraph.
 
 Use P0+P1 for quick passes. Full audit covers all three tiers.
 
@@ -294,38 +448,21 @@ Use P0+P1 for quick passes. Full audit covers all three tiers.
 
 When writing *about* AI writing patterns, quoted examples are exempt. Text inside quotation marks, code blocks, or marked as illustrative ("for example, AI might write...") should not be rewritten. Only flag patterns in the author's own prose.
 
-## Context profiles
+## Preserve the writer's voice
 
-Pass an optional context hint to adjust strictness. If none is given, auto-detect: short + hashtags = `linkedin`; code blocks or APIs = `technical-blog`; salutation + fundraising language = `investor-email`; step-by-step or README structure = `docs`; otherwise `blog` (all rules at full strength). If auto-detection feels wrong, say which profile you're using and why.
+This skill changes how sentences are built, never how the writing sounds. Register, warmth, formality, humor, and stance belong to the writer. Fix the construction and hand back prose that still sounds like them.
 
-- **`linkedin`** — Short-form social. Relax em dashes (2/post), bold hooks, and short-form transitions; skip uniform-paragraph and bullet rules.
-- **`blog`** — Default. All rules at full strength.
-- **`technical-blog`** — Relax hedging ("may" is accurate), bullet/option lists, and these word-table terms with legitimate technical meaning: `robust`, `comprehensive`, `seamless`, `ecosystem`, `leverage` (platform/API sense), `facilitate`, `underpin`, `streamline`. Still flag `delve`, `tapestry`, `beacon`, `embark`, `testament to`, `game-changer`, `harness`.
-- **`investor-email`** — Tighten everything; promotional language and significance inflation are the biggest risks (extra strict).
-- **`docs`** — Clarity over voice. Relax em dashes, bold, hedging; skip emoji/copula rules.
-- **`casual`** — Slack, internal notes. Catch only the worst offenders (P0).
-
-## Voice profiles
-
-Context profiles set how strict to be; voice profiles set how the prose should sound. Independent axes. Voice is optional — if the writer doesn't name one, infer it from the input's existing register and don't impose a persona on text that already has one.
-
-- **`casual`** — Contractions throughout; short sentences (≤14 words avg); fragments allowed; at least one first-person or concrete touch; near-zero jargon; keep warm hedges ("honestly," "I think"), cut corporate ones.
-- **`professional`** — Active voice; vary sentence length; one concrete claim per paragraph (number, name, date); explicit ask; low hedging.
-- **`technical`** — Plain copulatives ("X is Y") over inflated substitutes; one idea per sentence; imperative for instructions; define jargon on first use; tables/lists only where content is genuinely list-shaped.
-- **`warm`** — Address the reader ("you"); cut intensifiers in favor of stronger verbs; no performative-empathy openers; medium sentences (15–20 words).
-- **`blunt`** — Lead with the claim; cut windups; rare em dashes (periods for emphasis); no padding to hit a rule of three; near-zero hedging; short declaratives with the occasional long sentence for contrast.
-
-**Calibrate to a sample (optional).** If the writer gives a sample of their own writing, match its sentence-length pattern, contraction rate, paragraph openings, and word choices instead of a named profile. Don't upgrade their vocabulary.
-
-Where voice and context govern the same rule and disagree, resolve toward the stricter of the two.
+Concretely: do not make casual writing more professional or formal writing more relaxed, do not add or remove first person, do not soften or sharpen a stated position, and do not swap the writer's habitual words for ones you consider better. This protects register, not vocabulary. A confusing word is a construction defect, and replacing it is not a change of voice. Defer only when a rule can be satisfied *only* by shifting formality, warmth, or stance.
 
 ## Output format
 
 ### Detect mode (default)
 
-**1. Issues found** — A bulleted list of every AI-ism identified, with the offending text quoted, grouped by severity (P0, P1, P2).
+**1. Issues found** — A bulleted list of every AI-ism and plain language failure identified, with the offending text quoted, grouped by severity (P0, P1, P2). Mark each one as an AI pattern, a comprehensibility problem, or both.
 
-**2. Assessment** — For each flag, note whether it's a clear problem or a judgment call. Some AI-associated patterns are effective in context. Call out which to definitely fix vs. which are worth a second look. If the text is clean, say so.
+**2. Readability** — The longest sentence and its word count, the longest paragraph and its sentence count, and a reading grade level. State which tool produced the grade, or say you estimated it. After a rewrite or edit, give the grade before and after.
+
+**3. Assessment** — For each flag, note whether it's a clear problem or a judgment call. Some AI-associated patterns are effective in context. Call out which to definitely fix vs. which are worth a second look. If the text is clean, say so. Say separately whether the text passes the three tests: can a reader find what they need, understand it, and act on it.
 
 ### Rewrite mode
 
@@ -335,7 +472,7 @@ Where voice and context govern the same rule and disagree, resolve toward the st
 
 **3. What changed** — Brief summary of the meaningful edits.
 
-**4. Second-pass audit** — Re-read the rewritten version from section 2. Identify any remaining AI tells that survived the first pass, fix them, return the corrected text inline, and note what changed. If the rewrite is clean, say so.
+**4. Second-pass audit** — Re-read the rewritten version from section 2. Identify any remaining AI tells and plain language failures that survived the first pass, fix them, return the corrected text inline, and note what changed. Check the longest sentence and paragraph against the 25-word and 5-sentence limits, and confirm every specialist term and acronym is explained on first use. If the rewrite is clean, say so.
 
 ### Edit mode
 
@@ -343,16 +480,19 @@ After editing the file in place, return a short report — not the full file:
 
 **1. Edits made** — Bulleted list of changes, each with the file location and before → after. Only the spans you touched.
 
-**2. Verification** — Confirm you re-read the file and the flagged patterns are resolved. Note anything you deliberately left alone because it was already human or intentional.
+**2. Verification** — Confirm you re-read the file and the flagged patterns are resolved. Report the longest surviving sentence and paragraph. Note anything you deliberately left alone because it was already human or intentional.
 
-## Tone calibration
+## Final checks
 
-The goal is writing that sounds like a person wrote it. Direct. Specific. The writing should demonstrate confidence, not assert it.
+The goal is writing that reads as though a person built it and that a reader can act on. Direct. Specific. The writing should demonstrate confidence, not assert it.
 
-1. **Vary sentence length** — mix short with long. Fragments are fine.
-2. **Be concrete** — replace vague claims with numbers, names, dates, or examples.
-3. **Have a voice** — where appropriate, use first person, state preferences, show reactions.
-4. **Cut the neutrality** — if the piece is supposed to take a position, take it.
-5. **Earn your emphasis** — don't tell the reader something is interesting. Make it interesting.
+1. **Be concrete** — replace vague claims with numbers, names, dates, or examples.
+2. **Earn your emphasis** — don't tell the reader something is interesting. Make it interesting.
 
-If the original writing is already strong, say so and make only the necessary cuts. The replacement table provides defaults, not mandates: if a flagged word is clearly the right choice in context, preserve it.
+If the original writing is already strong, say so and make only the necessary cuts. The tables give defaults, not the only wording: pick a better replacement when one exists, but pick one. Keeping the flagged word is governed by Fix, do not defer.
+
+## Attribution
+
+Adapted from avoid-ai-writing (https://github.com/conorbronsdon/avoid-ai-writing), Copyright (c) 2026 Conor Bronsdon, MIT License. The pattern catalogue draws on Wikipedia's "Signs of AI writing" (WikiProject AI Cleanup) and the detection research cited above. Crypto/web3-specific phrase rules from the source were dropped as out of scope.
+
+The Plain language section adapts the UK Department for Education Plain Language standard (DDTS-529) and the GOV.UK writing guidelines and A to Z style guide. That material is Crown copyright, used under the Open Government Licence v3.0 (https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/). British spelling, date, and currency conventions were converted to American ones, British institutional terms were dropped, and the source's examples were rewritten as domain-neutral.
