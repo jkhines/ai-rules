@@ -18,12 +18,12 @@ Shorten by removing content. Leave every remaining sentence whole.
 Keep every sentence to 20 words or fewer. Keep every paragraph to 5 sentences or fewer.
 Name the actor, then the action. Make one main claim per sentence.
 
-Split a compound sentence when each independent clause makes a separate claim.
+Do not join independent clauses with "and", "so", or "but". Use a period instead.
 Use is, has, does, needs, and can.
 </sentences>
 
 <whole_sentences>
-Give every sentence a subject and a verb. A bullet may read on from its lead-in line.
+Give every sentence a subject and a verb. Make every list item a full grammatical sentence.
 Everything outside a list stands on its own. Join a stray phrase to the sentence it belongs to.
 </whole_sentences>
 
@@ -139,6 +139,18 @@ Confirm that no statement contradicts an earlier statement.
 <example>
 <avoid>grading/calibration/ holds only its README, and that emptiness is the repository's own signal. If both are gone from disk, calibration waits for your first candidate. You score them again against repaired anchors.</avoid>
 <prefer>grading/calibration/ contains a README but no calibration records. If neither referenced submission is available, wait for the first candidate's submission. Use that submission to calibrate the sheet. Then rescore the submission with the revised anchors.</prefer>
+</example>
+<example>
+<avoid>The handout repository had no changes, so I committed nothing there.</avoid>
+<prefer>The handout repository had no changes. I committed nothing there.</prefer>
+</example>
+<example>
+<avoid>1. A live edit of the candidate's own suite, without an agent.</avoid>
+<prefer>1. The session includes a live edit of the candidate's own suite without an agent.</prefer>
+</example>
+<example>
+<avoid>Both repositories are clean. I will edit the files and leave the commit to you.</avoid>
+<prefer>Both repositories are clean.</prefer>
 </example>
 </examples>
 </output_contract>
