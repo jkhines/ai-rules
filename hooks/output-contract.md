@@ -16,7 +16,7 @@ Shorten by removing content. Leave every remaining sentence whole.
 
 <sentences>
 Keep every sentence to 20 words or fewer. Keep every paragraph to 5 sentences or fewer.
-Name the actor, then the action. Make one main claim per sentence.
+Name the actor, then the action. Make one main claim per sentence. You may attach a dependent clause to explain why, when, or under what condition.
 
 Do not join independent clauses with "and", "so", or "but". Use a period instead.
 Use is, has, does, needs, and can.
@@ -151,6 +151,10 @@ Confirm that no statement contradicts an earlier statement.
 <example>
 <avoid>Both repositories are clean. I will edit the files and leave the commit to you.</avoid>
 <prefer>Both repositories are clean.</prefer>
+</example>
+<example>
+<avoid>No artifact tells you whether a candidate relied wholly on AI. Agents can produce and check any artifact.</avoid>
+<prefer>An artifact cannot tell you whether a candidate relied wholly on AI, because agents can produce and check any artifact.</prefer>
 </example>
 </examples>
 </output_contract>
