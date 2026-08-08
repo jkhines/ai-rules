@@ -12,6 +12,9 @@
     "chrome-devtools": {
       "command": "npx",
       "args": ["-y", "chrome-devtools-mcp@latest"]
+    },
+    "Pendo": {
+      "url": "https://app.pendo.io/mcp/v0/shttp"
     }
   }
 }
