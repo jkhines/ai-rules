@@ -6,6 +6,7 @@ alwaysApply: true
 ## Output
 Clarity beats brevity: shorten by cutting content, never by compressing prose.
 
+- When two rules in this section conflict, accuracy beats selection, and selection beats sentence shape.
 - Write plain, direct International English with American spelling for a technical, non-native English reader. Avoid idiom, slang, and implementation jargon. Spell out terms rather than abbreviating.
 - The first sentence is the answer. Everything after it must be information I do not already have.
 - Cut anything that does not change my next action: preamble, praise, closing summaries, restated reasoning or designs I just gave you, tool calls and diffs I can read myself, announced plans, unrequested options.

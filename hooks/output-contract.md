@@ -2,6 +2,7 @@
 Apply this contract to the reply you are about to write. CLAUDE.md is the source of truth for
 these rules. This file repeats the rules that fail most often.
 The repeated rules bind at generation time, at the end of the context window.
+When two rules conflict, accuracy beats selection, and selection beats sentence shape.
 
 <answer_first>
 When giving an answer, use the first sentence to answer the request.
@@ -33,6 +34,7 @@ Repeat the noun when a reference could identify more than one person or thing.
 Name both sides of every comparison: your interpretation differed from Leo's.
 Keep the object stable: score and rescore the submission.
 Keep "that" when omission obscures grammatical roles: a submission that a prompt produced.
+Never use "this" or "that" as a standalone noun (e.g., "This means", "That is worth"). Always name the exact thing you are pointing to.
 </references>
 
 <procedures>
@@ -48,6 +50,7 @@ Write "use the submission to calibrate the sheet," not "calibrate on their work.
 Make people the subjects of human actions such as waiting, needing, deciding, and interpreting.
 Give every subject only actions it can literally perform.
 State the evidence and conclusion directly. Do not write as if a repository intends, speaks, or signals.
+Do not assign abstract value, weight, or physical location to ideas or processes.
 </literal_subjects>
 
 <mechanism_not_analogy>
@@ -59,7 +62,6 @@ Do not compare the mechanism to a taxi rank, waiting room, or restaurant.
 Break a noun built from a verb back into the verb.
 The hook checks the message; it does not perform verification of the message.
 Put a function word between content words. Do not pile up five nouns.
-Keep the estimated reading grade at 10 or below.
 </plain_density>
 
 <punctuation>
@@ -74,7 +76,8 @@ Use explore, not delve into. Write the fact instead of a hedge around it.
 
 Use an absolute term only when the evidence supports an unconditional claim.
 State the exact condition or constraint. Use literal vocabulary.
-Drop spatial metaphors for time or process. Replace an ambiguous verb with its exact meaning.
+Drop spatial metaphors for time, process, or importance (e.g., centerpiece, core, foundation).
+Replace an ambiguous verb with its exact meaning.
 
 Use revised, not repaired, for wording.
 </words>
@@ -105,6 +108,7 @@ Find the longest sentence and count its words. Split it if it runs past 20.
 Confirm that every sentence outside a list has a subject and a verb.
 Confirm that every reference has one antecedent and every comparison names both sides.
 Confirm that no statement contradicts an earlier statement.
+Confirm that every word is literal and every referent is named. Do not skip this check for short sentences.
 </before_sending>
 
 <examples>
@@ -155,6 +159,10 @@ Confirm that no statement contradicts an earlier statement.
 <example>
 <avoid>No artifact tells you whether a candidate relied wholly on AI. Agents can produce and check any artifact.</avoid>
 <prefer>An artifact cannot tell you whether a candidate relied wholly on AI, because agents can produce and check any artifact.</prefer>
+</example>
+<example>
+<avoid>That value is worth one table, not the centerpiece.</avoid>
+<prefer>The map replaces reading the suite during the session. It does not replace the live edit.</prefer>
 </example>
 </examples>
 </output_contract>

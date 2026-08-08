@@ -452,10 +452,6 @@ Write time periods of 12 months or more consistently, in years and months: "this
 - No footnotes. They are a print convention. If the information matters, put it in the body; if it does not, cut it.
 - Do not repeat the summary in the first paragraph.
 
-### Checking readability
-
-Check the reading grade with a readability tool such as Hemingway, or the Flesch-Kincaid grade level and reading ease scores in Word. Report the score alongside the findings. A score is evidence, not a pass mark: text can hit a low grade level and still fail the three tests above.
-
 ## Severity tiers
 
 When triaging, prioritize by tier:
@@ -486,7 +482,7 @@ Concretely: do not make casual writing more professional or formal writing more 
 
 **1. Issues found** — A bulleted list of every AI-ism and plain language failure identified, with the offending text quoted, grouped by severity (P0, P1, P2). Mark each one as an AI pattern, a comprehensibility problem, or both.
 
-**2. Readability** — The longest sentence and its word count, the longest paragraph and its sentence count, and a reading grade level. State which tool produced the grade, or say you estimated it. After a rewrite or edit, give the grade before and after.
+**2. Readability** — The longest sentence and its word count, and the longest paragraph and its sentence count. After a rewrite or edit, give both counts before and after.
 
 **3. Assessment** — For each flag, note whether it's a clear problem or a judgment call. Some AI-associated patterns are effective in context. Call out which to definitely fix vs. which are worth a second look. If the text is clean, say so. Say separately whether the text passes the three tests: can a reader find what they need, understand it, and act on it.
 
