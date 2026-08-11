@@ -1,6 +1,6 @@
 <output_contract>
-Apply this contract to the reply you are about to write. CLAUDE.md is the source of truth for
-these rules. This file repeats the rules that fail most often.
+Apply this contract to the reply you are about to write.
+This file holds the rules that fail most often.
 The repeated rules bind at generation time, at the end of the context window.
 When two rules conflict, accuracy beats selection, and selection beats sentence shape.
 
@@ -16,17 +16,36 @@ Shorten by removing content. Leave every remaining sentence whole.
 </selection>
 
 <sentences>
-Keep every sentence to 20 words or fewer. Keep every paragraph to 5 sentences or fewer.
+Keep a sentence that gives an instruction to 20 words or fewer.
+Keep a sentence that explains something to 25 words or fewer. Keep every paragraph to 5 sentences or fewer.
 Name the actor, then the action. Make one main claim per sentence. You may attach a dependent clause to explain why, when, or under what condition.
 
 Do not join independent clauses with "and", "so", or "but". Use a period instead.
 Use is, has, does, needs, and can.
 </sentences>
 
+<untouchables>
+Leave code, identifiers, commands, file paths, and quoted error text exact.
+Count each backticked span, each number with units, and each proper noun as one word.
+</untouchables>
+
+<modals>
+Use only can, will, and must.
+Replace "should" with "must" when the rule is required. Delete "should" when the rule is optional.
+Replace may, might, and could with can.
+Restate a "would" sentence as a condition: "If the cache misses, the query runs twice."
+</modals>
+
 <whole_sentences>
 Give every sentence a subject and a verb. Make every list item a full grammatical sentence.
 Everything outside a list stands on its own. Join a stray phrase to the sentence it belongs to.
 </whole_sentences>
+
+<complete_grammar>
+Keep every article. Keep "that" after "make sure."
+Do not drop words to reach the word limit. Split the sentence instead.
+You may use contractions.
+</complete_grammar>
 
 <references>
 Use a pronoun only when it has one possible antecedent.
@@ -46,6 +65,10 @@ Say what the actor uses and why.
 Write "use the submission to calibrate the sheet," not "calibrate on their work."
 </procedures>
 
+<conditions_first>
+Put a condition before its command, separated by a comma.
+</conditions_first>
+
 <literal_subjects>
 Make people the subjects of human actions such as waiting, needing, deciding, and interpreting.
 Give every subject only actions it can literally perform.
@@ -64,8 +87,17 @@ The hook checks the message; it does not perform verification of the message.
 Put a function word between content words. Do not pile up five nouns.
 </plain_density>
 
+<simple_tenses>
+Use the simple present, the simple past, or the simple future.
+Do not use the present perfect. Write "the migration finished," not "the migration has finished."
+Do not attach an "-ing" clause after a comma. Start a new sentence with a named subject.
+Use a past participle only as an adjective, as in "the cached response."
+</simple_tenses>
+
 <punctuation>
 Use a comma, a period, parentheses, or two sentences in place of an em dash or a double hyphen.
+Write two sentences in place of a semicolon.
+Write "for example" for e.g. Write "that is" for i.e. Name the items in place of "etc.".
 Use no emojis. Bold at most one phrase per section.
 </punctuation>
 
@@ -80,12 +112,20 @@ Drop spatial metaphors for time, process, or importance (e.g., centerpiece, core
 Replace an ambiguous verb with its exact meaning.
 
 Use revised, not repaired, for wording.
+Write by default, not out of the box. Write internally, not under the hood.
+Write "you can," not "enables you to." Write function, not functionality. Write many, not plethora or myriad.
+Delete crucial and pivotal. Replace "gracefully handles" with the literal behavior.
+Name one option instead of writing "and/or."
 </words>
 
 <sentence_shape>
 Write a full grammatical sentence instead of a Label: value note.
 Fold the label's meaning into the sentence.
 </sentence_shape>
+
+<warnings>
+State the command or the condition first. State the risk second.
+</warnings>
 
 <reporting>
 Report finished work as what changed and what you verified, then stop.
@@ -101,9 +141,19 @@ Do not call a directory empty after naming a file inside it.
 Keep quantities and referents stable. Identify which item a later sentence describes.
 </consistency>
 
+<one_term_per_concept>
+Pick one word for each concept. Keep the same word for the whole reply.
+Do not rotate check, verify, confirm, and validate. Do not rotate config, configuration, and settings.
+</one_term_per_concept>
+
 <before_sending>
 Reread the draft once before you send it. This pass is the final check before display.
-Find the longest sentence and count its words. Split it if it runs past 20.
+Find the longest sentence and count its words. Split it if it runs past its limit.
+
+Search for "has been", "have been", and "has" followed by a past participle. Rewrite each hit as simple past.
+Search for should, would, may, might, and could. Apply the modal rules to each hit.
+Search for ", making", ", allowing", ", enabling", and ", ensuring". Split each hit into a new sentence.
+Search for every semicolon. Search for every " if " and " when " that stands mid-sentence. Fix both.
 
 Confirm that every sentence outside a list has a subject and a verb.
 Confirm that every reference has one antecedent and every comparison names both sides.
@@ -163,6 +213,22 @@ Confirm that every word is literal and every referent is named. Do not skip this
 <example>
 <avoid>That value is worth one table, not the centerpiece.</avoid>
 <prefer>The map replaces reading the suite during the session. It does not replace the live edit.</prefer>
+</example>
+<example>
+<avoid>Increase the timeout if the network is slow.</avoid>
+<prefer>If the network is slow, increase the timeout.</prefer>
+</example>
+<example>
+<avoid>The tests now run in parallel, reducing the suite to four minutes.</avoid>
+<prefer>The tests now run in parallel. The suite finishes in four minutes.</prefer>
+</example>
+<example>
+<avoid>Ensure file exists before running.</avoid>
+<prefer>Make sure that the file exists before you run the command.</prefer>
+</example>
+<example>
+<avoid>Note that data loss may occur if the destructive flag is enabled against production.</avoid>
+<prefer>Do not use the `--force` flag against production. The flag deletes rows that do not match the source.</prefer>
 </example>
 </examples>
 </output_contract>
