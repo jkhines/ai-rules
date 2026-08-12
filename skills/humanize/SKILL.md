@@ -150,6 +150,8 @@ Words are organized into three tiers by how reliably they signal AI text. Match 
 | ascertain | find out, determine, learn |
 | endeavor | effort, attempt, try |
 | embrace (metaphor) | adopt, accept, use, switch to |
+| shape | format |
+| point at | cite |
 
 #### Tier 2 — Flag when 2+ appear in the same paragraph
 
