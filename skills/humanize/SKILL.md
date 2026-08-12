@@ -105,7 +105,7 @@ Words are organized into three tiers by how reliably they signal AI text. Match 
 | stream / workstream (work-grouping metaphor) | area |
 | thread (work-grouping metaphor) | flow |
 | path / pathway (route/plan metaphor) | approach |
-| gate / gating (checkpoint metaphor) | prerequisite, check |
+| gate / gating (verb) | block |
 | seam (joining metaphor) | integration point |
 | tapestry | (describe the actual complexity) |
 | realm | area, field, domain |
@@ -152,6 +152,7 @@ Words are organized into three tiers by how reliably they signal AI text. Match 
 | embrace (metaphor) | adopt, accept, use, switch to |
 | shape | format |
 | point at | cite |
+| sequence | order, organize |
 
 #### Tier 2 — Flag when 2+ appear in the same paragraph
 
