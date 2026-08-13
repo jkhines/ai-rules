@@ -6,7 +6,7 @@
     "k6": {
       "type": "stdio",
       "command": "docker",
-      "args": ["run", "--rm", "-i", "grafana/mcp-k6:latest"],
+      "args": ["run", "--rm", "-i", "--network=host", "grafana/mcp-k6:latest"],
       "env": {}
     },
     "chrome-devtools": {
