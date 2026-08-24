@@ -50,7 +50,8 @@ Clarity beats brevity: shorten by cutting content, never by compressing prose.
 - Code must be correct, secure, and fully functional with all imports. Prioritize readability; note security or efficiency considerations.
 - Prefer the simplest approach that meets the requirement; check whether a smaller change (one flag, an existing value) achieves the goal before adding parameters, files, or abstraction.
 - For substantial changes, follow red-green-refactor TDD; load the `tdd` skill for the method.
-- Wrap source code lines at 120 characters; never wrap source code earlier than that. This limit applies only to source code. Never hard-wrap prose, including Markdown, documentation, generated artifacts, or chat responses, unless the target file's existing format requires it.
+- Wrap source code lines at 120 characters; never wrap source code earlier than that.
+- Never apply the 120-character limit to Markdown files. Do not insert line breaks in Markdown based on line length, even when editing text that already exceeds 120 characters. Preserve one paragraph per line unless the file already uses another format.
 - Use yarn and uv, not npm and pip.
 - Never remove existing inline comments. Add a comment only when code is non-obvious to an expert: a complete, capitalized sentence ending in a period, one space after the code, no decoration.
 
