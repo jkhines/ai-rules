@@ -127,6 +127,31 @@ for dir in "$REPO_DIR/skills/"*/; do
     link "$dir" "$HOME/.cursor/skills/$(basename "$dir")"
 done
 
+# ~/.config/opencode
+# OpenCode reads its global rules from AGENTS.md in this directory, and it already auto-loads every
+# skill in ~/.claude/skills, so the skills linked above need no second link here.
+OPENCODE_DIR="$HOME/.config/opencode"
+mkdir -p "$OPENCODE_DIR"
+link "$REPO_DIR/CLAUDE.md" "$OPENCODE_DIR/AGENTS.md"
+
+# opencode.json holds user settings such as providers and permissions next to the MCP servers, so
+# merge the managed keys instead of replacing the whole file.
+#
+# OpenCode reaches OpenRouter through the OPENROUTER_API_KEY environment variable, so the provider
+# needs no entry here. Only the default model does.
+OPENCODE_CONFIG="$OPENCODE_DIR/opencode.json"
+OPENCODE_MODEL="openrouter/openai/gpt-5.6-sol"
+if command -v jq >/dev/null 2>&1; then
+    [ -f "$OPENCODE_CONFIG" ] || echo '{}' > "$OPENCODE_CONFIG"
+    jq --slurpfile generated "$REPO_DIR/.opencode.mcp.json" --arg model "$OPENCODE_MODEL" \
+        '.["$schema"] = $generated[0]["$schema"] | .model = $model | .mcp = $generated[0].mcp' \
+        "$OPENCODE_CONFIG" > "${OPENCODE_CONFIG}.tmp"
+    mv "${OPENCODE_CONFIG}.tmp" "$OPENCODE_CONFIG"
+    echo "Set model $OPENCODE_MODEL and merged MCP servers into $OPENCODE_CONFIG"
+else
+    echo "WARN: jq not found; skipping model and MCP configuration in $OPENCODE_CONFIG"
+fi
+
 # ~/.local/bin
 link "$REPO_DIR/scripts/open-google-chrome-cdp.sh" "$HOME/.local/bin/open-google-chrome-cdp.sh"
 

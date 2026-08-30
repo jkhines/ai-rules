@@ -1,6 +1,6 @@
 # AI Rules
 
-Custom rules and commands for AI coding assistants including Claude Code, Cursor, and ChatGPT.
+Custom rules and commands for AI coding assistants including Claude Code, Cursor, OpenCode, and ChatGPT.
 
 ## Contents
 
@@ -82,6 +82,26 @@ To use these rules in Cursor:
 ```
 
 After setup, Cursor discovers skills from `~/.cursor/skills/*/SKILL.md` and applies them when relevant.
+
+### OpenCode
+
+[OpenCode](https://opencode.ai/) keeps its global configuration in `~/.config/opencode/`. `install.sh` links `CLAUDE.md` to `~/.config/opencode/AGENTS.md`, which is the global rules file OpenCode reads, and merges the MCP servers from `mcp.json` into the `mcp` key of `~/.config/opencode/opencode.json`. The merge touches only the keys it manages, so your providers, permissions, and other settings survive a rerun.
+
+Skills need no link of their own. OpenCode auto-loads every skill in `~/.claude/skills/`, which `install.sh` already fills.
+
+The same merge sets the default model to `openrouter/openai/gpt-5.6-sol`. OpenCode reads the OpenRouter credential from the `OPENROUTER_API_KEY` environment variable, so the provider itself needs no entry in the config file.
+
+```bash
+# Link the rules and sync the MCP servers
+./install.sh
+
+# Confirm OpenCode sees the servers
+opencode mcp list
+```
+
+OpenCode loads its configuration once at startup, so restart it after a rerun.
+
+The output-conformance hook does not carry over. It is registered as a Claude Code `UserPromptSubmit` hook, and OpenCode publishes no equivalent hook for a plugin to append context to each prompt.
 
 ### ChatGPT
 

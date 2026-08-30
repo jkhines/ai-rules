@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Merges mcpServers from mcp.json into generated Claude Code and Cursor MCP configs.
+# Merges mcpServers from mcp.json into generated Claude Code, Cursor, and OpenCode MCP configs.
 # Run this after editing mcp.json to sync MCP servers into local application configs.
 set -euo pipefail
 
@@ -7,6 +7,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MCP_FILE="$REPO_DIR/mcp.json"
 CLAUDE_FILE="$REPO_DIR/.claude.json"
 CURSOR_FILE="$REPO_DIR/.cursor.mcp.json"
+OPENCODE_FILE="$REPO_DIR/.opencode.mcp.json"
 
 if [ ! -f "$MCP_FILE" ]; then
     echo "ERROR: $MCP_FILE not found"
@@ -46,4 +47,21 @@ else
     jq -n --argjson servers "$CLAUDE_SERVERS" '{"mcpServers": $servers}' > "$CLAUDE_FILE"
 fi
 
-echo "Updated $CLAUDE_FILE and $CURSOR_FILE with MCP servers from ${SOURCES[*]}"
+# OpenCode declares its own shape: a stdio server becomes "local" and carries its command and
+# arguments in one array, and a URL server becomes "remote". install.sh merges this fragment into
+# ~/.config/opencode/opencode.json, which also holds settings this repository does not manage.
+OPENCODE_SERVERS=$(jq '
+    map_values(
+        if has("url") then
+            {"type": "remote", "url": .url, "enabled": true}
+                + (if has("headers") then {"headers": .headers} else {} end)
+        else
+            {"type": "local", "command": ([.command] + (.args // [])), "enabled": true}
+                + (if ((.env // {}) | length) > 0 then {"environment": .env} else {} end)
+        end
+    )' <<< "$CURSOR_SERVERS")
+
+jq -n --argjson servers "$OPENCODE_SERVERS" \
+    '{"$schema": "https://opencode.ai/config.json", "mcp": $servers}' > "$OPENCODE_FILE"
+
+echo "Updated $CLAUDE_FILE, $CURSOR_FILE, and $OPENCODE_FILE with MCP servers from ${SOURCES[*]}"
