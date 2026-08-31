@@ -51,6 +51,36 @@ cleanup_repo_symlinks() {
     done
 }
 
+create_opencode_skill_adapter() {
+    local skill="$1"
+    local dest="$2"
+    local marker="<!-- Managed by ai-rules/install.sh; do not edit. -->"
+    local tmp="${dest}.tmp"
+
+    if ([ -e "$dest" ] || [ -L "$dest" ]) && ! grep -Fqx "$marker" "$dest"; then
+        echo "WARN: $dest already exists and is not managed by this repository; skipping."
+        return 0
+    fi
+
+    {
+        printf '%s\n' '---'
+        printf 'description: Run the %s skill workflow\n' "$skill"
+        printf '%s\n\n' '---'
+        printf '%s\n\n' "$marker"
+        printf 'Load the `%s` skill using the skill tool, then follow it for this request:\n\n' "$skill"
+        printf '%s\n' '$ARGUMENTS'
+    } > "$tmp"
+
+    if [ -f "$dest" ] && cmp -s "$tmp" "$dest"; then
+        rm "$tmp"
+        echo "OK: $dest already contains the $skill skill adapter"
+        return 0
+    fi
+
+    mv "$tmp" "$dest"
+    echo "Created OpenCode skill adapter: $dest"
+}
+
 # Ensure required scripts are executable in this clone.
 chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/scripts/open-google-chrome-cdp.sh" "$REPO_DIR/scripts/claude-statusline.js" "$REPO_DIR/hooks/inject-contract.py"
 
@@ -151,6 +181,16 @@ if command -v jq >/dev/null 2>&1; then
 else
     echo "WARN: jq not found; skipping model and MCP configuration in $OPENCODE_CONFIG"
 fi
+
+# OpenCode discovers the linked skills above but does not register each skill as a custom command.
+# Add thin command adapters so every repository skill is also available as /<skill-name>.
+OPENCODE_COMMANDS_DIR="$OPENCODE_DIR/commands"
+mkdir -p "$OPENCODE_COMMANDS_DIR"
+for dir in "$REPO_DIR/skills/"*/; do
+    [ -e "$dir" ] || continue
+    skill="$(basename "$dir")"
+    create_opencode_skill_adapter "$skill" "$OPENCODE_COMMANDS_DIR/$skill.md"
+done
 
 # ~/.local/bin
 link "$REPO_DIR/scripts/open-google-chrome-cdp.sh" "$HOME/.local/bin/open-google-chrome-cdp.sh"
