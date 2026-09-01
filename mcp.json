@@ -15,6 +15,9 @@
     },
     "Pendo": {
       "url": "https://app.pendo.io/mcp/v0/shttp"
+    },
+    "Notion": {
+      "url": "https://mcp.notion.com/mcp"
     }
   }
 }
