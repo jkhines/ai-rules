@@ -29,72 +29,55 @@ Editing `output-contract.md` changes what the next prompt carries. The file take
 - **skills/agent-instructions/** - The AGENTS.md open standard for portable AI agent instructions.
 - **skills/ask-questions/** - Systematic problem analysis and solution path optimization.
 - **skills/browser-tools/** - Browser tool selection, Chrome isolation, and browser-harness execution.
-- **skills/code-review/** - Reviews changes between two branches with prioritized feedback.
 - **skills/commit-push/** - Commits and pushes changes following Conventional Commits v1.0.0.
+- **skills/explicit/** - Direct, low-decoding writing grounded in shared visible context.
 - **skills/external-services/** - Credentials, environment variables, and API conventions for third-party services.
-- **skills/feature-branch/** - Creates and checks out a Git feature branch from a Jira ticket.
 - **skills/humanize/** - Audits writing for AI patterns; detect, rewrite, or edit modes.
 - **skills/masticulate/** - Walks through an existing numbered list one item at a time.
 - **skills/quiz/** - Builds a mnemonic recall scaffold and quizzes one prompt at a time.
-- **skills/pull-request/** - Creates a PR with summary, test plan, and linked context.
 
 ---
 
 ## Setup Instructions
 
-### Claude Code
-
-[Claude Code](https://docs.anthropic.com/en/docs/claude-code) reads configuration from the `~/.claude/` directory. Use symlinks to keep rules synced with this repository.
+The easiest way to configure all supported assistants is to run the install script. It creates symlinks so future updates to this repository apply automatically.
 
 ```bash
 # Clone the repository
 git clone https://github.com/jkhines/ai-rules.git ~/src/ai-rules
+cd ~/src/ai-rules
 
-# Create the Claude config directory if it doesn't exist
-mkdir -p ~/.claude
-
-# Symlink global rules
-ln -s ~/src/ai-rules/CLAUDE.md ~/.claude/CLAUDE.md
-
-# Symlink skills directory
-ln -s ~/src/ai-rules/skills/ask-questions ~/.claude/skills/ask-questions
-# Repeat for each skill, or run ./install.sh to link all skills at once.
-```
-
-After setup, Claude Code automatically loads `CLAUDE.md` into every conversation and discovers skills from `~/.claude/skills/*/SKILL.md`.
-
-### Cursor
-
-[Cursor](https://cursor.com/) uses a similar structure to Claude Code:
-- **Global rules** are set in the IDE: `Cursor Settings > General > Rules for AI`
-- **Project rules** go in `.cursor/rules/` within each project (`.mdc` format)
-- **Skills** go in `~/.cursor/skills/` (personal) or `.cursor/skills/` within each project (`skill-name/SKILL.md` format)
-
-To use these rules in Cursor:
-
-1. **For global rules**: Open `Cursor Settings > General > Rules for AI` and paste the contents of `CLAUDE.md`
-
-2. **For skills**: Run `./install.sh` from this repository, or symlink each skill directory into `~/.cursor/skills/`.
-
-```bash
-# Symlink all skills at once
+# Link rules, skills, hooks, and MCP servers for Claude Code, Cursor, and OpenCode
 ./install.sh
 ```
 
-After setup, Cursor discovers skills from `~/.cursor/skills/*/SKILL.md` and applies them when relevant.
+### Claude Code
+
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) reads configuration from the `~/.claude/` directory and `~/.claude.json`. `install.sh` automatically:
+- Symlinks global rules (`CLAUDE.md`)
+- Symlinks all skills into `~/.claude/skills/`
+- Configures the custom statusline and output-conformance hook in `~/.claude/settings.json`
+- Links `~/.claude.json` to configure MCP servers from `mcp.json`
+
+### Cursor
+
+[Cursor](https://cursor.com/) uses a similar structure. `install.sh` automatically:
+- Symlinks all skills into `~/.cursor/skills/`
+- Links `~/.cursor/mcp.json` to configure MCP servers from `mcp.json`
+
+For global rules in Cursor, you must apply them manually:
+1. Open `Cursor Settings > General > Rules for AI`
+2. Paste the contents of `CLAUDE.md`
 
 ### OpenCode
 
 [OpenCode](https://opencode.ai/) keeps its global configuration in `~/.config/opencode/`. `install.sh` links `CLAUDE.md` to `~/.config/opencode/AGENTS.md`, which is the global rules file OpenCode reads, and merges the MCP servers from `mcp.json` into the `mcp` key of `~/.config/opencode/opencode.json`. The merge touches only the keys it manages, so your providers, permissions, and other settings survive a rerun.
 
-Skills need no link of their own. OpenCode auto-loads every skill in `~/.claude/skills/`, which `install.sh` already fills.
+Skills need no link of their own. OpenCode auto-loads every skill in `~/.claude/skills/`, which `install.sh` already fills. The install script also creates thin command adapters in `~/.config/opencode/commands/` so you can trigger any repository skill as a custom command (e.g. `/humanize`).
 
 The same merge sets the default model to `openrouter/openai/gpt-5.6-sol`. OpenCode reads the OpenRouter credential from the `OPENROUTER_API_KEY` environment variable, so the provider itself needs no entry in the config file.
 
 ```bash
-# Link the rules and sync the MCP servers
-./install.sh
-
 # Confirm OpenCode sees the servers
 opencode mcp list
 ```
@@ -116,7 +99,7 @@ The output-conformance hook does not carry over. It is registered as a Claude Co
 
 ## Keeping Rules Updated
 
-With symlinks, pulling updates from this repository automatically updates your Claude Code and Cursor configurations:
+With symlinks, pulling updates from this repository automatically updates your configurations for Claude Code, Cursor, and OpenCode. Note that when adding new skills or updating MCP servers, you should re-run `./install.sh`.
 
 ```bash
 cd ~/src/ai-rules
