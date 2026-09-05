@@ -1,23 +1,29 @@
 ---
 name: browser-tools
 description: >-
-  Selecting and running browser tooling: Chrome DevTools MCP by default, browser-harness as the fallback,
-  Chrome isolation for concurrent sessions, and the mandatory browser-harness execution order. Load before
+  Refusing a browser whenever an agent tool or an API can do the job, and selecting browser tooling for
+  the cases that genuinely need one: Chrome DevTools MCP, browser-harness as the fallback, Chrome
+  isolation for concurrent sessions, and the mandatory browser-harness execution order. Load before
   launching or attaching to any browser for web development, debugging, QA, scraping, or site automation.
 ---
 # Browser tools
 
 ## Tool selection
 
-Resolve web tasks in this order:
+A browser is never the way to retrieve content. Use one only to observe a rendered page or a live runtime that no
+tool or API exposes. If an agent tool, an MCP server, or an API call can produce the answer, a browser is the wrong
+choice whether it runs headless or visible. Resolve web tasks in this order.
 
-1. For web search, research, or documentation, use built-in search, fetch, and documentation tools. Do not launch or attach to a browser unless interaction with or inspection of the rendered page is necessary.
-2. For a third-party service with an available MCP server or API, follow the `external-services` skill unless the visible UI itself is the source of truth.
-3. When a browser is required, use Chrome DevTools MCP by default. This includes web development, debugging, performance work, accessibility inspection, repeatable QA, DOM inspection, console and network analysis, Lighthouse, memory analysis, and browser emulation.
-4. Use `browser-harness` only when the task needs a capability Chrome DevTools MCP does not provide or cannot complete: open-ended web operations requiring custom recovery, arbitrary Python or direct raw CDP, custom or persistent site helpers, or Browser Use cloud integration. Treat it as the powerful fallback, not the default browser tool.
-5. State why before switching tools. Do not use fallback tooling to bypass authentication, authorization, or consent.
-6. Before using `browser-harness` with an authenticated or internal application, run `browser-harness telemetry status` and, if enabled, run `browser-harness telemetry disable`.
-7. Validate browser work from rendered or runtime state with screenshots, DOM or accessibility reads, console or network evidence, or another direct observation appropriate to the task.
+1. For public pages, documentation, research, and web search, use the built-in search and fetch tools.
+2. For content behind a login, use that service's MCP server, or its API with the credentials already in the environment. Follow the `external-services` skill. Never open a browser to sign in to a service whose token or key is already set.
+3. Before launching a browser, name the observation that only the rendered page or the live runtime supplies: client-side rendering, layout, interaction, console output, network traffic, or a performance measurement. Search the available tools for a match first, including deferred tools reachable through `ToolSearch`. A browser that duplicates an existing tool or API is wasted work and added risk.
+4. Treat an authentication wall as a signal to return to step 2. It is not a reason to drive a login screen or to reuse a human's signed-in browser session.
+5. When a browser is required, use Chrome DevTools MCP. This covers web development, debugging, performance work, accessibility inspection, repeatable QA, DOM inspection, console and network analysis, Lighthouse, memory analysis, and browser emulation.
+6. Run the browser headless once the earlier steps have established that a browser is required. Headless is a detail of how the browser runs. It never makes a browser the right tool for work an agent tool or an API already covers.
+7. Use `browser-harness` only when the task needs a capability Chrome DevTools MCP does not provide or cannot complete: open-ended web operations requiring custom recovery, arbitrary Python or direct raw CDP, custom or persistent site helpers, or Browser Use cloud integration. Treat it as the powerful fallback, not the default browser tool.
+8. State why before switching tools. Do not use fallback tooling to bypass authentication, authorization, or consent.
+9. Before using `browser-harness` with an authenticated or internal application, run `browser-harness telemetry status` and, if enabled, run `browser-harness telemetry disable`.
+10. Validate browser work from rendered or runtime state with screenshots, DOM or accessibility reads, console or network evidence, or another direct observation appropriate to the task.
 
 ## Chrome requirement and session isolation
 
@@ -30,7 +36,7 @@ When more than one browser session may run at the same time, each session must d
 When the routing rules select `browser-harness`, follow this mandatory order. Each task drives its own isolated Google Chrome instance so simultaneous sessions never share a profile or a debugging endpoint.
 
 1. Read the `browser-harness` skill.
-2. Launch a dedicated Google Chrome for this session with a unique profile directory and its own remote debugging port, for example `google-chrome --user-data-dir="$(mktemp -d)" --remote-debugging-port=0 <url>`. A port of `0` lets Chrome pick a free port and record it, which avoids collisions between sessions. Never reuse another session's profile or port, and never attach to a single fixed shared port.
+2. Launch a dedicated Google Chrome for this session with a unique profile directory and its own remote debugging port, for example `google-chrome --headless --user-data-dir="$(mktemp -d)" --remote-debugging-port=0 <url>`. Drop `--headless` only when a human must watch the run. A port of `0` lets Chrome pick a free port and record it, which avoids collisions between sessions. Never reuse another session's profile or port, and never attach to a single fixed shared port.
 3. Read this session's own CDP WebSocket endpoint from the Chrome instance you just launched (the `DevToolsActivePort` file in that profile directory, or the `webSocketDebuggerUrl` from `http://127.0.0.1:<port>/json/version`). Use that value as `BU_CDP_WS` for every `browser-harness` command in this task.
 4. Do not rely on `browser-harness` default attachment, existing browser sessions, default browser handlers, a shared fixed debugging port, or Chromium-compatible browsers.
 5. If `browser-harness` opens or attaches to any non-Google-Chrome browser, or to a Chrome instance you did not launch for this session, stop immediately and report failure.

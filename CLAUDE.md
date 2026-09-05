@@ -65,7 +65,8 @@ Clarity beats brevity: shorten by cutting content, never by compressing prose.
 
 ## Skill routing
 - Before any interaction with a third-party service or API, load the `external-services` skill. Prefer MCP servers over direct API calls.
-- Before launching or attaching to a browser, load the `browser-tools` skill. Web search, research, and documentation use built-in search and fetch tools, not a browser.
+- Retrieve web content without a browser. Public pages, documentation, and research use the built-in search and fetch tools. Content behind a login uses that service's MCP server, or its API with the credentials already in the environment, per the `external-services` skill.
+- Never launch a browser for work an agent tool, an MCP server, or an API can do, headless or visible. Load the `browser-tools` skill only when the observation needs a rendered page or a live runtime that no tool exposes. An authentication wall sends you back to the API, not to a login screen.
 - When creating or updating instructions, skills, or rules for AI coding agents, load the `agent-instructions` skill and follow the AGENTS.md open standard.
 
 ## Environment
