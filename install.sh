@@ -51,6 +51,29 @@ cleanup_repo_symlinks() {
     done
 }
 
+# Remove generated OpenCode skill adapters whose skill no longer exists in this repository. The
+# adapters are plain generated files, not symlinks, so cleanup_repo_symlinks cannot reach them.
+cleanup_opencode_adapters() {
+    local dir="$1"
+    local marker="<!-- Managed by ai-rules/install.sh; do not edit. -->"
+    local entry skill
+
+    [ -d "$dir" ] || return 0
+
+    for entry in "$dir"/*.md; do
+        [ -f "$entry" ] || continue
+        grep -Fqx "$marker" "$entry" || continue
+
+        skill="$(basename "$entry" .md)"
+        if [ -d "$REPO_DIR/skills/$skill" ]; then
+            continue
+        fi
+
+        rm "$entry"
+        echo "Removed stale OpenCode skill adapter: $entry"
+    done
+}
+
 create_opencode_skill_adapter() {
     local skill="$1"
     local dest="$2"
@@ -186,6 +209,7 @@ fi
 # Add thin command adapters so every repository skill is also available as /<skill-name>.
 OPENCODE_COMMANDS_DIR="$OPENCODE_DIR/commands"
 mkdir -p "$OPENCODE_COMMANDS_DIR"
+cleanup_opencode_adapters "$OPENCODE_COMMANDS_DIR"
 for dir in "$REPO_DIR/skills/"*/; do
     [ -e "$dir" ] || continue
     skill="$(basename "$dir")"

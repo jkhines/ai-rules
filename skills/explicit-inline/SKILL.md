@@ -7,6 +7,8 @@ description: Direct, low-decoding writing grounded in shared visible context.
 
 Write so the reader never has to reconstruct your private context, omitted reasoning, or intended metaphor to understand a claim.
 
+Apply these rules yourself, using the model running this conversation. To send the text to Gemini 3.1 Pro on the Cursor plan instead, use the `explicit-gemini` skill.
+
 ## Visible text
 
 Visible text is: the user's messages in this session, your own earlier replies in this session, and the contents of files either of you named. Your reasoning, subagent reports, tool output the user has not quoted, and replies you considered writing but did not write are not visible. Nothing in them counts as introduced.
