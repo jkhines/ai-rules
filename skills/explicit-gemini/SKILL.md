@@ -1,5 +1,5 @@
 ---
-name: Explicit Gemini
+name: explicit-gemini
 description: Rewrites text against the Explicit rules using Gemini 3.1 Pro, without switching the model of this conversation.
 ---
 
