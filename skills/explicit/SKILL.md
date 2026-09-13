@@ -1,5 +1,5 @@
 ---
-name: explicit-inline
+name: explicit
 description: Direct, low-decoding writing grounded in shared visible context.
 ---
 
