@@ -23,7 +23,7 @@ Use these for their respective services:
 | Jira Cloud | `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN` |
 | Confluence Cloud | `CONFLUENCE_BASE_URL`, `CONFLUENCE_EMAIL`, `CONFLUENCE_API_TOKEN` |
 | GitHub | `GITHUB_PAT` |
-| SonarQube | `SONAR_TOKEN` |
+| SonarQube | `SONAR_ADMIN_TOKEN` |
 | DeepL | `DEEPL_AUTH_KEY` |
 | PyPI / Twine | `TWINE_USERNAME`, `TWINE_PASSWORD`, `TWINE_TEST_USERNAME`, `TWINE_TEST_PASSWORD` |
 | Lucidchart | `LUCID_API_KEY` |
@@ -45,7 +45,7 @@ Use these for their respective services:
 
 - Jira / Confluence: HTTP Basic Auth, `*_EMAIL` as username and `*_API_TOKEN` as password; use `*_BASE_URL` as the host, never a hand-built URL.
 - GitHub: prefer the `gh` CLI; fall back to the raw API with `GITHUB_PAT` as Bearer token only when `gh` cannot do it.
-- SonarQube: `SONAR_TOKEN` as Bearer token.
+- SonarQube: `SONAR_ADMIN_TOKEN` as Bearer token.
 - TestRail: HTTP Basic Auth against `TESTRAIL_URL` as the host, `TESTRAIL_USERNAME` (account email) as username and `TESTRAIL_API_KEY` as password; API v2 base path `/index.php?/api/v2/`.
 - Auth0: client ID, secret, and domain for the target environment (sb/dev/prod).
 - SendGrid: Bearer token against `https://api.sendgrid.com/v3` (prefer `SENDGRID_RESTRICTED_API_KEY`; use `SENDGRID_ADMIN_API_KEY` only when broader scope is required). Email Activity feed: `GET /v3/messages?query=...` (query language, e.g. `last_event_time BETWEEN TIMESTAMP "..." AND TIMESTAMP "..."`).
