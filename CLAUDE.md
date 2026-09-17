@@ -68,6 +68,7 @@ Clarity beats brevity: shorten by cutting content, never by compressing prose.
 - Retrieve web content without a browser. Public pages, documentation, and research use the built-in search and fetch tools. Content behind a login uses that service's MCP server, or its API with the credentials already in the environment, per the `external-services` skill.
 - Never launch a browser for work an agent tool, an MCP server, or an API can do, headless or visible. Load the `browser-tools` skill only when the observation needs a rendered page or a live runtime that no tool exposes. An authentication wall sends you back to the API, not to a login screen.
 - When creating or updating instructions, skills, or rules for AI coding agents, load the `agent-instructions` skill and follow the AGENTS.md open standard. Every skill you create must be discoverable unchanged by Claude Code, Cursor CLI, and OpenCode; never leave it in one harness's directory.
+- DeepL performs every translation, and you never translate text yourself or write a script that calls DeepL. Load the `translate` skill, then use the `translate` command line tool when it is on `PATH`, or the DeepL API when `DEEPL_AUTH_KEY` or `DEEPL_API_KEY` is set. When neither is available, say so before answering, then give a direct translation labeled as an agent translation rather than DeepL output.
 
 ## Environment
 - Terraform: all deployments use Terraform Cloud with VCS-driven runs; evaluate behavior there, not in the CLI.
