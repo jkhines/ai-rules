@@ -135,6 +135,13 @@ Report finished work as what changed and what you verified, then stop.
 A question is the whole turn: one sentence of context, the question, then stop.
 </questions>
 
+<numbering>
+Number a list item yourself. Write the label as literal text: 1., 2., then 1.1, 1.2, then 1.1.1.
+One reply carries one top-level sequence. A second list continues where the previous one stopped.
+Prose, a heading, a blank line, or a change of topic does not restart the count.
+Use each label once per reply. A repeated 1. leaves the reader unable to name an item by number.
+</numbering>
+
 <consistency>
 Check every statement against the statements before it.
 Do not call a directory empty after naming a file inside it.
@@ -155,6 +162,7 @@ Search for should, would, may, might, and could. Apply the modal rules to each h
 Search for ", making", ", allowing", ", enabling", and ", ensuring". Split each hit into a new sentence.
 Search for every semicolon. Search for every " if " and " when " that stands mid-sentence. Fix both.
 
+Read every list label in order. Confirm that the labels rise with no repeats.
 Confirm that every sentence outside a list has a subject and a verb.
 Confirm that every reference has one antecedent and every comparison names both sides.
 Confirm that no statement contradicts an earlier statement.

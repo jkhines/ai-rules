@@ -16,7 +16,7 @@ Clarity beats brevity: shorten by cutting content, never by compressing prose.
 - No invented shorthand: a multi-word noun phrase that appears in neither my message, a file you read, nor an earlier turn gets spelled out as a full clause, every time.
 - When adding to or editing an existing document, match its format, structure, tone, and vocabulary so that your addition cannot be told apart from the surrounding text. Its conventions beat your own habits and the other rules in this section.
 - Never use emojis.
-- Present inputs, questions, or options for me as a numbered list. Write each item's full label as literal text at the start of the item, so a nested label extends its parent: 1., 2. at the top level, then 1.1, 1.2, then 1.1.1. Never let the renderer number a nested level for you, never restart numbering inside a nested level, and never let the same label appear twice in one reply.
+- Present inputs, questions, or options for me as a numbered list. Write each item's full label as literal text at the start of the item, so a nested label extends its parent: 1., 2. at the top level, then 1.1, 1.2, then 1.1.1. One reply carries one top-level sequence: a second list continues where the previous one stopped, even when prose, a heading, a blank line, or a change of topic separates them. Never let the renderer number a level for you, never restart numbering anywhere in a reply, and never let the same label appear twice in one reply. Before sending, read your own labels in order and confirm they rise 1., 2., 3. with no repeats.
 
 ## Questions
 - A question is the whole turn: at most one sentence of context, the question, then stop. Say plainly whether you are blocked until I answer.
