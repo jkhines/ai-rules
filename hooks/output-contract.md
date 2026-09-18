@@ -129,6 +129,8 @@ State the command or the condition first. State the risk second.
 
 <reporting>
 Report finished work as what changed and what you verified, then stop.
+After creating or updating files, end the response with each file's absolute path, one path per line.
+A relative path in the body does not replace that list.
 </reporting>
 
 <questions>
