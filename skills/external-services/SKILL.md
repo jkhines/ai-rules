@@ -2,7 +2,7 @@
 name: external-services
 description: >-
   Credentials, environment variables, and API conventions for third-party services (Jira, Confluence,
-  GitHub, SonarQube, Auth0, AWS, SendGrid, TestRail, Terraform Enterprise, and others). Load before any
+  GitHub, SonarQube, Auth0, AWS, SendGrid, TestRail, Terraform Enterprise, Delinea Secret Server, and others). Load before any
   interaction with a third-party service or API, whether through an MCP server or a direct API call.
 ---
 # External services
@@ -37,6 +37,7 @@ Use these for their respective services:
 | Auth0 (prod) | `AUTH0_PROD_CLIENT_ID`, `AUTH0_PROD_CLIENT_SECRET`, `AUTH0_PROD_DOMAIN` |
 | AWS | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION` |
 | TestRail | `TESTRAIL_URL`, `TESTRAIL_USERNAME`, `TESTRAIL_API_KEY` |
+| Delinea Secret Server | `SECRETSERVER_BASE_URL`, `SECRETSERVER_API_KEY` |
 
 - Assume Cloud-hosted services unless told otherwise. Use the latest stable API version (confirm with Context7 via `CONTEXT7_KEY`). Always handle pagination; never assume one response contains all results.
 - If a service is not listed, check for an MCP server first (`ToolSearch`), then the environment (`env | grep -i <service>`).
@@ -50,3 +51,4 @@ Use these for their respective services:
 - Auth0: client ID, secret, and domain for the target environment (sb/dev/prod).
 - SendGrid: Bearer token against `https://api.sendgrid.com/v3` (prefer `SENDGRID_RESTRICTED_API_KEY`; use `SENDGRID_ADMIN_API_KEY` only when broader scope is required). Email Activity feed: `GET /v3/messages?query=...` (query language, e.g. `last_event_time BETWEEN TIMESTAMP "..." AND TIMESTAMP "..."`).
 - AWS: use the AWS CLI with the named profiles in `~/.aws/config` (`sb`, `dev`, `prod`) and always pass `--profile <name>`. Use env credentials only when a profile is unavailable or the user directs it.
+- Delinea Secret Server: `SECRETSERVER_API_KEY` as Bearer token against `SECRETSERVER_BASE_URL` with the base path `/api/v1` (not `/SecretServer/api/v1`, which redirects to the login page). Never guess or probe the tenant host; if `SECRETSERVER_BASE_URL` is not set, say so and stop. The key is a short-lived token from the user's Secret Server preferences (**API Token** > **Generate API Token and Copy to Clipboard**), and it expires after the tenant's "Session Timeout for Webservices" (Delinea default: 20 minutes). Call `GET /api/v1/users/current` first; on `401 "Authentication failed or expired token."`, stop, ask the user to generate a new token, and offer the manual web-interface steps when the task is only a few clicks.
