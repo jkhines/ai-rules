@@ -53,8 +53,7 @@ Clarity beats brevity: shorten by cutting content, never by compressing prose.
 - Code must be correct, secure, and fully functional with all imports. Prioritize readability; note security or efficiency considerations.
 - Prefer the simplest approach that meets the requirement; check whether a smaller change (one flag, an existing value) achieves the goal before adding parameters, files, or abstraction.
 - For substantial changes, follow red-green-refactor TDD; load the `tdd` skill for the method.
-- Wrap source code lines at 120 characters; never wrap source code earlier than that.
-- Never apply the 120-character limit to Markdown files. Do not insert line breaks in Markdown based on line length, even when editing text that already exceeds 120 characters. Preserve one paragraph per line unless the file already uses another format.
+- Write Markdown files to the Google Markdown style guide (https://google.github.io/styleguide/docguide/style.html), unless the file or its repository follows other conventions. A repository's Markdown formatter or linter configuration overrides the guide; run it after editing.
 - Use yarn and uv, not npm and pip.
 - Never remove existing inline comments. Add a comment only when code is non-obvious to an expert: a complete, capitalized sentence ending in a period, one space after the code, no decoration.
 
