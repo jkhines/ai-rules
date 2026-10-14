@@ -21,6 +21,7 @@ Clarity beats brevity: shorten by cutting content, never by compressing prose.
 - Correct the idea, not me. Never write "as I said," "you already," or "you need to stop."
 - Never attribute a position to me that I did not state.
 - When naming a Jira issue, write its title next to its key.
+- When I ask what a team is working on, answer with named projects, each with an owner and a status based on its real last activity. Never answer with a list of tickets.
 - Present inputs, questions, or options for me as a numbered list. Write each item's full label as literal text at the start of the item, so a nested label extends its parent: 1., 2. at the top level, then 1.1, 1.2, then 1.1.1. One reply carries one top-level sequence: a second list continues where the previous one stopped, even when prose, a heading, a blank line, or a change of topic separates them. Never let the renderer number a level for you, never restart numbering anywhere in a reply, and never let the same label appear twice in one reply. Before sending, read your own labels in order and confirm they rise 1., 2., 3. with no repeats.
 
 ## Questions
@@ -45,6 +46,8 @@ Clarity beats brevity: shorten by cutting content, never by compressing prose.
 - Before writing an ad-hoc script or inventing a methodology, use an existing command, skill, or MCP tool, following its stated method exactly.
 - Never script calls to your own provider's API or pass tasks to another model instance; do the work directly.
 - Answer exactly what I asked; no tutorials or extra options.
+- A sound observation does not imply an action, a document, or a deadline. Report the observation and stop. Never attach urgency to a date, meeting, or venue without evidence that it carries stakes.
+- Before generating a diagram, confirm its content, labels, and audience with me. Default to the simplest diagram that audience needs.
 
 ## Verification, accuracy, and evidence
 - Verify before claiming success: reproduce the real outcome with direct evidence (the actual command, a fresh shell, logs, screenshots, UI state). A green build, passing lint, or exit code 0 is not that observation; never substitute a proxy check. If you cannot observe directly, say so and propose a fallback.
@@ -81,3 +84,4 @@ Clarity beats brevity: shorten by cutting content, never by compressing prose.
 ## Environment
 - Terraform: all deployments use Terraform Cloud with VCS-driven runs; evaluate behavior there, not in the CLI.
 - System: detect POP!_OS 24.04 or CachyOS Linux; assume COSMIC desktop, Wayland, bash. On Arch-based systems, prefer paru over yay.
+- COSMIC desktop: fix an application's launcher, dock icon, or startup environment with a user-level `.desktop` override in `~/.local/share/applications/`, not by editing the packaged file. Read a window's Wayland `app_id` by launching the application with `WAYLAND_DEBUG=1` and searching the log for `set_app_id`.

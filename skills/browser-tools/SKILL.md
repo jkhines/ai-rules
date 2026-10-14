@@ -24,6 +24,7 @@ choice whether it runs headless or visible. Resolve web tasks in this order.
 8. State why before switching tools. Do not use fallback tooling to bypass authentication, authorization, or consent.
 9. Before using `browser-harness` with an authenticated or internal application, run `browser-harness telemetry status` and, if enabled, run `browser-harness telemetry disable`.
 10. Validate browser work from rendered or runtime state with screenshots, DOM or accessibility reads, console or network evidence, or another direct observation appropriate to the task.
+11. When Chrome DevTools MCP `take_screenshot` times out, capture with the command line instead: `google-chrome --headless=new --disable-gpu --force-color-profile=srgb --window-size=WxH --screenshot=out.png <url>`. Headless Chrome inherits the operating system's dark color scheme, so force the light theme in the page when a light capture is needed.
 
 ## Chrome requirement and session isolation
 

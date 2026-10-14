@@ -44,8 +44,10 @@ Use these for their respective services:
 
 ## Authentication (when not using MCP)
 
+- Jira through the Atlassian MCP server: read responses (`getJiraIssue`, `searchJiraIssuesUsingJql`) drop custom fields whatever `fields` requests, although JQL filters on custom fields work. When a task must read a custom field value, use the REST API with the `JIRA_*` variables below.
 - Jira / Confluence: HTTP Basic Auth, `*_EMAIL` as username and `*_API_TOKEN` as password; use `*_BASE_URL` as the host, never a hand-built URL.
 - GitHub: prefer the `gh` CLI; fall back to the raw API with `GITHUB_PAT` as Bearer token only when `gh` cannot do it.
+- GitHub: when a `gh` command fails with a permission, not-found, or SSO error, run `gh auth status`. If another signed-in account belongs to the repository's organization, run `gh auth switch` to that account and retry. Never override the account with `GH_TOKEN`.
 - SonarQube: `SONAR_ADMIN_TOKEN` as Bearer token.
 - TestRail: HTTP Basic Auth against `TESTRAIL_URL` as the host, `TESTRAIL_USERNAME` (account email) as username and `TESTRAIL_API_KEY` as password; API v2 base path `/index.php?/api/v2/`.
 - Auth0: client ID, secret, and domain for the target environment (sb/dev/prod).

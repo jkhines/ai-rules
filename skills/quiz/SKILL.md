@@ -16,6 +16,9 @@ retrieval.
 
 If the topic or source material is missing, ask for it in one sentence.
 
+When the answers need lookups, build the full verified answer key before asking the first question, so each
+correction comes back at once. Keep the research to the scope the user named.
+
 If the topic is available but source material is not, use the conversation context. If factual accuracy matters and the
 content is external, retrieve the source before building the quiz.
 
