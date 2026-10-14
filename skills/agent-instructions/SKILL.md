@@ -1,9 +1,9 @@
 ---
 name: agent-instructions
 description: >-
-  The AGENTS.md open standard for writing portable AI agent instructions. Load when creating or updating
-  any instruction, skill, rule, or configuration meant to be read by an AI coding agent (Claude Code,
-  Codex, Cursor, or others).
+  Follow the AGENTS.md open standard for writing portable AI agent instructions, skills, and rules.
+  Load when creating or updating any instruction, skill, rule, or configuration for an AI coding agent
+  so that every artifact is discoverable unchanged by Claude Code, Cursor, Cursor CLI, and OpenCode.
 ---
 # Agent instructions
 

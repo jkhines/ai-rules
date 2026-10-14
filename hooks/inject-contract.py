@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """UserPromptSubmit hook: restate the output contract at generation time.
 
-CLAUDE.md loads once, at the top of the context window, where a long session buries it. This
-hook appends the same rules in positive form to every prompt, so they sit next to the tokens
-the model is about to generate. Pure standard library, so the hook needs no install step.
+AGENTS.md (linked to ~/.claude/CLAUDE.md) loads once, at the top of the context window, where a long
+session buries it. This hook appends the same rules in positive form to every prompt, so they sit next
+to the tokens the model is about to generate. Pure standard library, so the hook needs no install step.
 """
 import json
 import sys

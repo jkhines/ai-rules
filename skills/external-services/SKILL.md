@@ -1,9 +1,10 @@
 ---
 name: external-services
 description: >-
-  Credentials, environment variables, and API conventions for third-party services (Jira, Confluence,
-  GitHub, SonarQube, Auth0, AWS, SendGrid, TestRail, Terraform Enterprise, Delinea Secret Server, and others). Load before any
-  interaction with a third-party service or API, whether through an MCP server or a direct API call.
+  Prefer MCP servers over direct API calls, and use environment credentials for third-party services
+  (Jira, Confluence, GitHub, SonarQube, Auth0, AWS, SendGrid, TestRail, Terraform Enterprise, DeepL,
+  Delinea Secret Server, and others). Load before any interaction with a third-party service or API,
+  when retrieving web content behind a login, or when translating content with DeepL.
 ---
 # External services
 
@@ -49,6 +50,7 @@ Use these for their respective services:
 - GitHub: prefer the `gh` CLI; fall back to the raw API with `GITHUB_PAT` as Bearer token only when `gh` cannot do it.
 - GitHub: when a `gh` command fails with a permission, not-found, or SSO error, run `gh auth status`. If another signed-in account belongs to the repository's organization, run `gh auth switch` to that account and retry. Never override the account with `GH_TOKEN`.
 - SonarQube: `SONAR_ADMIN_TOKEN` as Bearer token.
+- DeepL: load the `translate` skill first. Use the `translate` command line tool when it is on `PATH`, or call the DeepL API with `DEEPL_AUTH_KEY` or `DEEPL_API_KEY` when no file is involved. When neither is available, state that DeepL is unavailable before answering, and label the result as an agent translation rather than DeepL output.
 - TestRail: HTTP Basic Auth against `TESTRAIL_URL` as the host, `TESTRAIL_USERNAME` (account email) as username and `TESTRAIL_API_KEY` as password; API v2 base path `/index.php?/api/v2/`.
 - Auth0: client ID, secret, and domain for the target environment (sb/dev/prod).
 - SendGrid: Bearer token against `https://api.sendgrid.com/v3` (prefer `SENDGRID_RESTRICTED_API_KEY`; use `SENDGRID_ADMIN_API_KEY` only when broader scope is required). Email Activity feed: `GET /v3/messages?query=...` (query language, e.g. `last_event_time BETWEEN TIMESTAMP "..." AND TIMESTAMP "..."`).

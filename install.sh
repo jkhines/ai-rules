@@ -122,7 +122,7 @@ link "$REPO_DIR/.claude.json" "$HOME/.claude.json"
 # ~/.claude
 mkdir -p "$HOME/.claude/skills"
 cleanup_repo_symlinks "$HOME/.claude/skills"
-link "$REPO_DIR/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+link "$REPO_DIR/AGENTS.md" "$HOME/.claude/CLAUDE.md"
 for dir in "$REPO_DIR/skills/"*/; do
     [ -e "$dir" ] || continue
     link "$dir" "$HOME/.claude/skills/$(basename "$dir")"
@@ -185,7 +185,7 @@ done
 # skill in ~/.claude/skills, so the skills linked above need no second link here.
 OPENCODE_DIR="$HOME/.config/opencode"
 mkdir -p "$OPENCODE_DIR"
-link "$REPO_DIR/CLAUDE.md" "$OPENCODE_DIR/AGENTS.md"
+link "$REPO_DIR/AGENTS.md" "$OPENCODE_DIR/AGENTS.md"
 
 # opencode.json holds user settings such as providers and permissions next to the MCP servers, so
 # merge the managed keys instead of replacing the whole file.

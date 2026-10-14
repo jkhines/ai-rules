@@ -1,10 +1,10 @@
 ---
 name: browser-tools
 description: >-
-  Refusing a browser whenever an agent tool or an API can do the job, and selecting browser tooling for
-  the cases that genuinely need one: Chrome DevTools MCP, browser-harness as the fallback, Chrome
-  isolation for concurrent sessions, and the mandatory browser-harness execution order. Load before
-  launching or attaching to any browser for web development, debugging, QA, scraping, or site automation.
+  Retrieve public web content with built-in search and fetch tools, retrieve authenticated content
+  through MCP servers or APIs per the external-services skill, and use a browser only when observing a
+  rendered page or live runtime that no tool or API exposes. Load before launching or attaching to any
+  browser for web development, debugging, QA, scraping, or site automation.
 ---
 # Browser tools
 

@@ -5,7 +5,7 @@ Custom rules and commands for AI coding assistants including Claude Code, Cursor
 ## Contents
 
 ### Global Rules
-- **CLAUDE.md** - Global behavior, generation, and formatting rules for Claude Code. Applied automatically to all interactions.
+- **AGENTS.md** - Global behavior, generation, and formatting rules following the [AGENTS.md](https://agents.md) standard. Applied automatically to all interactions.
   - Note: These settings can also be copy-pasted into the Cursor IDE in order to apply globally.
 - **CHATGPT.md** - Concise rules for ChatGPT emphasizing direct, brief responses.
 
@@ -14,9 +14,9 @@ Custom rules and commands for AI coding assistants including Claude Code, Cursor
 
 ### Output-conformance hooks
 
-`CLAUDE.md` loads once, at the top of the context window, so a long session buries it and the model drifts back to preambles, em dashes, and flagged vocabulary. One hook closes that gap without asking you anything. `install.sh` links both files into `~/.claude/hooks/` and registers the script in `~/.claude/settings.json`.
+`AGENTS.md` (linked to `~/.claude/CLAUDE.md`) loads once, at the top of the context window, so a long session buries it and the model drifts back to preambles, em dashes, and flagged vocabulary. One hook closes that gap without asking you anything. `install.sh` links both files into `~/.claude/hooks/` and registers the script in `~/.claude/settings.json`.
 
-- **hooks/output-contract.md** - the `CLAUDE.md` output rules that fail most often, restated in positive form with five before-and-after examples. `CLAUDE.md` stays the source of truth.
+- **hooks/output-contract.md** - the `AGENTS.md` output rules that fail most often, restated in positive form with five before-and-after examples. `AGENTS.md` stays the source of truth.
 - **hooks/inject-contract.py** - `UserPromptSubmit` hook, the only registration. Appends the contract to every prompt as `additionalContext`, so the rules sit beside the tokens the model is about to write instead of thousands of tokens above them.
 
 Nothing inspects the reply afterward, and that is deliberate. A `Stop` hook fires once the turn ends, so it can only block a finished message and make the model send a second one. A `MessageDisplay` hook can only add a line of its own under the reply. Both answers add noise where you asked for a clean message, so the contract has to land the first message instead.
@@ -30,12 +30,15 @@ Editing `output-contract.md` changes what the next prompt carries. The file take
 - **skills/ask-questions/** - Systematic problem analysis and solution path optimization.
 - **skills/browser-tools/** - Browser tool selection, Chrome isolation, and browser-harness execution.
 - **skills/commit-push/** - Commits and pushes changes following Conventional Commits v1.0.0.
+- **skills/cosmic-desktop/** - POP!_OS 24.04, CachyOS Linux, COSMIC desktop `.desktop` overrides, and Wayland `app_id` inspection.
 - **skills/explicit-gemini/** - Rewrites text against the Explicit rules using Gemini 3.1 Pro on the Cursor plan.
 - **skills/explicit/** - Direct, low-decoding writing grounded in shared visible context.
 - **skills/external-services/** - Credentials, environment variables, and API conventions for third-party services.
 - **skills/humanize/** - Audits writing for AI patterns; detect, rewrite, or edit modes.
+- **skills/markdown-style/** - Google Markdown style guide and repository formatter conventions.
 - **skills/masticulate/** - Walks through an existing numbered list one item at a time.
 - **skills/quiz/** - Builds a mnemonic recall scaffold and quizzes one prompt at a time.
+- **skills/terraform/** - Terraform Cloud VCS-driven deployment evaluation.
 
 ---
 
@@ -55,7 +58,7 @@ cd ~/src/ai-rules
 ### Claude Code
 
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) reads configuration from the `~/.claude/` directory and `~/.claude.json`. `install.sh` automatically:
-- Symlinks global rules (`CLAUDE.md`)
+- Symlinks global rules (`AGENTS.md` to `~/.claude/CLAUDE.md`)
 - Symlinks all skills into `~/.claude/skills/`
 - Configures the custom statusline and output-conformance hook in `~/.claude/settings.json`
 - Links `~/.claude.json` to configure MCP servers from `mcp.json`
@@ -68,11 +71,11 @@ cd ~/src/ai-rules
 
 For global rules in Cursor, you must apply them manually:
 1. Open `Cursor Settings > General > Rules for AI`
-2. Paste the contents of `CLAUDE.md`
+2. Paste the contents of `AGENTS.md`
 
 ### OpenCode
 
-[OpenCode](https://opencode.ai/) keeps its global configuration in `~/.config/opencode/`. `install.sh` links `CLAUDE.md` to `~/.config/opencode/AGENTS.md`, which is the global rules file OpenCode reads, and merges the MCP servers from `mcp.json` into the `mcp` key of `~/.config/opencode/opencode.json`. The merge touches only the keys it manages, so your providers, permissions, and other settings survive a rerun.
+[OpenCode](https://opencode.ai/) keeps its global configuration in `~/.config/opencode/`. `install.sh` links `AGENTS.md` to `~/.config/opencode/AGENTS.md`, which is the global rules file OpenCode reads, and merges the MCP servers from `mcp.json` into the `mcp` key of `~/.config/opencode/opencode.json`. The merge touches only the keys it manages, so your providers, permissions, and other settings survive a rerun.
 
 Skills need no link of their own. OpenCode auto-loads every skill in `~/.claude/skills/`, which `install.sh` already fills. The install script also creates thin command adapters in `~/.config/opencode/commands/` so you can trigger any repository skill as a custom command (e.g. `/humanize`).
 
