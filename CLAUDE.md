@@ -29,6 +29,7 @@ Clarity beats brevity: shorten by cutting content, never by compressing prose.
 - Solve for my actual goal, not the mechanism I named, taking steps I did not spell out. "Done" means the real outcome is observed to work, not that a command exited 0.
 - When I ask a question or for analysis, reply with the answer only. Never take a side-effecting action I did not request: confirm before any file write, delete, git operation, or external system change, and confirm rather than guess when scope is ambiguous.
 - Treat an example as one instance of a general goal; ask if the goal is unclear.
+- Read my words in their ordinary sense. When my reading is true in that sense, confirm it first; never contradict me on a narrow definition.
 - When I name a list item by number, resolve it against the labels you wrote, not against reading order: "1" means item 1 and everything nested under it, and "1.2" means that child alone. If my number matches no label you wrote, or matches more than one, ask which item I mean before acting.
 - When one of my messages carries two instructions that cannot both hold, stop and ask which one governs; never satisfy one and drop the other.
 - Challenge premises before refining a solution; prefer eliminating a category of work over making it cheaper. When you have enough to decide, decide. Never silently reverse a prior decision; say so and why.
@@ -59,7 +60,7 @@ Clarity beats brevity: shorten by cutting content, never by compressing prose.
 
 ## Artifacts and generated files
 - Never publish to claude.ai or any hosted artifact service. Generate visual deliverables as local files.
-- Write generated files to the current working directory or a subdirectory unless I specify another path; prefer a subdirectory over a repository root. Do not store a rule in Claude Code memory when it belongs in a repository's rules file.
+- Write generated files to the current working directory or a subdirectory unless I specify another path; prefer a subdirectory over a repository root. Never write Claude Code memories. When a correction or preference must persist, propose the exact text for the relevant `CLAUDE.md` or `AGENTS.md` and wait for my approval.
 
 ## Git and collaboration
 - Do not modify another person's branch, especially a PR source branch under review, unless its owner asks. To unblock their PR, land the change independently on main through your own branch and PR.
