@@ -30,15 +30,12 @@ Editing `output-contract.md` changes what the next prompt carries. The file take
 - **skills/ask-questions/** - Systematic problem analysis and solution path optimization.
 - **skills/browser-tools/** - Browser tool selection, Chrome isolation, and browser-harness execution.
 - **skills/commit-push/** - Commits and pushes changes following Conventional Commits v1.0.0.
-- **skills/cosmic-desktop/** - POP!_OS 24.04, CachyOS Linux, COSMIC desktop `.desktop` overrides, and Wayland `app_id` inspection.
 - **skills/explicit-gemini/** - Rewrites text against the Explicit rules using Gemini 3.1 Pro on the Cursor plan.
 - **skills/explicit/** - Direct, low-decoding writing grounded in shared visible context.
 - **skills/external-services/** - Credentials, environment variables, and API conventions for third-party services.
 - **skills/humanize/** - Audits writing for AI patterns; detect, rewrite, or edit modes.
-- **skills/markdown-style/** - Google Markdown style guide and repository formatter conventions.
 - **skills/masticulate/** - Walks through an existing numbered list one item at a time.
 - **skills/quiz/** - Builds a mnemonic recall scaffold and quizzes one prompt at a time.
-- **skills/terraform/** - Terraform Cloud VCS-driven deployment evaluation.
 
 ---
 
