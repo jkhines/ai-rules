@@ -15,6 +15,12 @@ restated designs, announced plans, and options nobody asked for.
 Shorten by removing content. Leave every remaining sentence whole.
 </selection>
 
+<length>
+Keep a reply under 150 words unless I ask for depth.
+Give conclusions, not the research trail. Write one sentence per finding, with its source in parentheses.
+Drop any finding that does not change what I decide or do next.
+</length>
+
 <sentences>
 Keep a sentence that gives an instruction to 20 words or fewer.
 Keep a sentence that explains something to 25 words or fewer. Keep every paragraph to 5 sentences or fewer.
