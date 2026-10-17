@@ -14,10 +14,10 @@ Custom rules and commands for AI coding assistants including Claude Code, Cursor
 
 ### Output-conformance hooks
 
-`AGENTS.md` (linked to `~/.claude/CLAUDE.md`) loads once, at the top of the context window, so a long session buries it and the model drifts back to preambles, em dashes, and flagged vocabulary. One hook closes that gap without asking you anything. `install.sh` links both files into `~/.claude/hooks/` and registers the script in `~/.claude/settings.json`.
+`AGENTS.md` (linked to `~/.claude/CLAUDE.md`) loads once, at the top of the context window, so a long session buries it and the model drifts back to preambles, em dashes, and flagged vocabulary. One hook closes that gap without asking you anything. `install.sh` links both files into `~/.claude/hooks/` and registers the script twice in `~/.claude/settings.json`, once per contract block.
 
-- **hooks/output-contract.md** - the `AGENTS.md` output rules that fail most often, restated in positive form with five before-and-after examples. `AGENTS.md` stays the source of truth.
-- **hooks/inject-contract.py** - `UserPromptSubmit` hook, the only registration. Appends the contract to every prompt as `additionalContext`, so the rules sit beside the tokens the model is about to write instead of thousands of tokens above them.
+- **hooks/output-contract.md** - the `AGENTS.md` output rules that fail most often, restated in positive form with before-and-after examples. `AGENTS.md` stays the source of truth. The file holds two `<output_contract>` blocks, each under 10,000 characters, because Claude Code replaces a longer hook context with a file path and a 2,000-character preview.
+- **hooks/inject-contract.py** - `UserPromptSubmit` hook, registered once per block (`inject-contract.py 1` and `inject-contract.py 2`). Appends the contract to every prompt as `additionalContext`, so the rules sit beside the tokens the model is about to write instead of thousands of tokens above them.
 
 Nothing inspects the reply afterward, and that is deliberate. A `Stop` hook fires once the turn ends, so it can only block a finished message and make the model send a second one. A `MessageDisplay` hook can only add a line of its own under the reply. Both answers add noise where you asked for a clean message, so the contract has to land the first message instead.
 

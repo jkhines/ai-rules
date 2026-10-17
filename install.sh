@@ -148,25 +148,32 @@ for hook in inject-contract.py output-contract.md; do
     link "$REPO_DIR/hooks/$hook" "$HOOKS_DIR/$hook"
 done
 
+# Claude Code truncates any hook additionalContext over 10,000 characters to a 2,000-character
+# preview, so the contract is two blocks and the script is registered once per block.
 INJECT_CMD="python3 \"$HOOKS_DIR/inject-contract.py\""
+INJECT_CMD_1="$INJECT_CMD 1"
+INJECT_CMD_2="$INJECT_CMD 2"
 
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 if command -v jq >/dev/null 2>&1; then
     [ -f "$CLAUDE_SETTINGS" ] || echo '{}' > "$CLAUDE_SETTINGS"
     jq --arg cmd "node \"$STATUSLINE_LINK\"" \
         --arg inject "$INJECT_CMD" \
+        --arg inject1 "$INJECT_CMD_1" \
+        --arg inject2 "$INJECT_CMD_2" \
         '
         # Drop any earlier registration of the same command so reruns do not stack duplicates.
         def prune($cmd): map(select([.hooks[]?.command] | index($cmd) | not));
         .statusLine = {"type": "command", "command": $cmd}
         | .hooks //= {}
-        | .hooks.UserPromptSubmit = ((.hooks.UserPromptSubmit // []) | prune($inject))
-            + [{"hooks": [{"type": "command", "command": $inject, "timeout": 5}]}]
+        | .hooks.UserPromptSubmit = ((.hooks.UserPromptSubmit // []) | prune($inject) | prune($inject1) | prune($inject2))
+            + [{"hooks": [{"type": "command", "command": $inject1, "timeout": 5},
+                          {"type": "command", "command": $inject2, "timeout": 5}]}]
         ' \
         "$CLAUDE_SETTINGS" > "${CLAUDE_SETTINGS}.tmp"
     mv "${CLAUDE_SETTINGS}.tmp" "$CLAUDE_SETTINGS"
     echo "Configured statusLine in $CLAUDE_SETTINGS -> $STATUSLINE_LINK"
-    echo "Registered the UserPromptSubmit hook in $CLAUDE_SETTINGS"
+    echo "Registered the two UserPromptSubmit hook commands in $CLAUDE_SETTINGS"
 else
     echo "WARN: jq not found; skipping statusLine and hook configuration in $CLAUDE_SETTINGS"
 fi

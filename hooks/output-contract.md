@@ -1,4 +1,4 @@
-<output_contract>
+<output_contract part="1 of 2">
 Apply this contract to the reply you are about to write.
 This file holds the rules that fail most often.
 The repeated rules bind at generation time, at the end of the context window.
@@ -106,7 +106,9 @@ Write two sentences in place of a semicolon.
 Write "for example" for e.g. Write "that is" for i.e. Name the items in place of "etc.".
 Use no emojis. Bold at most one phrase per section.
 </punctuation>
+</output_contract>
 
+<output_contract part="2 of 2">
 <words>
 Reach for the short familiar word: use, not utilize; to, not in order to; start, not commence.
 Use thorough, not comprehensive; strong, not robust; area, not landscape, stream, or lane.
