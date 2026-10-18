@@ -30,7 +30,7 @@ Editing `output-contract.md` changes what the next prompt carries. The file take
 - **skills/ask-questions/** - Systematic problem analysis and solution path optimization.
 - **skills/browser-tools/** - Browser tool selection and the canonical browser-harness attachment to the normal Google Chrome profile (`scripts/attach-chrome.sh`, linked to `~/.local/bin/attach-chrome.sh`).
 - **skills/commit-push/** - Commits and pushes changes following Conventional Commits v1.0.0.
-- **skills/explicit-gemini/** - Rewrites text against the Explicit rules using Gemini 3.1 Pro on the Cursor plan.
+- **skills/explicit-gemini/** - Rewrites text against the Explicit rules using Gemini 4 Argon High on the Cursor plan.
 - **skills/explicit/** - Direct, low-decoding writing grounded in shared visible context.
 - **skills/external-services/** - Credentials, environment variables, and API conventions for third-party services.
 - **skills/humanize/** - Audits writing for AI patterns; detect, rewrite, or edit modes.

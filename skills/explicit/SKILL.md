@@ -7,7 +7,7 @@ description: Direct, low-decoding writing grounded in shared visible context.
 
 Write so the reader never has to reconstruct your private context, omitted reasoning, or intended metaphor to understand a claim.
 
-Apply these rules yourself, using the model running this conversation. To send the text to Gemini 3.1 Pro on the Cursor plan instead, use the `explicit-gemini` skill.
+Apply these rules yourself, using the model running this conversation. To send the text to Gemini 4 Argon High on the Cursor plan instead, use the `explicit-gemini` skill.
 
 ## Visible text
 
