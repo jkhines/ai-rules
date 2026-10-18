@@ -3,8 +3,9 @@ name: browser-tools
 description: >-
   Retrieve public web content with built-in search and fetch tools, retrieve authenticated content
   through MCP servers or APIs per the external-services skill, and use a browser only when observing a
-  rendered page or live runtime that no tool or API exposes. Load before launching or attaching to any
-  browser for web development, debugging, QA, scraping, or site automation.
+  rendered page or live runtime that no tool or API exposes. Every browser-harness task attaches to the
+  user's normal Google Chrome through this skill's attach-chrome.sh script. Load before launching or
+  attaching to any browser for web development, debugging, QA, scraping, or site automation.
 ---
 # Browser tools
 
@@ -17,33 +18,36 @@ choice whether it runs headless or visible. Resolve web tasks in this order.
 1. For public pages, documentation, research, and web search, use the built-in search and fetch tools.
 2. For content behind a login, use that service's MCP server, or its API with the credentials already in the environment. Follow the `external-services` skill. Never open a browser to sign in to a service whose token or key is already set.
 3. Before launching a browser, name the observation that only the rendered page or the live runtime supplies: client-side rendering, layout, interaction, console output, network traffic, or a performance measurement. Search the available tools for a match first, including deferred tools reachable through `ToolSearch`. A browser that duplicates an existing tool or API is wasted work and added risk.
-4. Treat an authentication wall as a signal to return to step 2. It is not a reason to drive a login screen or to reuse a human's signed-in browser session.
-5. When a browser is required, use Chrome DevTools MCP. This covers web development, debugging, performance work, accessibility inspection, repeatable QA, DOM inspection, console and network analysis, Lighthouse, memory analysis, and browser emulation.
-6. Run the browser headless once the earlier steps have established that a browser is required. Headless is a detail of how the browser runs. It never makes a browser the right tool for work an agent tool or an API already covers.
-7. Use `browser-harness` only when the task needs a capability Chrome DevTools MCP does not provide or cannot complete: open-ended web operations requiring custom recovery, arbitrary Python or direct raw CDP, custom or persistent site helpers, or Browser Use cloud integration. Treat it as the powerful fallback, not the default browser tool.
-8. State why before switching tools. Do not use fallback tooling to bypass authentication, authorization, or consent.
-9. Before using `browser-harness` with an authenticated or internal application, run `browser-harness telemetry status` and, if enabled, run `browser-harness telemetry disable`.
-10. Validate browser work from rendered or runtime state with screenshots, DOM or accessibility reads, console or network evidence, or another direct observation appropriate to the task.
-11. When Chrome DevTools MCP `take_screenshot` times out, capture with the command line instead: `google-chrome --headless=new --disable-gpu --force-color-profile=srgb --window-size=WxH --screenshot=out.png <url>`. Headless Chrome inherits the operating system's dark color scheme, so force the light theme in the page when a light capture is needed.
+4. When a page needs the user's signed-in session and no MCP server or API credential covers the task, use `browser-harness` attached to the user's normal Google Chrome, as the "browser-harness execution" section describes. Never drive a sign-in screen or type a credential.
+5. For web development, debugging, performance work, accessibility inspection, repeatable QA, DOM inspection, console and network analysis, Lighthouse, memory analysis, and browser emulation on pages that need no sign-in, use Chrome DevTools MCP. It manages its own Chrome instance. Run it headless unless a human must watch.
+6. Use `browser-harness` for every task that needs the user's signed-in session, and for any task that needs a capability Chrome DevTools MCP does not provide or cannot complete: open-ended web operations requiring custom recovery, arbitrary Python or direct raw CDP, or custom or persistent site helpers.
+7. State why before switching tools. Do not use fallback tooling to bypass authentication, authorization, or consent.
+8. Validate browser work from rendered or runtime state with screenshots, DOM or accessibility reads, console or network evidence, or another direct observation appropriate to the task.
+9. When Chrome DevTools MCP `take_screenshot` times out, capture with the command line instead: `google-chrome --headless=new --disable-gpu --force-color-profile=srgb --window-size=WxH --screenshot=out.png <url>`. Headless Chrome inherits the operating system's dark color scheme, so force the light theme in the page when a light capture is needed.
 
-## Chrome requirement and session isolation
+## Chrome requirement
 
-Browser automation must use Google Chrome explicitly. Chrome DevTools MCP may launch Chrome or connect to it through its own supported configuration. Do not use Vivaldi, Firefox, Chromium, or another browser unless the user explicitly overrides this requirement.
-
-When more than one browser session may run at the same time, each session must drive its own isolated Chrome instance (a distinct user profile directory and its own remote debugging port) so sessions never share a profile, pages, or a debugging endpoint. Let Chrome DevTools MCP manage its own isolated Chrome instance rather than pointing several sessions at one shared Chrome. Never launch or attach to a single fixed debugging port from more than one session; a shared endpoint is the cause of cross-session conflicts and contention.
+Browser automation must use Google Chrome explicitly. Do not use Vivaldi, Firefox, Chromium, or another browser unless the user explicitly overrides this requirement for a named task.
 
 ## browser-harness execution
 
-When the routing rules select `browser-harness`, follow this mandatory order. Each task drives its own isolated Google Chrome instance so simultaneous sessions never share a profile or a debugging endpoint.
+Every `browser-harness` task attaches to the user's normal Google Chrome profile (`~/.config/google-chrome`), which has remote debugging turned on at `chrome://inspect/#remote-debugging`. That profile holds the signed-in sessions and the password manager. Google refuses sign-in in a separate automated profile, so never launch Chrome with `--user-data-dir` or `--remote-debugging-port`.
+
+`scripts/attach-chrome.sh` in this skill is the only supported way to connect. `install.sh` links it to `~/.local/bin/attach-chrome.sh`, so it is on `PATH`. The script launches Chrome when Chrome is not running, disables `browser-harness` telemetry, and starts a `browser-harness` daemon with a new name for this task. It connects that daemon to the port in `~/.config/google-chrome/DevToolsActivePort` and exits nonzero unless the daemon is connected to that port alone. It prints one line: `BU_NAME=<name> BU_CDP_WS=<url>`.
+
+Follow this order.
 
 1. Read the `browser-harness` skill.
-2. Launch a dedicated Google Chrome for this session with a unique profile directory and its own remote debugging port, for example `google-chrome --headless --user-data-dir="$(mktemp -d)" --remote-debugging-port=0 <url>`. Drop `--headless` only when a human must watch the run. A port of `0` lets Chrome pick a free port and record it, which avoids collisions between sessions. Never reuse another session's profile or port, and never attach to a single fixed shared port.
-3. Read this session's own CDP WebSocket endpoint from the Chrome instance you just launched (the `DevToolsActivePort` file in that profile directory, or the `webSocketDebuggerUrl` from `http://127.0.0.1:<port>/json/version`). Use that value as `BU_CDP_WS` for every `browser-harness` command in this task.
-4. Do not rely on `browser-harness` default attachment, existing browser sessions, default browser handlers, a shared fixed debugging port, or Chromium-compatible browsers.
-5. If `browser-harness` opens or attaches to any non-Google-Chrome browser, or to a Chrome instance you did not launch for this session, stop immediately and report failure.
-6. Run the requested browser action with `BU_CDP_WS="$ws" browser-harness` only after verifying the controlled browser is the Google Chrome instance you launched for this session.
-7. If `browser-harness` fails in any way, the very next command must be `browser-harness --doctor`.
-8. Failures include non-zero exit, traceback, import error, command not found, connection error, timeout, hang, or unexpected daemon behavior.
-9. Before `browser-harness --doctor` has run, do not debug, patch, reinstall, inspect wrappers, retry, or use `curl`, `WebFetch`, Playwright, or another browser.
-10. If `browser-harness --doctor` reports the Chrome connection as `"FAIL"`, relaunch this session's isolated Chrome (step 2) and retry the original command with the new `BU_CDP_WS`.
-11. If Chrome asks for the remote debugging checkbox or permission popup, stop and ask the user to approve it.
+2. Run `attach-chrome.sh` once at the start of the task, and save its output line to a file in the session scratchpad, for example `attach-chrome.sh > "$SCRATCHPAD/chrome.env"`. Shell variables do not survive between agent tool calls, and the file does.
+3. If Chrome shows a remote-debugging approval dialog, ask the user to click Allow. If the script times out before the click, rerun it with the daemon name from the timed-out run, for example `attach-chrome.sh chrome-1792283478-1809768`.
+4. If the script exits nonzero for any other reason, stop and report its message.
+5. Prefix every `browser-harness` command in the task with the saved line, for example `env $(cat "$SCRATCHPAD/chrome.env") browser-harness <<'PY'`. Never run `browser-harness` without that prefix. Default discovery can attach to another browser on port 9222, and the default daemon can belong to another task.
+6. Open each page with `new_tab(url)`, and reuse one tab per site for the rest of the task.
+7. If a page shows a sign-in, passkey, MFA, or consent screen, stop and ask the user to complete it in Chrome.
+8. If a `browser-harness` command fails in any way, run `browser-harness --doctor` with the same prefix as the very next command. Then rerun `attach-chrome.sh <name>` with the same name before any retry. Failures include a nonzero exit, a traceback, an import error, command not found, a connection error, a timeout, a hang, or unexpected daemon behavior.
+9. Before `browser-harness --doctor` runs, do not debug, patch, reinstall, inspect wrappers, retry, or use `curl`, `WebFetch`, Playwright, or another browser.
+10. At the end of the task, close the tabs that the task opened, unless the user needs to see one. Then stop the task's daemon with `BU_NAME=<name> browser-harness --reload`.
+
+Each new daemon opens a new connection, and Chrome asks the user to approve every new connection. Expect one Allow click per task. A rerun of `attach-chrome.sh` with the same name reuses the connected daemon and asks for nothing.
+
+Tasks that run at the same time share the one Chrome, but each task holds its own daemon and its own tabs. A task never stops another task's daemon and never acts in another task's tabs.

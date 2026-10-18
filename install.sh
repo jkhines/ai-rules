@@ -105,7 +105,7 @@ create_opencode_skill_adapter() {
 }
 
 # Ensure required scripts are executable in this clone.
-chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/scripts/open-google-chrome-cdp.sh" "$REPO_DIR/scripts/claude-statusline.js" "$REPO_DIR/hooks/inject-contract.py"
+chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/skills/browser-tools/scripts/attach-chrome.sh" "$REPO_DIR/scripts/claude-statusline.js" "$REPO_DIR/hooks/inject-contract.py"
 
 # Sync MCP servers from mcp.json into generated app configs.
 "$REPO_DIR/mcp.sh"
@@ -224,6 +224,12 @@ for dir in "$REPO_DIR/skills/"*/; do
 done
 
 # ~/.local/bin
-link "$REPO_DIR/scripts/open-google-chrome-cdp.sh" "$HOME/.local/bin/open-google-chrome-cdp.sh"
+# The browser-tools skill owns the only supported way to attach browser-harness to Chrome.
+link "$REPO_DIR/skills/browser-tools/scripts/attach-chrome.sh" "$HOME/.local/bin/attach-chrome.sh"
+OLD_CHROME_LINK="$HOME/.local/bin/open-google-chrome-cdp.sh"
+if [ -L "$OLD_CHROME_LINK" ] && [ "$(readlink "$OLD_CHROME_LINK")" = "$REPO_DIR/scripts/open-google-chrome-cdp.sh" ]; then
+    rm "$OLD_CHROME_LINK"
+    echo "Removed retired link: $OLD_CHROME_LINK"
+fi
 
 echo "Done."
