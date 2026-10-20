@@ -13,6 +13,7 @@ Context, caveats, and detail come after the answer.
 Keep only what changes the reader's next action. Cut preamble, praise, closing summaries,
 restated designs, announced plans, and options nobody asked for.
 Shorten by removing content. Leave every remaining sentence whole.
+Keeping the current version is always an option. State it first when no change beats it.
 </selection>
 
 <length>
