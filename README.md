@@ -14,7 +14,7 @@ Custom rules and commands for AI coding assistants including Claude Code, Cursor
 
 ### Output-conformance hooks
 
-`AGENTS.md` (linked to `~/.claude/CLAUDE.md`) loads once, at the top of the context window, so a long session buries it and the model drifts back to preambles, em dashes, and flagged vocabulary. One hook closes that gap without asking you anything. `install.sh` links both files into `~/.claude/hooks/` and registers the script twice in `~/.claude/settings.json`, once per contract block.
+`AGENTS.md` (copied to `~/.claude/CLAUDE.md`) loads once, at the top of the context window, so a long session buries it and the model drifts back to preambles, em dashes, and flagged vocabulary. One hook closes that gap without asking you anything. `install.sh` links both files into `~/.claude/hooks/` and registers the script twice in `~/.claude/settings.json`, once per contract block.
 
 - **hooks/output-contract.md** - the `AGENTS.md` output rules that fail most often, restated in positive form with before-and-after examples. `AGENTS.md` stays the source of truth. The file holds two `<output_contract>` blocks, each under 10,000 characters, because Claude Code replaces a longer hook context with a file path and a 2,000-character preview.
 - **hooks/inject-contract.py** - `UserPromptSubmit` hook, registered once per block (`inject-contract.py 1` and `inject-contract.py 2`). Appends the contract to every prompt as `additionalContext`, so the rules sit beside the tokens the model is about to write instead of thousands of tokens above them.
@@ -55,7 +55,7 @@ cd ~/src/ai-rules
 ### Claude Code
 
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) reads configuration from the `~/.claude/` directory and `~/.claude.json`. `install.sh` automatically:
-- Symlinks global rules (`AGENTS.md` to `~/.claude/CLAUDE.md`)
+- Writes global rules to `~/.claude/CLAUDE.md` (see [Global rules file](#global-rules-file))
 - Symlinks all skills into `~/.claude/skills/`
 - Configures the custom statusline and output-conformance hook in `~/.claude/settings.json`
 - Links `~/.claude.json` to configure MCP servers from `mcp.json`
@@ -68,11 +68,11 @@ cd ~/src/ai-rules
 
 For global rules in Cursor, you must apply them manually:
 1. Open `Cursor Settings > General > Rules for AI`
-2. Paste the contents of `AGENTS.md`
+2. Paste the contents of the generated `~/.claude/CLAUDE.md`, which includes any appended rules
 
 ### OpenCode
 
-[OpenCode](https://opencode.ai/) keeps its global configuration in `~/.config/opencode/`. `install.sh` links `AGENTS.md` to `~/.config/opencode/AGENTS.md`, which is the global rules file OpenCode reads, and merges the MCP servers from `mcp.json` into the `mcp` key of `~/.config/opencode/opencode.json`. The merge touches only the keys it manages, so your providers, permissions, and other settings survive a rerun.
+[OpenCode](https://opencode.ai/) keeps its global configuration in `~/.config/opencode/`. `install.sh` writes the global rules to `~/.config/opencode/AGENTS.md`, which is the global rules file OpenCode reads, and merges the MCP servers from `mcp.json` into the `mcp` key of `~/.config/opencode/opencode.json`. The merge touches only the keys it manages, so your providers, permissions, and other settings survive a rerun.
 
 Skills need no link of their own. OpenCode auto-loads every skill in `~/.claude/skills/`, which `install.sh` already fills. The install script also creates thin command adapters in `~/.config/opencode/commands/` so you can trigger any repository skill as a custom command (e.g. `/humanize`).
 
@@ -98,9 +98,19 @@ The output-conformance hook does not carry over. It is registered as a Claude Co
 
 ---
 
+## Global rules file
+
+`scripts/build-rules.sh` writes `~/.claude/CLAUDE.md` and `~/.config/opencode/AGENTS.md` as read-only copies, not links. Each copy holds `AGENTS.md`, then every Markdown file in `~/.config/agent-rules/append.d/`, in name order. Each source starts with a comment that names its path.
+
+- To add rules that must stay out of this repository, link a file into `~/.config/agent-rules/append.d/` and rerun `scripts/build-rules.sh`.
+- To change the rules, edit `AGENTS.md` or the appended file, never the copy. The copy is read-only, so an edit to it fails instead of being lost on the next build.
+- The `post-commit` and `post-merge` hooks in `.githooks/` rerun the build, so a committed or pulled change takes effect at once. After an uncommitted edit, run `scripts/build-rules.sh` yourself.
+
+---
+
 ## Keeping Rules Updated
 
-With symlinks, pulling updates from this repository automatically updates your configurations for Claude Code, Cursor, and OpenCode. Note that when adding new skills or updating MCP servers, you should re-run `./install.sh`.
+Pulling updates from this repository updates your configurations for Claude Code, Cursor, and OpenCode: skills and hooks through their links, and the global rules file through the `post-merge` hook. Note that when adding new skills or updating MCP servers, you should re-run `./install.sh`.
 
 ```bash
 cd ~/src/ai-rules

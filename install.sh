@@ -105,7 +105,7 @@ create_opencode_skill_adapter() {
 }
 
 # Ensure required scripts are executable in this clone.
-chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/skills/browser-tools/scripts/attach-chrome.sh" "$REPO_DIR/scripts/claude-statusline.js" "$REPO_DIR/hooks/inject-contract.py"
+chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/.githooks/post-commit" "$REPO_DIR/.githooks/post-merge" "$REPO_DIR/scripts/build-rules.sh" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/skills/browser-tools/scripts/attach-chrome.sh" "$REPO_DIR/scripts/claude-statusline.js" "$REPO_DIR/hooks/inject-contract.py"
 
 # Sync MCP servers from mcp.json into generated app configs.
 "$REPO_DIR/mcp.sh"
@@ -122,7 +122,6 @@ link "$REPO_DIR/.claude.json" "$HOME/.claude.json"
 # ~/.claude
 mkdir -p "$HOME/.claude/skills"
 cleanup_repo_symlinks "$HOME/.claude/skills"
-link "$REPO_DIR/AGENTS.md" "$HOME/.claude/CLAUDE.md"
 for dir in "$REPO_DIR/skills/"*/; do
     [ -e "$dir" ] || continue
     link "$dir" "$HOME/.claude/skills/$(basename "$dir")"
@@ -187,12 +186,16 @@ for dir in "$REPO_DIR/skills/"*/; do
     link "$dir" "$HOME/.cursor/skills/$(basename "$dir")"
 done
 
+# Global rules: ~/.claude/CLAUDE.md and ~/.config/opencode/AGENTS.md are read-only copies of AGENTS.md
+# plus every file in ~/.config/agent-rules/append.d/. The post-commit and post-merge hooks rerun this
+# script, so a committed or pulled AGENTS.md change takes effect at once.
+"$REPO_DIR/scripts/build-rules.sh"
+
 # ~/.config/opencode
-# OpenCode reads its global rules from AGENTS.md in this directory, and it already auto-loads every
-# skill in ~/.claude/skills, so the skills linked above need no second link here.
+# OpenCode reads its global rules from AGENTS.md in this directory, which the build above writes, and it
+# already auto-loads every skill in ~/.claude/skills, so the skills linked above need no second link here.
 OPENCODE_DIR="$HOME/.config/opencode"
 mkdir -p "$OPENCODE_DIR"
-link "$REPO_DIR/AGENTS.md" "$OPENCODE_DIR/AGENTS.md"
 
 # opencode.json holds user settings such as providers and permissions next to the MCP servers, so
 # merge the managed keys instead of replacing the whole file.

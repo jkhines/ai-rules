@@ -1,0 +1,3 @@
+#!/bin/sh
+# Rebuild the global rules copies so a committed AGENTS.md change takes effect at once.
+exec "$(git rev-parse --show-toplevel)/scripts/build-rules.sh" >/dev/null
