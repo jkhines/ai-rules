@@ -100,7 +100,7 @@ The output-conformance hook does not carry over. It is registered as a Claude Co
 
 ## Global rules file
 
-`scripts/build-rules.sh` writes `~/.claude/CLAUDE.md` and `~/.config/opencode/AGENTS.md` as read-only copies, not links. Each copy holds `AGENTS.md`, then every Markdown file in `~/.config/agent-rules/append.d/`, in name order. Each source starts with a comment that names its path.
+`scripts/build-rules.sh` writes `~/.claude/CLAUDE.md` and `~/.config/opencode/AGENTS.md` as read-only copies, not links. Each copy holds `AGENTS.md`, then every Markdown file in `~/.config/agent-rules/append.d/`, in name order, with nothing added between them. Put only rules in an appended file, because every line loads into every session.
 
 - To add rules that must stay out of this repository, link a file into `~/.config/agent-rules/append.d/` and rerun `scripts/build-rules.sh`.
 - To change the rules, edit `AGENTS.md` or the appended file, never the copy. The copy is read-only, so an edit to it fails instead of being lost on the next build.
