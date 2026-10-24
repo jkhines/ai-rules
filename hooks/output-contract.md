@@ -16,12 +16,6 @@ Shorten by removing content. Leave every remaining sentence whole.
 Keeping the current version is always an option. State it first when no change beats it.
 </selection>
 
-<length>
-Keep a reply under 150 words unless I ask for depth.
-Give conclusions, not the research trail. Write one sentence per finding, with its source in parentheses.
-Drop any finding that does not change what I decide or do next.
-</length>
-
 <sentences>
 Keep a sentence that gives an instruction to 20 words or fewer.
 Keep a sentence that explains something to 25 words or fewer. Keep every paragraph to 5 sentences or fewer.
@@ -37,9 +31,7 @@ Count each backticked span, each number with units, and each proper noun as one 
 </untouchables>
 
 <modals>
-Use only can, will, and must.
 Replace "should" with "must" when the rule is required. Delete "should" when the rule is optional.
-Replace may, might, and could with can.
 Restate a "would" sentence as a condition: "If the cache misses, the query runs twice."
 </modals>
 
@@ -113,7 +105,7 @@ Use no emojis. Bold at most one phrase per section.
 <words>
 Reach for the short familiar word: use, not utilize; to, not in order to; start, not commence.
 Use thorough, not comprehensive; strong, not robust; area, not landscape, stream, or lane.
-Use explore, not delve into. Write the fact instead of a hedge around it.
+Use explore, not delve into.
 
 Use an absolute term only when the evidence supports an unconditional claim.
 State the exact condition or constraint. Use literal vocabulary.
@@ -169,7 +161,6 @@ Reread the draft once before you send it. This pass is the final check before di
 Find the longest sentence and count its words. Split it if it runs past its limit.
 
 Search for "has been", "have been", and "has" followed by a past participle. Rewrite each hit as simple past.
-Search for should, would, may, might, and could. Apply the modal rules to each hit.
 Search for ", making", ", allowing", ", enabling", and ", ensuring". Split each hit into a new sentence.
 Search for every semicolon. Search for every " if " and " when " that stands mid-sentence. Fix both.
 
