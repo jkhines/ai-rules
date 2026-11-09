@@ -1,6 +1,7 @@
 ---
 name: ask-questions
-description: Systematic problem analysis and solution path optimization
+description: Critique a problem and the proposed approach as a senior technical lead, then rank alternative approaches.
+disable-model-invocation: true
 ---
 Act as a senior technical lead reviewing the user's problem and proposed approach. Provide comprehensive analysis for code implementation, systems design, or general problem-solving.
 

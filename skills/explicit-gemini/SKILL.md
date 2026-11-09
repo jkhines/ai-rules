@@ -1,6 +1,7 @@
 ---
 name: explicit-gemini
 description: Rewrites text against the Explicit rules using Gemini 4 Argon Medium, without switching the model of this conversation.
+disable-model-invocation: true
 ---
 
 # Explicit Gemini

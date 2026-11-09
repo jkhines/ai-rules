@@ -1,11 +1,10 @@
 ---
 name: quiz
-description: Build a mnemonic recall scaffold and quiz the user one question at a time
+description: Build a mnemonic recall scaffold and quiz the user one question at a time. Use when the user asks to memorize a topic, be quizzed or drilled on it, or build a mnemonic.
 ---
 # Quiz
 
-Turn a topic into a recall-first learning loop. Use when the user asks to memorize, internalize, drill, study,
-learn, recall, quiz, or build a mnemonic for any topic.
+Turn a topic into a recall-first learning loop.
 
 ## Goal
 

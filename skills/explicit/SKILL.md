@@ -1,6 +1,7 @@
 ---
 name: explicit
-description: Direct, low-decoding writing grounded in shared visible context.
+description: Rewrite text so that every reference, reasoning step, and claim can be understood from visible text.
+disable-model-invocation: true
 ---
 
 # Explicit

@@ -1,6 +1,7 @@
 ---
 name: commit-push
-description: Commits code changes following Conventional Commits v1.0.0 and validates branch naming
+description: Stage all changes, commit with a Conventional Commits message, and push without asking for confirmation.
+disable-model-invocation: true
 ---
 
 ## Conventional Commits (v1.0.0)

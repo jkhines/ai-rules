@@ -27,11 +27,11 @@ Editing `output-contract.md` changes what the next prompt carries. The file take
 
 ### Skills
 - **skills/agent-instructions/** - The AGENTS.md open standard for portable AI agent instructions.
-- **skills/ask-questions/** - Systematic problem analysis and solution path optimization.
+- **skills/ask-questions/** - Critiques a problem and the proposed approach, then ranks alternative approaches.
 - **skills/browser-tools/** - Browser tool selection and the canonical browser-harness attachment to the normal Google Chrome profile (`scripts/attach-chrome.sh`, linked to `~/.local/bin/attach-chrome.sh`).
 - **skills/commit-push/** - Commits and pushes changes following Conventional Commits v1.0.0.
 - **skills/explicit-gemini/** - Rewrites text against the Explicit rules using Gemini 4 Argon Medium on the Cursor plan.
-- **skills/explicit/** - Direct, low-decoding writing grounded in shared visible context.
+- **skills/explicit/** - Rewrites text so that every reference, reasoning step, and claim can be understood from visible text.
 - **skills/external-services/** - Credentials, environment variables, and API conventions for third-party services.
 - **skills/humanize/** - Audits writing for AI patterns; detect, rewrite, or edit modes.
 - **skills/masticulate/** - Walks through an existing numbered list one item at a time.
