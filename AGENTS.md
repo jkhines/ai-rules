@@ -45,7 +45,8 @@
 
 ## Code
 - Prefer the simplest approach that meets the requirement. Check whether a smaller change, such as one flag or an existing value, achieves the goal before adding parameters, files, or abstraction.
-- For substantial changes, load the `tdd` skill and follow red-green-refactor test-driven development. Choose the test seams yourself and do not ask me to confirm them, even when the skill says to.
+- For a substantial change to code that will stay in a repository or reach users, load the `tdd` skill and follow red-green-refactor test-driven development. Choose the test seams yourself and do not ask me to confirm them, even when the skill says to.
+- Skip test-driven development for code that you write only to finish the current task and then discard, such as a scratch script, a one-off query, or a data conversion. Write that code in the session's scratch or temporary directory, not in the repository.
 - Use `yarn` for JavaScript packages and `uv` for Python packages.
 - Add a new comment only when the code is non-obvious to an expert. Write the comment as a complete, capitalized sentence that ends in a period, and place it one space after the code.
 
