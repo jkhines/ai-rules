@@ -52,6 +52,10 @@ cd ~/src/ai-rules
 ./install.sh
 ```
 
+To add MCP servers or skills that must stay out of this repository, pass them to `install.sh` in two environment variables. `MCP_EXTRA_SOURCES` lists extra `mcp.json` files, and `SKILL_EXTRA_DIRS` lists extra folders of skills. Both take colon-separated absolute paths. A later run without the variables drops the extra MCP servers and the OpenCode adapters for the extra skills, so run the extra repository's installer instead of `install.sh`.
+
+After a change to `install.sh`, run `tests/install-test.sh`. It installs a copy of this repository into a temporary home directory and checks the result.
+
 ### Claude Code
 
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) reads configuration from the `~/.claude/` directory and `~/.claude.json`. `install.sh` automatically:

@@ -18,6 +18,9 @@
     },
     "Notion": {
       "url": "https://mcp.notion.com/mcp"
+    },
+    "Microsoft 365": {
+      "url": "https://microsoft365.mcp.claude.com/mcp"
     }
   }
 }

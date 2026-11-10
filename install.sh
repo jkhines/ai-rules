@@ -3,6 +3,22 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Skills come from this repository and from every folder in SKILL_EXTRA_DIRS (colon-separated absolute
+# paths). Another repository passes its skill folders here instead of copying this script's install code.
+SKILL_ROOTS=("$REPO_DIR/skills")
+IFS=':' read -ra EXTRA_SKILL_ROOTS <<< "${SKILL_EXTRA_DIRS:-}"
+for root in "${EXTRA_SKILL_ROOTS[@]}"; do
+    [ -n "$root" ] || continue
+    SKILL_ROOTS+=("${root%/}")
+done
+SKILL_DIRS=()
+for root in "${SKILL_ROOTS[@]}"; do
+    for dir in "$root"/*/; do
+        [ -d "$dir" ] || continue
+        SKILL_DIRS+=("$dir")
+    done
+done
+
 link() {
     local src="$1"
     local dest="$2"
@@ -30,7 +46,7 @@ link() {
     echo "Linked $dest -> $src"
 }
 
-# Remove symlinks previously installed from this repository (including stale names/layouts).
+# Remove symlinks previously installed from this repository or a skill folder (including stale names/layouts).
 cleanup_repo_symlinks() {
     local dir="$1"
     local entry target
@@ -42,21 +58,24 @@ cleanup_repo_symlinks() {
         [ -L "$entry" ] || continue
 
         target="$(readlink "$entry")"
-        case "$target" in
-            "$REPO_DIR"/*)
-                rm "$entry"
-                echo "Removed stale link: $entry"
-                ;;
-        esac
+        for root in "$REPO_DIR" "${SKILL_ROOTS[@]}"; do
+            case "$target" in
+                "$root"/*)
+                    rm "$entry"
+                    echo "Removed stale link: $entry"
+                    break
+                    ;;
+            esac
+        done
     done
 }
 
-# Remove generated OpenCode skill adapters whose skill no longer exists in this repository. The
+# Remove generated OpenCode skill adapters whose skill no longer exists in any skill folder. The
 # adapters are plain generated files, not symlinks, so cleanup_repo_symlinks cannot reach them.
 cleanup_opencode_adapters() {
     local dir="$1"
     local marker="<!-- Managed by ai-rules/install.sh; do not edit. -->"
-    local entry skill
+    local entry skill root
 
     [ -d "$dir" ] || return 0
 
@@ -65,9 +84,9 @@ cleanup_opencode_adapters() {
         grep -Fqx "$marker" "$entry" || continue
 
         skill="$(basename "$entry" .md)"
-        if [ -d "$REPO_DIR/skills/$skill" ]; then
-            continue
-        fi
+        for root in "${SKILL_ROOTS[@]}"; do
+            [ -d "$root/$skill" ] && continue 2
+        done
 
         rm "$entry"
         echo "Removed stale OpenCode skill adapter: $entry"
@@ -104,9 +123,6 @@ create_opencode_skill_adapter() {
     echo "Created OpenCode skill adapter: $dest"
 }
 
-# Ensure required scripts are executable in this clone.
-chmod +x "$REPO_DIR/.githooks/pre-commit" "$REPO_DIR/.githooks/post-commit" "$REPO_DIR/.githooks/post-merge" "$REPO_DIR/scripts/build-rules.sh" "$REPO_DIR/install.sh" "$REPO_DIR/mcp.sh" "$REPO_DIR/setup.sh" "$REPO_DIR/skills/browser-tools/scripts/attach-chrome.sh" "$REPO_DIR/scripts/claude-statusline.js" "$REPO_DIR/hooks/inject-contract.py"
-
 # Sync MCP servers from mcp.json into generated app configs.
 "$REPO_DIR/mcp.sh"
 
@@ -122,8 +138,7 @@ link "$REPO_DIR/.claude.json" "$HOME/.claude.json"
 # ~/.claude
 mkdir -p "$HOME/.claude/skills"
 cleanup_repo_symlinks "$HOME/.claude/skills"
-for dir in "$REPO_DIR/skills/"*/; do
-    [ -e "$dir" ] || continue
+for dir in "${SKILL_DIRS[@]}"; do
     link "$dir" "$HOME/.claude/skills/$(basename "$dir")"
 done
 
@@ -181,8 +196,7 @@ fi
 mkdir -p "$HOME/.cursor/skills"
 cleanup_repo_symlinks "$HOME/.cursor/skills"
 link "$REPO_DIR/.cursor.mcp.json" "$HOME/.cursor/mcp.json"
-for dir in "$REPO_DIR/skills/"*/; do
-    [ -e "$dir" ] || continue
+for dir in "${SKILL_DIRS[@]}"; do
     link "$dir" "$HOME/.cursor/skills/$(basename "$dir")"
 done
 
@@ -220,8 +234,7 @@ fi
 OPENCODE_COMMANDS_DIR="$OPENCODE_DIR/commands"
 mkdir -p "$OPENCODE_COMMANDS_DIR"
 cleanup_opencode_adapters "$OPENCODE_COMMANDS_DIR"
-for dir in "$REPO_DIR/skills/"*/; do
-    [ -e "$dir" ] || continue
+for dir in "${SKILL_DIRS[@]}"; do
     skill="$(basename "$dir")"
     create_opencode_skill_adapter "$skill" "$OPENCODE_COMMANDS_DIR/$skill.md"
 done
