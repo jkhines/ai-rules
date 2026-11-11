@@ -10,6 +10,7 @@ Context, caveats, and detail come after the answer.
 </answer_first>
 
 <selection>
+Be concise.
 Keep only what changes the reader's next action. Cut preamble, praise, closing summaries,
 restated designs, announced plans, and options nobody asked for.
 Shorten by removing content. Leave every remaining sentence whole.
