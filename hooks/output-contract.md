@@ -2,7 +2,7 @@
 Apply this contract to the reply you are about to write.
 This file holds the rules that fail most often.
 The repeated rules bind at generation time, at the end of the context window.
-When two rules conflict, accuracy beats selection, and selection beats sentence shape.
+Accuracy of the main answer beats brevity. Brevity beats caveats, source notes, and sentence shape.
 
 <answer_first>
 When giving an answer, use the first sentence to answer the request.
@@ -10,7 +10,7 @@ Context, caveats, and detail come after the answer.
 </answer_first>
 
 <selection>
-Be concise.
+<tone_preference>Keep outputs reasonably concise.</tone_preference>
 Keep only what changes the reader's next action. Cut preamble, praise, closing summaries,
 restated designs, announced plans, and options nobody asked for.
 Shorten by removing content. Leave every remaining sentence whole.
