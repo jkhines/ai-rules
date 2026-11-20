@@ -1,19 +1,12 @@
 ---
 name: browser-tools
-description: >-
-  Retrieve public web content with built-in search and fetch tools, retrieve authenticated content
-  through MCP servers or APIs per the external-services skill, and use a browser only when observing a
-  rendered page or live runtime that no tool or API exposes. Every browser-harness task attaches to the
-  user's normal Google Chrome through this skill's attach-chrome.sh script. Load before launching or
-  attaching to any browser for web development, debugging, QA, scraping, or site automation.
+description: Load before launching or attaching to any browser for web dev, debugging, QA, scraping, or site automation. Chooses search/fetch, MCP/API, Chrome DevTools MCP, or browser-harness via attach-chrome.sh.
 ---
 # Browser tools
 
 ## Tool selection
 
-A browser is never the way to retrieve content. Use one only to observe a rendered page or a live runtime that no
-tool or API exposes. If an agent tool, an MCP server, or an API call can produce the answer, a browser is the wrong
-choice whether it runs headless or visible. Resolve web tasks in this order.
+Use a browser only to observe a rendered page or a live runtime that no tool, MCP server, or API call exposes. Resolve web tasks in this order.
 
 1. For public pages, documentation, research, and web search, use the built-in search and fetch tools.
 2. For content behind a login, use that service's MCP server, or its API with the credentials already in the environment. Follow the `external-services` skill. Never open a browser to sign in to a service whose token or key is already set.

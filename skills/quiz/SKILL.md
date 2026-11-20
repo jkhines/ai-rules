@@ -63,13 +63,13 @@ Start like this:
 ```markdown
 Round 1.
 
-Mnemonic: **[WORD]**
+Mnemonic: [WORD]
 
-1. **A** = [short meaning]
-2. **B** = [short meaning]
-3. **C** = [short meaning]
+1. A = [short meaning]
+2. B = [short meaning]
+3. C = [short meaning]
 
-Your turn. What does **[WORD]** stand for?
+Your turn. What does [WORD] stand for?
 ```
 
 For corrections:
@@ -89,7 +89,7 @@ If the user is wrong:
 ```markdown
 Close. Fix:
 
-2. **B** = [correct item]
+1. B = [correct item]
 
 Try again: [same short question]
 ```

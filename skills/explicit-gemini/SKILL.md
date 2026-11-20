@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Explicit Gemini
 
-Rewrite text against the rules in the `explicit` skill, using Gemini 4 Argon Medium through `cursor-agent`.
+Run this skill only when the user invokes `explicit-gemini` by name. Rewrite text against the rules in the `explicit` skill, using Gemini 4 Argon Medium through `cursor-agent`.
 
 Do not rewrite the text yourself. The `cursor-agent` call bills the Cursor plan and starts a fresh session, so this conversation is never re-sent and a long session costs no more than a short one.
 

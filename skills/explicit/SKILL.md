@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Explicit
 
-Write so the reader never has to reconstruct your private context, omitted reasoning, or intended metaphor to understand a claim.
+Run this skill only when the user invokes `explicit` by name. Write so the reader never has to reconstruct your private context, omitted reasoning, or intended metaphor to understand a claim.
 
 Apply these rules yourself, using the model running this conversation. To send the text to Gemini 4 Argon Medium on the Cursor plan instead, use the `explicit-gemini` skill.
 

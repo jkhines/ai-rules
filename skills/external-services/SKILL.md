@@ -1,18 +1,14 @@
 ---
 name: external-services
-description: >-
-  Prefer MCP servers over direct API calls, and use environment credentials for third-party services
-  (Jira, Confluence, GitHub, SonarQube, Auth0, AWS, SendGrid, TestRail, Terraform Enterprise, DeepL,
-  Delinea Secret Server, and others). Load before any interaction with a third-party service or API,
-  when retrieving web content behind a login, or when translating content with DeepL.
+description: Load before using any third-party service, authenticated URL, or DeepL (Jira, Confluence, GitHub, SonarQube, Auth0, AWS, SendGrid, TestRail, TFE, Secret Server, Fastmail): MCP first, then env vars.
 ---
 # External services
 
 Before any interaction with a third-party service or API, resolve in this order.
 
-1. **Prefer MCP servers.** If one is available for the service (check via `ToolSearch`), use it. It handles auth, pagination, and API versioning. Do not fall back to direct API calls when an MCP tool can do the job. For Jira and Confluence, always use the `Atlassian-MCP-Server` tools (`searchJiraIssuesUsingJql`, `getJiraIssue`, `getConfluencePage`, `searchConfluenceUsingCql`).
-2. **Otherwise use environment variables and direct API calls.**
-   - **Mandatory credentials:** Never attempt unauthenticated requests, browser-based login, public URLs, OAuth flows, or prompt the user for credentials that exist in the environment. If a required variable is not set, say so and stop.
+1. Use the service's MCP server when one is available (check via `ToolSearch`), except for two cases that require direct API calls: reading Jira custom field values (which `Atlassian-MCP-Server` strips from `getJiraIssue` and `searchJiraIssuesUsingJql` responses) and reading or sending Fastmail mail or contacts (use `FASTMAIL_API_TOKEN` against JMAP; use the Fastmail MCP server only for calendars). For all other Jira and Confluence work, use `Atlassian-MCP-Server`.
+2. Otherwise use environment variables and direct API calls:
+   - Never attempt unauthenticated requests, browser-based login, public URLs, OAuth flows, or prompt the user for credentials that exist in the environment. If a required variable is not set, say so and stop.
    - Read credential values with `env | grep VAR_NAME | cut -d= -f2-`, not `$VAR` or `echo "$VAR"` (which may appear empty under shell sandboxing). Pass them via command substitution, e.g. `"$(env | grep TFE_TOKEN | cut -d= -f2-)"`.
 
 ## Environment variables
@@ -46,7 +42,6 @@ Use these for their respective services:
 
 ## Authentication (when not using MCP)
 
-- Jira through the Atlassian MCP server: read responses (`getJiraIssue`, `searchJiraIssuesUsingJql`) drop custom fields whatever `fields` requests, although JQL filters on custom fields work. When a task must read a custom field value, use the REST API with the `JIRA_*` variables below.
 - Jira / Confluence: HTTP Basic Auth, `*_EMAIL` as username and `*_API_TOKEN` as password; use `*_BASE_URL` as the host, never a hand-built URL.
 - GitHub: prefer the `gh` CLI; fall back to the raw API with `GITHUB_PAT` as Bearer token only when `gh` cannot do it.
 - GitHub: when a `gh` command fails with a permission, not-found, or SSO error, run `gh auth status`. If another signed-in account belongs to the repository's organization, run `gh auth switch` to that account and retry. Never override the account with `GH_TOKEN`.

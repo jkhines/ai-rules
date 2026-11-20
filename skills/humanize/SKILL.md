@@ -1,6 +1,6 @@
 ---
 name: humanize
-description: Audits writing for AI patterns ("AI-isms") and plain language failures, then reports, rewrites, or edits the file in place. Use when the user asks to humanize text, strip AI tells, judge whether something sounds machine-generated, simplify or clarify wording, cut jargon, check reading level, or make a document easier to read.
+description: Audit or rewrite prose for AI writing patterns ("AI-isms") and plain-language failures. Use when asked to humanize text, strip AI tells, check whether text sounds like AI, or simplify wording.
 ---
 # Humanize
 
@@ -370,9 +370,9 @@ Spell out an acronym in full the first time it appears on a page. If research sh
 
 ### Words to avoid
 
-Plain English rules out formal or long words where short familiar ones work: "buy" not "purchase", "help" not "assist", "about" not "approximately". Words ending in "-ion" and "-ment" make sentences longer and more complicated than they need to be; break the noun back into the verb it came from.
+Plain English rules out formal or long words where short familiar ones work: "buy" not "purchase", "help" not "assist", "about" not "approximately". Words ending in "-ion" and "-ment" make sentences longer and more complicated than they need to be. Break the noun back into the verb it came from.
 
-This table overlaps the Tier 1 and Tier 2 tables above on `utilize`, `leverage`, `in order to`, `robust`, `streamline`, `facilitate`, `foster`, `empower`, and `overarching`. The suggested replacements are worded differently in the two places but point the same direction, so use whichever fits the sentence. The difference that matters is the trigger: the tiers flag these words because AI overuses them, and this table flags them because readers stumble on them, so a word listed here is worth replacing even in text no one suspects of being machine-generated.
+In addition to the Tier 1 and Tier 2 tables above, replace these formal or metaphorical words even in text that does not sound machine-generated:
 
 | Replace | With |
 |---|---|
@@ -388,31 +388,22 @@ This table overlaps the Tier 1 and Tier 2 tables above on `utilize`, `leverage`,
 | disincentivize | discourage, deter |
 | drive (metaphor) | create, cause, encourage |
 | drive out | stop, avoid, prevent |
-| empower | allow, give permission |
-| facilitate | say specifically how you are helping; "run" if it is a workshop |
 | focus (verb) | work on, concentrate on |
-| foster (unless children) | encourage, help |
 | going forward / moving forward | from now on, in the future |
 | hub / portal / one-stop shop | website, service |
 | impact (unless a collision) | have an effect on, influence |
-| in order to | to, or cut entirely |
 | incentivize | encourage, motivate |
 | initiate | start, begin |
 | key (unless it unlocks something) | cut it, or use important, significant |
 | land (verb, unless aircraft) | get, achieve |
-| leverage (unless financial) | use, influence |
 | liaise | work with, work alongside |
-| overarching | cut it, or use encompassing |
 | progress (verb) | work on, develop, make progress |
 | promote (unless advertising or a career) | recommend, support |
 | ring-fencing | separate, or name what the money will be spent on |
-| robust (unless a sturdy object) | well thought out, thorough |
 | slim down | make smaller, reduce the size |
-| streamline | simplify, remove unnecessary administration |
 | strengthening (unless a physical structure) | name the action: increase funding, add staff |
 | tackle (unless physical) | stop, solve, deal with |
 | transform | describe what you are changing and how |
-| utilize | use |
 
 Avoid metaphors generally. They do not say what you mean and they slow comprehension.
 
@@ -481,38 +472,34 @@ Concretely: do not make casual writing more professional or formal writing more 
 
 ## Output format
 
+Format every report using the numbering, zero-bold, and zero-em-dash rules from `AGENTS.md`:
+
 ### Audit report (default, when nothing is changed)
 
-**1. Issues found** — A bulleted list of every AI-ism and plain language failure identified, with the offending text quoted, grouped by severity (P0, P1, P2). Mark each one as an AI pattern, a comprehensibility problem, or both.
-
-**2. Readability** — The longest sentence and its word count, and the longest paragraph and its sentence count. After a rewrite or edit, give both counts before and after.
-
-**3. Assessment** — For each flag, note whether it's a clear problem or a judgment call. Some AI-associated patterns are effective in context. Call out which to definitely fix vs. which are worth a second look. If the text is clean, say so. Say separately whether the text passes the three tests: can a reader find what they need, understand it, and act on it.
+1. List every AI-ism and plain-language failure identified, quoting the offending text, grouped by severity (P0, P1, P2), and state whether each is an AI pattern, a comprehensibility problem, or both.
+2. State the longest sentence and its word count, and the longest paragraph and its sentence count (give before and after counts when rewriting or editing).
+3. State for each flag whether it is a clear defect or a judgment call, and state separately whether the text passes the three plain-language tests (find, understand, act).
 
 ### Rewritten text, returned in the reply
 
-**1. Issues found** — Bulleted list of every AI-ism, with offending text quoted.
-
-**2. Rewritten version** — The full rewritten content. Preserve the intent and all specific technical details (apply Meaning preservation above). Convert inline label-value notes into connected prose, retaining the information conveyed by each label.
-
-**3. What changed** — Brief summary of the meaningful edits.
-
-**4. Second-pass audit** — Re-read the rewritten version from section 2. Identify any remaining AI tells and plain language failures that survived the first pass, fix them, return the corrected text inline, and note what changed. Check the longest sentence and paragraph against the 25-word and 5-sentence limits, and confirm every specialist term and acronym is explained on first use. If the rewrite is clean, say so.
+1. List every AI-ism and plain-language failure identified, quoting the offending text.
+2. Provide the full rewritten version, preserving all facts, options, and technical artifacts (apply Meaning preservation above) and folding inline label-value notes into connected prose.
+3. Summarize the meaningful edits and the artifact-comparison result.
+4. Re-read the rewritten version from item 2, fix any surviving AI tells or plain-language failures inline, report the longest sentence and paragraph against the 25-word and 5-sentence limits, and confirm every specialist term and acronym is explained on first use.
 
 ### Report after changing a file in place
 
 Return a short report rather than the full file:
 
-**1. Edits made** — Bulleted list of changes, each with the file location and before → after. Only the spans you touched.
-
-**2. Verification** — Confirm you re-read the file and the flagged patterns are resolved. Report the longest surviving sentence and paragraph. Note anything you deliberately left alone because it was already human or intentional.
+1. List the edits made, each with the file location and before-and-after text for the touched spans.
+2. Confirm that you re-read the file, that the flagged patterns and the mechanical artifact check passed, and report the longest surviving sentence and paragraph.
 
 ## Final checks
 
-The goal is writing that reads as though a person built it and that a reader can act on. Direct. Specific. The writing should demonstrate confidence, not assert it.
+The goal is writing that reads as though a person built it and that a reader can act on. The writing should demonstrate confidence through specific facts rather than asserting it.
 
-1. **Be concrete** — replace vague claims with numbers, names, dates, or examples.
-2. **Earn your emphasis** — don't tell the reader something is interesting. Make it interesting.
+1. Replace vague claims with numbers, names, dates, or examples.
+2. Let the facts earn emphasis rather than telling the reader something is interesting.
 
 If the original writing is already strong, say so and make only the necessary cuts. The tables give defaults, not the only wording: pick a better replacement when one exists, but pick one. Keeping the flagged word is governed by Fix, do not defer.
 
