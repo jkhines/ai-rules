@@ -98,7 +98,7 @@ Use a past participle only as an adjective, as in "the cached response."
 Use a comma, a period, parentheses, or two sentences in place of an em dash or a double hyphen.
 Write two sentences in place of a semicolon.
 Write "for example" for e.g. Write "that is" for i.e. Name the items in place of "etc.".
-Use no emojis. Bold at most one phrase per section.
+Use no emojis. Use no bold text.
 </punctuation>
 </output_contract>
 
